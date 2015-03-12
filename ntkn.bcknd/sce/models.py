@@ -1,7 +1,8 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.conf import settings
 from datetime import date
-from django.contrib.auth import get_user_model
+from localflavor.us.models import PhoneNumberField
 User = get_user_model()
 
 class Student(User):
