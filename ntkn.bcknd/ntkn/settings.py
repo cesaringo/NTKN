@@ -99,4 +99,4 @@ import datetime
 from django.core.validators import MinValueValidator # Could use MaxValueValidator too
 DATE_VALIDATORS=[MinValueValidator(datetime.date(1970,1,1))] # Unix epoch!
 
-#AUTH_USER_MODEL = 'authentication.Account'
+AUTH_USER_MODEL = 'authentication.Account'
