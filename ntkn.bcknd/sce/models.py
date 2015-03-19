@@ -3,10 +3,66 @@ from django.db import models
 from django.conf import settings
 from datetime import date
 from localflavor.us.models import PhoneNumberField
-User = get_user_model()
+from authentication.models import Account
+from slugify import slugify
 
-class Student(User):
-	mname = models.CharField(max_length=100, blank=True, null=True, vorbose_name="Middle name")
+class GradeLevel(models.Model):
+	number	=	models.IntegerField(verbose_name="Grade number")
+	name 	= 	models.CharField(max_length=150, unique=True, verbose_name="Grade name")
+
+	class Meta:
+		ordering = ('number',)
+
+	def __unicode__(self):
+		return unicode(self.name)
+
+	@property
+	def grade(self):
+		return self.number
+
+class IntegerRangeField(models.IntegerField):
+	def __init__(self, verbose_name=None, name=None, min_value=None, max_value=None, **kwargs):
+		self.min_value, self.max_value = min_value, max_value
+		models.IntegerField.__init__(self, verbose_name, name, **kwargs)
+
+	def formfield(self, **kwargs):
+		defaults = {'min_value': self.min_value, 'max_value':self.max_value}
+		defaults.update(kwargs)
+		return super(IntegerRangeField, self).formfield(**defaults)
+
+class ClassYear(models.Model):
+	"""	ClassYear such as class of 2015
+	"""
+	year 	= 	IntegerRangeField(unique=True, min_value=2000, max_value=date.today().year + 1, help_text="e.g. 2015")
+	name 	= 	models.CharField(max_length=255, help_text="e.g. Class of 2015", blank=True)
+
+	class Meta:
+		verbose_name = "Class Year"
+
+	def __unicode__(self):
+		return self.name
+
+	def save(self, *args, **kwargs):
+		if not self.name:
+			self.name = "Class of %s" % (self.year,)
+		super(ClassYear, self).save(*args, **kwargs)
+
+
+
+
+class Education(models.Model):
+	name = models.CharField(max_length=100, unique=True)
+	slug = models.CharField(max_length=100, unique=True)
+
+	def __init__(self, name):
+		self.name = name
+		self.slug = slugify(name)
+	
+
+
+
+class Student(Account):
+	mname = models.CharField(max_length=100, blank=True, null=True, verbose_name="Middle name")
 	sex	= models.CharField(max_length=1, choices=(('M', 'Male'), ('F', 'Female')), blank=True, null=True )
 	bday = models.DateField(blank=True, null=True, verbose_name="Birth Date", validators=settings.DATE_VALIDATORS)
 	year = models.ForeignKey(GradeLevel, blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Grade level")
@@ -16,6 +72,10 @@ class Student(User):
 	phone = PhoneNumberField()
 	parent_email = models.EmailField(blank=True, editable=False)
 	parent_phone  = PhoneNumberField()
+
+	education = models.ForeignKey(Education, blank=True, null=True, on_delete=models.SET_NULL)
+
+	#Status = Regular/ Irregulae
 
 	class Meta:
 		permissions = (
@@ -31,37 +91,38 @@ class Student(User):
 		pass
 
 
+class Teacher(Account):
+	phone = PhoneNumberField()
+	##Adtional administrative data for teacher 
 
 
-
-class GradeLevel(models.Model):
-	number	=	models.IntegerField(verbose_name="Grade number")
-	name 	= 	models.CharField(max_length=150, unique=True, verbose_name="Grade name")
-
-	class Meta:
-		ordering = (number)
-
-	def __unicode__(self):
-		return unicode(self.name)
-
-	@property
-	def grade(self):
-		return self.number
-
-class ClassYear(models.Model):
-	"""	ClassYear such as class of 2015
-	"""
-	year 	= 	models.IntegerField(unique=True, min_value=2000, max_value=date.today().year + 1, help_text="e.g. 2015")
-	name 	= 	models.CharField(max_length=255, help_text="e.g. Class of 2015", blank=True)
+class SchoolYear(models.Model):
+	name = models.CharField(max_length=100, unique=True)
+	start_date = models.DateField(validators=settings.DATE_VALIDATORS)
+	end_date = models.DateField(validators=settings.DATE_VALIDATORS)
+	active_year = models.BooleanField(default=False, help_text = '')
 
 	class Meta:
-		verbose_name = "Class Year"
+		ordering = ('start_date',)
 
 	def __unicode__(self):
 		return self.name
 
-	def save(self, *args, **kwargs):
-		if not self.name:
-			self.name = "Class of %s" % (self.year,)
-		super(ClassYear, self).save(*args, **kwargs)
+class Subject(models.Model):
+	name = models.CharField(max_length=100)
+
+
+
+class Course(models.Model):
+	subject = models.ForeignKey(Subject)
+	teacher = models.ForeignKey(Teacher)
+	school_year = models.ForeignKey(SchoolYear)
+
+
+
+class Enrollment(models.Model):
+	student = models.ForeignKey(Student)
+	course = models.ForeignKey(Course)
+	##Aditional data for evaluating the student of this course
+
 
