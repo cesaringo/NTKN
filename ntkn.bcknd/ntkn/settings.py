@@ -39,11 +39,13 @@ INSTALLED_APPS = (
 
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_auth',
     'localflavor',
+    'compressor',
 
-    'authentication',
-    'sce',
-    'front',
+    'authentication', #Custom user Model
+    'sce',  #School Information System
+    'front', #Angular app
 
 )
 
@@ -90,6 +92,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'staticfiles'
 
 TEMPLATE_DIRS = (
     'templates',
@@ -101,3 +104,31 @@ from django.core.validators import MinValueValidator # Could use MaxValueValidat
 DATE_VALIDATORS=[MinValueValidator(datetime.date(1970,1,1))] # Unix epoch!
 
 AUTH_USER_MODEL = 'authentication.Account'
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+)
+COMPRESS_ENABLED = os.environ.get('COMPRESS_ENABLED', False)
+
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'templates'),
+)
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
+
+ 
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+AUTHENTICATION_BACKENDS = (
+    'authentication.backends.EmailOrUsernameModelBackend',
+    'django.contrib.auth.backends.ModelBackend'
+)

@@ -1,5 +1,5 @@
 from distutils import version
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate, get_user_model, login
 from rest_framework import serializers
 import rest_framework
 from rest_framework.authtoken.models import Token
@@ -105,6 +105,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
         if self.object:
             if not self.object.is_active:
                 raise serializers.ValidationError(constants.DISABLE_ACCOUNT_ERROR)
+            #login(self.context['request'], self.object)
             return attrs
         else:
             raise serializers.ValidationError(constants.INVALID_CREDENTIALS_ERROR)
@@ -196,9 +197,9 @@ class SetUsernameRetypeSerializer(SetUsernameSerializer):
 
 class TokenSerializer(serializers.ModelSerializer):
     auth_token = serializers.CharField(source='key')
-
+    user = UserSerializer()
     class Meta:
         model = Token
         fields = (
-            'auth_token',
+            'auth_token', 'user',
         )

@@ -1,15 +1,16 @@
-from django.contrib.auth import get_user_model
-from rest_framework import generics, permissions, status, response
+from django.contrib.auth import get_user_model, logout
+from rest_framework import generics, permissions, status, response, views
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from django.contrib.auth.tokens import default_token_generator
-from . import serializers, settings, utils
+from authentication import serializers, settings, utils
+
 
 User = get_user_model()
 
 
-class RootView(generics.GenericAPIView):
+class RootView(views.APIView):
     """
     Root endpoint - use one of sub endpoints.
     """
@@ -76,14 +77,16 @@ class LoginView(utils.ActionViewMixin, generics.GenericAPIView):
     )
 
     def action(self, serializer):
-        token, _ = Token.objects.get_or_create(user=serializer.object)
+        user = serializer.object
+        token, _ = Token.objects.get_or_create(user=user)
+
         return Response(
             data=serializers.TokenSerializer(token).data,
             status=status.HTTP_200_OK,
         )
 
 
-class LogoutView(generics.GenericAPIView):
+class LogoutView(views.APIView):
     """
     Use this endpoint to logout user (remove user authentication token).
     """
@@ -93,8 +96,7 @@ class LogoutView(generics.GenericAPIView):
 
     def post(self, request):
         Token.objects.filter(user=request.user).delete()
-
-        return response.Response(status=status.HTTP_200_OK)
+        return response.Response(status=status.HTTP_200_OK,)
 
 
 class PasswordResetView(utils.ActionViewMixin, utils.SendEmailViewMixin, generics.GenericAPIView):

@@ -17,6 +17,7 @@ class AccountManager(BaseUserManager):
         )
         
 		account.set_password(password)
+		account.is_active = True
 		account.save()
 		return account
 
@@ -36,7 +37,7 @@ class Account(AbstractBaseUser):
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 	objects = AccountManager()
-
+	is_active = models.BooleanField(default=True)
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username']
 
@@ -48,3 +49,17 @@ class Account(AbstractBaseUser):
 
 	def get_short_name(self):
 		return self.first_name		
+
+	@property
+	def is_superuser(self):
+		return self.is_admin
+
+	@property
+	def is_staff(self):
+		return self.is_admin
+
+	def has_perm(self, perm, obj=None):
+		return self.is_admin
+
+	def has_module_perms(self, app_label):
+		return self.is_admin
