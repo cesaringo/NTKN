@@ -1,0 +1,28 @@
+{
+  "name": "ntkn.front",
+  "version": "1.0",
+  "homepage": "https://facebook.com/cesaringo90",
+  "description": "School Information System",
+  "moduleType": [
+    "amd",
+    "es6",
+    "globals",
+    "node",
+    "yui"
+  ],
+  "keywords": [
+    "natkan"
+  ],
+  "authors": [
+    "César Serrano Ruíz"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

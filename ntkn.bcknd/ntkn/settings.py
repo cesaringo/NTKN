@@ -44,8 +44,10 @@ INSTALLED_APPS = (
     'compressor',
 
     'authentication', #Custom user Model
-    'sce',  #School Information System
+    #'sce',  #School Information System
     'front', #Angular app
+    #'front2', #Angular app
+
 
 )
 

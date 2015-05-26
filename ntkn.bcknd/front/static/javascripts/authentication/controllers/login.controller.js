@@ -15,17 +15,22 @@
 	* @namespace LoginController
 	*/
 	function LoginController($location, $scope, Authentication, Validate){
+		if (Authentication.authenticated) {
+	    	$location.path('/dashboard');
+	    	return;
+	  	}
 		$scope.model = {'username':'','password':''};
 		$scope.complete = false;
 		$scope.login = function(formData){
 			$scope.errors = [];
 			Validate.form_validation(formData,$scope.errors);
 			if(!formData.$invalid){
+				console.log("No errror");
 				Authentication.login($scope.model.username, $scope.model.password)
-				.then(function(data){
+				.then(function(response){
 		        	// success case
-		        	console.log('$location.path("/")');
-		        },function(data){
+		        	$location.path("/dashboard");
+		        },function(response){
 		        	// error case
 		        	$scope.errors = data;
 		        });

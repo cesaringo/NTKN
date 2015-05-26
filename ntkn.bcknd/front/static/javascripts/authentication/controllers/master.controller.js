@@ -16,7 +16,6 @@
 	        $scope.authenticated = true;
 	    });
 
-		console.log('MasterController: $scope.authenticated=' + $scope.authenticated);
 	    
 	    // Wait and respond to the logout event.
 	    $scope.$on('Authentication.logged_out', function() {
