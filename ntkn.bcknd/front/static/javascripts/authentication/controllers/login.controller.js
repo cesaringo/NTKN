@@ -9,12 +9,14 @@
 		.module('ntkn.authentication.controllers')
 		.controller('LoginController', LoginController);
 
-	LoginController.$inject = ['$location', '$scope', 'Authentication', 'Validate'];
+	LoginController.$inject = ['$location', '$scope', '$timeout', 'Authentication', 'Validate', 'ngProgress'];
 
 	/**
 	* @namespace LoginController
 	*/
-	function LoginController($location, $scope, Authentication, Validate){
+	function LoginController($location, $scope, $timeout, Authentication, Validate, ngProgress){
+		
+
 		if (Authentication.authenticated) {
 	    	$location.path('/dashboard');
 	    	return;
@@ -25,14 +27,18 @@
 			$scope.errors = [];
 			Validate.form_validation(formData,$scope.errors);
 			if(!formData.$invalid){
-				console.log("No errror");
+				ngProgress.start();
+				ngProgress.color("#FAA634");
+				ngProgress.height("5px");
 				Authentication.login($scope.model.username, $scope.model.password)
 				.then(function(response){
 		        	// success case
+		        	ngProgress.complete();
 		        	$location.path("/dashboard");
 		        },function(response){
 		        	// error case
-		        	$scope.errors = data;
+		            ngProgress.complete();
+		        	$scope.errors = response;
 		        });
 			}
 		}

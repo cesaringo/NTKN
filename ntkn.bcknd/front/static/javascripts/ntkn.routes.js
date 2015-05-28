@@ -14,26 +14,20 @@
 	function config($routeProvider){
 		$routeProvider
 			.when('/', {
-				templateUrl: '/static/templates/main.html',
+				templateUrl: '/static/views/main.html',
 				controller: 'MainController',
 			})
 			.when('/login',{
 				controller: 'LoginController',
-				templateUrl: '/static/templates/authentication/login.html',
+				templateUrl: '/static/views/authentication/login.html',
 			})
 			.when('/logout', {
-		        templateUrl: '/static/templates/main.html',
+		        templateUrl: '/static/views/main.html',
 		        controller: 'LogoutController',
 		    })
 		    .when('/dashboard', {
-		        templateUrl: '/static/templates/dashboard.html',
+		        templateUrl: '/static/views/dashboard.html',
 		        controller: 'DashboardController',
-		        
-		        resolve: {
-		          authenticated: ['Aunthentication', function(Aunthentication){
-		            return Aunthentication.getAuthenticationStatus();
-		          }],
-		        }
 		    })
 			.otherwise('/');
 	}

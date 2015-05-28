@@ -6,6 +6,7 @@
 			'ntkn.config',
 			'ntkn.routes',
 			'ntkn.authentication',
+			'ngProgress',
 		]);
 
 	angular
@@ -26,8 +27,8 @@
 	**/
 
 	function run($http, Authentication){
-		/*$http.defaults.xsrfHeaderName = 'X-CSRFToken';
-		$http.defaults.xsrfCookieName = 'csrftoken';*/
+		$http.defaults.xsrfHeaderName = 'X-CSRFToken';
+		$http.defaults.xsrfCookieName = 'csrftoken';
 
 		//Authentication.initialize('//localhost:8000/rest-auth', false);
 	}

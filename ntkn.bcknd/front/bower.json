@@ -3,13 +3,6 @@
   "version": "1.0",
   "homepage": "https://facebook.com/cesaringo90",
   "description": "School Information System",
-  "moduleType": [
-    "amd",
-    "es6",
-    "globals",
-    "node",
-    "yui"
-  ],
   "keywords": [
     "natkan"
   ],
@@ -17,12 +10,20 @@
     "César Serrano Ruíz"
   ],
   "license": "MIT",
-  "private": true,
   "ignore": [
     "**/.*",
     "node_modules",
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "angular-cookies": "~1.4.0",
+    "angular-route": "~1.4.0",
+    "bootstrap-material-design": "~0.3.0",
+    "bootstrap": "~3.3.4",
+    "ngDialog": "~0.3.12",
+    "ngprogress": "~1.0.7",
+    "underscore": "~1.8.3"
+  }
 }

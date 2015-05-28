@@ -25,8 +25,8 @@
     	    //REQUEST SERVICE
 			'request': function(args){
 				// Let's retrieve the token from the cookie, if available
-	            if($cookies.token){
-	                $http.defaults.headers.common.Authorization = 'Token ' + $cookies.token;
+	            if($window.localStorage.token){
+	                $http.defaults.headers.common.Authorization = 'Token ' + $window.localStorage.token;
 	            }
 	            //Continue
 	            params = args.params || {}
@@ -47,10 +47,12 @@
 	                data: data
 	            })
 	            .success(angular.bind(this, function(data, status, headers, config){
+	            	//console.log(config);
 	            	deferred.resolve(data, status);
 	            }))
 	            .error(angular.bind(this,function(data, status, headers, config){
 	            	console.log("error syncing with: " + url);
+	            	//console.log(config);
 	            	//Set request status
 	            	if(data){
 	            		data.status = status;
@@ -107,10 +109,9 @@
 
 
 				function loginSuccessFn(response){
-					console.log(response)
 					if(!auth.use_session){
 						$http.defaults.headers.common.Authorization = 'Token ' + response.key;
-						$window.localStorage.token = response.key;
+						$window.localStorage.token = response.key; 
  						//$window.localStorage.username = response.data.username;
 					}
 					auth.authenticated = true;
