@@ -1,8 +1,8 @@
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
 from django.db import models
-from .thumbs import ImageWithThumbsField
-
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 class AccountManager(BaseUserManager):
 	def create_user(self, email, password=None, **kwargs):
@@ -39,8 +39,8 @@ class Account(AbstractBaseUser):
 	objects = AccountManager()
 	is_active = models.BooleanField(default=True)
 
-	photo = ImageWithThumbsField(upload_to='users/photos', sizes=((125,125),(200,200)), null=True)
-	second_photo = ImageWithThumbsField(upload_to='users/photos', null=True, blank=True)
+	photo = models.ImageField(upload_to='avatars')
+	second_photo = ImageSpecField(source='photo', processors=[ResizeToFill(100, 50)], format='JPEG', options={'quality': 60})
 
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username']
