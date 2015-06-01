@@ -14,3 +14,4 @@ regex==2015.03.18
 requests==2.7.0
 requests-oauthlib==0.5.0
 six==1.9.0
+imagekit
