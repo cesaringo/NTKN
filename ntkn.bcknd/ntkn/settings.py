@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'rest_auth',
     'localflavor',
     'compressor',
+    'imagekit',
 
     'authentication', #Custom user Model
     'sce',  #School Information System
