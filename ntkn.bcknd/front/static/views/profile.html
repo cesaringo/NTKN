@@ -1,0 +1,21 @@
+<div class="profile" ng-show="vm.profile">
+	<div class="jumbotron profile__header">
+		<h1 class="profile__username">{{ vm.profile.username }}</h1>
+
+			
+		<p class="profile__tagline">{{ vm.profile.tagline }}</p>
+	</div>
+	<div class="user-info">
+		<h3>User details</h3>
+		<dl class="dl-horizontal">
+			<dt>Name:</dt>
+			<dd>{{vm.profile.first_name}} {{vm.profile.last_name}}</dd>
+
+			<dt>Email:</dt>
+			<dd>{{vm.profile.email}}</dd>
+		</dl>
+	</div>
+	<div class="student-info">
+		<h3>Student details</h3>
+	</div>
+</div>

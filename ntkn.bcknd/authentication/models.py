@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
 from django.db import models
-
+from .thumbs import ImageWithThumbsField
 
 
 class AccountManager(BaseUserManager):
@@ -38,6 +38,10 @@ class Account(AbstractBaseUser):
 	updated_at = models.DateTimeField(auto_now=True)
 	objects = AccountManager()
 	is_active = models.BooleanField(default=True)
+
+	photo = ImageWithThumbsField(upload_to='users/photos', sizes=((125,125),(200,200)), null=True)
+	second_photo = ImageWithThumbsField(upload_to='users/photos', null=True, blank=True)
+
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username']
 

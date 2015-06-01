@@ -3,11 +3,6 @@
     <h1>Login</h1>
     <div class="well">
       <form role="form" ng-submit="login(loginForm)" novalidate name="loginForm" >
-
-        
-        
-        
-
         <div class="form-group">
           <label for="login__email">Email</label>
           <input type="text" class="form-control" id="login__email" ng-model="model.username" placeholder="algo@naktnak.mx" name="username" required/>
@@ -24,6 +19,9 @@
         <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors">{{error}}</div>
         <div class="alert alert-danger" ng-if="error">{{error}}</div>
       </form>
+      <div class="progress progress-striped active" style="height:10px;" ng-if="loginProgress">
+        <div class="progress-bar" style="width: {{progressCount}}%;"></div>
+      </div>
     </div>
   </div>
 </div>

@@ -29,6 +29,11 @@
 		        templateUrl: '/static/views/dashboard.html',
 		        controller: 'DashboardController',
 		    })
+		    .when('/profile',{
+		    	templateUrl: '/static/views/profile.html',
+		    	controller: 'ProfileController',
+		    	controllerAs: 'vm',
+		    })
 			.otherwise('/');
 	}
 })()

@@ -7,6 +7,7 @@
 			'ntkn.routes',
 			'ntkn.authentication',
 			'ngProgress',
+			'ntkn.profiles',
 		]);
 
 	angular
