@@ -27,6 +27,13 @@
 	      $scope.authenticated = true;
 	    });
 
+	    $scope.$on('Authentication.invalid_token', function() {
+			$scope.authenticated = false;
+			$scope.invalid_token = "Token has expired or is invalid. Please login again";
+			$location.path("/login");
+	    });
+
+
 	    //If the user attempts to access a restricted page, redirect them back to the main page.
 	    $scope.$on('$routeChangeError', function(ev, current, previous, rejection){
 	      console.error("Unable to change routes.  Error: ", rejection)

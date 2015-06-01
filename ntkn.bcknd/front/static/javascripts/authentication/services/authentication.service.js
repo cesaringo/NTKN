@@ -24,7 +24,7 @@
 
     	    //REQUEST SERVICE
 			'request': function(args){
-				// Let's retrieve the token from the cookie, if available
+				// Let's retrieve the token if available
 	            if($window.localStorage.token){
 	                $http.defaults.headers.common.Authorization = 'Token ' + $window.localStorage.token;
 	            }
@@ -51,7 +51,21 @@
 	            	deferred.resolve(data, status);
 	            }))
 	            .error(angular.bind(this,function(data, status, headers, config){
+	            	var authentication = this;
+	            	
+		            if (status == 401){
+		                delete $http.defaults.headers.common.Authorization;
+		                $window.localStorage.removeItem('token');
+		                //$window.localStorage.removeItem('username');
+		                authentication.authenticated = false;
+		                console.log(authentication.authenticated);
+		                if (data.detail == "Invalid token.")
+		                	$rootScope.$broadcast("Authentication.invalid_token");
+		                else 
+		                	$rootScope.$broadcast("Authentication.logged_out");
+		            }
 	            	console.log("error syncing with: " + url);
+
 	            	//console.log(config);
 	            	//Set request status
 	            	if(data){
@@ -71,6 +85,14 @@
 	                        data['status'] = 0;
 	                        data['non_field_errors'] = ["Server timed out. Please try again."];
 	                    }
+	                }
+	                if (status == 403){
+	                	var authentication = this;
+	                	delete $http.defaults.headers.common.Authorization;
+						$window.localStorage.removeItem('token');
+						//$window.localStorage.removeItem('username');
+						authentication.authenticated = false;
+						$rootScope.$broadcast("Authentication.logged_out");
 	                }
 	                deferred.reject(data, status, headers, config);
 	            }));
@@ -156,8 +178,8 @@
 	            // Set restrict to true to reject the promise if not logged in
 	            // Set to false or omit to resolve when status is known
 	            // Set force to true to ignore stored value and query API
+	            console.log("Cheking authenticationStatus");
 
-	            
 	            restrict = restrict || false;
 	            force = force || false;
 	            if(this.authPromise == null || force){

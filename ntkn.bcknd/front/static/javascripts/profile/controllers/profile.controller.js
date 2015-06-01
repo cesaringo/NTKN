@@ -20,9 +20,8 @@ function ProfileController($location, $routeParams, ProfileService) {
       	}
 		
 		function profileErrorFn(data, status, headers, config) {
-	        console.log(data);
+			console.log(data);
 	    }
 
 	}
-
 }

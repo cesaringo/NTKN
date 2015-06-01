@@ -12,6 +12,7 @@
 		
 
 		if (Authentication.authenticated) {
+			console.log(Authentication.authenticated);
 	    	$location.path('/dashboard');
 	    	return;
 	  	}
@@ -36,7 +37,7 @@
 			        	completeProgressBar();
 			        	$scope.errors = response;
 			        });
-				},1000);
+				},100);
 			}
 
 			function startProgressBar(){
@@ -46,12 +47,14 @@
 					var remaining = 100 - progressCount;
 					progressCount +=  (0.15 * Math.pow(1 - Math.sqrt(remaining), 2));
 					$scope.progressCount = progressCount;
-					console.log("startProgressBar" + $scope.progressCount);
+					//console.log("startProgressBar" + $scope.progressCount);
 				}, 100);
 			}
 			function completeProgressBar(){
 				$interval.cancel(_startProgressBar);
 				$scope.loginProgress = false;
+				var progressCount = 0;
+				$scope.progressCount = progressCount;
 			}
 		}
 	}
