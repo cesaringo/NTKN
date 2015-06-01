@@ -44,7 +44,7 @@ INSTALLED_APPS = (
     'compressor',
 
     'authentication', #Custom user Model
-    #'sce',  #School Information System
+    'sce',  #School Information System
     'front', #Angular app
     #'front2', #Angular app
 
@@ -121,7 +121,7 @@ TEMPLATE_DIRS = (
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         #'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        #'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     )
 }
