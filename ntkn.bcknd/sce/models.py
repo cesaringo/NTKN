@@ -5,6 +5,7 @@ from datetime import date
 from localflavor.us.models import PhoneNumberField
 from authentication.models import Account
 from slugify import slugify
+	
 
 class GradeLevel(models.Model):
 	number	=	models.IntegerField(verbose_name="Grade number")
@@ -124,5 +125,3 @@ class Enrollment(models.Model):
 	student = models.ForeignKey(Student)
 	course = models.ForeignKey(Course)
 	##Aditional data for evaluating the student of this course
-
-
