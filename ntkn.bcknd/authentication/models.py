@@ -4,6 +4,12 @@ from django.db import models
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
+class Photo(models.Model):
+	original = models.ImageField(upload_to='account_photos')
+	thumbnail_30x30 = ImageSpecField(source='original', processors=[ResizeToFill(30, 30)], format='JPEG', options={'quality': 60})
+	thumbnail_50x50 = ImageSpecField(source='original', processors=[ResizeToFill(50, 50)], format='JPEG', options={'quality': 60})
+	thumbnail_100x100 = ImageSpecField(source='original', processors=[ResizeToFill(100, 100)], format='JPEG', options={'quality': 60})
+
 class AccountManager(BaseUserManager):
 	def create_user(self, email, password=None, **kwargs):
 		if not email:
@@ -38,9 +44,7 @@ class Account(AbstractBaseUser):
 	updated_at = models.DateTimeField(auto_now=True)
 	objects = AccountManager()
 	is_active = models.BooleanField(default=True)
-
-	photo = models.ImageField(upload_to='avatars')
-	second_photo = ImageSpecField(source='photo', processors=[ResizeToFill(100, 50)], format='JPEG', options={'quality': 60})
+	photo = models.OneToOneField(Photo, blank=True, null=True)
 
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username']
@@ -67,3 +71,4 @@ class Account(AbstractBaseUser):
 
 	def has_module_perms(self, app_label):
 		return self.is_admin
+
