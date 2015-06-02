@@ -1,5 +1,10 @@
 <div class="profile" ng-show="vm.profile">
 	<div class="jumbotron profile__header">
+		
+		<img src="{{ vm.profile.photo.thumbnail_30x30 }}" alt="{{ vm.profile.username }}">
+		<img src="{{ vm.profile.photo.thumbnail_50x50 }}" alt="{{ vm.profile.username }}">
+		<img src="{{ vm.profile.photo.thumbnail_100x100 }}" alt="{{ vm.profile.username }}">
+		<img src="{{ vm.profile.photo.original }}" alt="{{ vm.profile.username }}">
 		<h1 class="profile__username">{{ vm.profile.username }}</h1>
 
 			
@@ -10,7 +15,6 @@
 		<dl class="dl-horizontal">
 			<dt>Name:</dt>
 			<dd>{{vm.profile.first_name}} {{vm.profile.last_name}}</dd>
-
 			<dt>Email:</dt>
 			<dd>{{vm.profile.email}}</dd>
 		</dl>
