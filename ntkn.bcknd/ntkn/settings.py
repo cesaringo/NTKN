@@ -97,6 +97,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'media').replace('\\','/')
+
+
+
 TEMPLATE_DIRS = (
     'templates',
 )

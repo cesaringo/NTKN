@@ -12,7 +12,8 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.exceptions import ValidationError
-
+from imagekit.models import ImageSpecField
+from authentication.models import Photo
 
 class LoginSerializer(AuthTokenSerializer):
 
@@ -37,16 +38,28 @@ class TokenSerializer(serializers.ModelSerializer):
         model = Token
         fields = ('key',)
 
+class PhotoSerializer(serializers.ModelSerializer):
+    original = serializers.ImageField('original')
+    thumbnail_30x30 = serializers.ImageField('thumbnail_30x30')
+    thumbnail_50x50 =serializers.ImageField('thumbnail_50x50')
+    thumbnail_100x100 = serializers.ImageField('thumbnail_100x100')
+    class Meta:
+        model = Photo
+        fields = ('original', 'thumbnail_30x30', 'thumbnail_50x50', 'thumbnail_100x100',)
+
 
 class UserDetailsSerializer(serializers.ModelSerializer):
 
     """
     User model w/o password
     """
+    photo = PhotoSerializer()
+
     class Meta:
         model = get_user_model()
-        fields = ('username', 'email', 'first_name', 'last_name', 'created_at')
+        fields = ('username', 'email', 'first_name', 'last_name', 'created_at', 'photo',)
         read_only_fields = ('email', )
+
 
 
 class PasswordResetSerializer(serializers.Serializer):
