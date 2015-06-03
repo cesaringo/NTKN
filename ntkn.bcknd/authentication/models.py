@@ -6,9 +6,9 @@ from imagekit.processors import ResizeToFill
 
 class Photo(models.Model):
 	original = models.ImageField(upload_to='account_photos')
-	thumbnail_30x30 = ImageSpecField(source='original', processors=[ResizeToFill(30, 30)], format='JPEG', options={'quality': 60})
-	thumbnail_50x50 = ImageSpecField(source='original', processors=[ResizeToFill(50, 50)], format='JPEG', options={'quality': 60})
-	thumbnail_100x100 = ImageSpecField(source='original', processors=[ResizeToFill(100, 100)], format='JPEG', options={'quality': 60})
+	thumbnail_30x30 = ImageSpecField(source='original', processors=[ResizeToFill(30, 30)], format='JPEG', options={'quality': 100})
+	thumbnail_50x50 = ImageSpecField(source='original', processors=[ResizeToFill(50, 50)], format='JPEG', options={'quality': 100})
+	thumbnail_100x100 = ImageSpecField(source='original', processors=[ResizeToFill(100, 100)], format='JPEG', options={'quality': 100})
 
 class AccountManager(BaseUserManager):
 	def create_user(self, email, password=None, **kwargs):
