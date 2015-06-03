@@ -7,8 +7,8 @@
 	angular
 		.module('ntkn.authentication.controllers')
 		.controller('LoginController', LoginController);
-	LoginController.$inject = ['$location', '$timeout', '$scope', '$interval', 'Authentication', 'Validate', 'ngProgress'];
-	function LoginController($location, $timeout, $scope, $interval, Authentication, Validate, ngProgress){
+	LoginController.$inject = ['$location', '$timeout', '$scope', '$interval', 'Authentication', 'Validate', 'ngProgress', 'ProfileService'];
+	function LoginController($location, $timeout, $scope, $interval, Authentication, Validate, ngProgress, ProfileService){
 		
 
 		if (Authentication.authenticated) {
@@ -30,9 +30,9 @@
 				$timeout(function(){//Nice Animation
 					Authentication.login($scope.model.username, $scope.model.password)
 					.then(function(response){
-			        	//success case
 			        	completeProgressBar();
 			        	$location.path("/dashboard");
+
 			        },function(response){
 			        	completeProgressBar();
 			        	$scope.errors = response;

@@ -11,8 +11,10 @@
     </div> <!-- ./navbar-header -->
     <div class="collapse navbar-collapse" id="not-google-plus-nav">
       <ul class="nav navbar-nav pull-right">
-          <li ng-if="authenticated"><a href="/profile">+{{ user.username }}</a></li>
-          <li ng-if="authenticated"><a href="/+{{ user.username }}/settings">Settings</a></li>
+          <li ng-if="authenticated"><a href="/profile">
+            {{username }}</a>
+          </li>
+          <li ng-if="authenticated"><a href="/settings">Settings</a></li>
           <li ng-if="authenticated"><a href="/dashboard">Dashboard</a></li>
           <li ng-if="authenticated"><a href="/logout">Logout</a>
           </li>

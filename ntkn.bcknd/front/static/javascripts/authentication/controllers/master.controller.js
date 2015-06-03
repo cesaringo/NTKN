@@ -4,12 +4,12 @@
 		.module('ntkn.authentication.controllers')
 		.controller('MasterController', MasterController);
 
-	MasterController.$inject = ['$scope', '$location', 'Authentication'];
+	MasterController.$inject = ['$scope', '$location', '$window', 'Authentication', ];
 
-	function MasterController($scope, $location, Authentication){
+	function MasterController($scope, $location, $window, Authentication){
 		// Assume user is not logged in until we hear otherwise
 		$scope.authenticated = false;
-		
+		$scope.username = "..";
 		
 		// Wait for the status of authentication, set scope var to true if it resolves
 		Authentication.authenticationStatus(true).then(function(){
@@ -20,15 +20,18 @@
 	    // Wait and respond to the logout event.
 	    $scope.$on('Authentication.logged_out', function() {
       		$scope.authenticated = false;
+      		$scope.username = null;
 		});
 
 		// Wait and respond to the log in event.
 		$scope.$on('Authentication.logged_in', function() {
 	      $scope.authenticated = true;
+	      $scope.username = $window.localStorage.username;
 	    });
 
 	    $scope.$on('Authentication.invalid_token', function() {
 			$scope.authenticated = false;
+			$scope.username = null;
 			$scope.invalid_token = "Token has expired or is invalid. Please login again";
 			$location.path("/login");
 	    });

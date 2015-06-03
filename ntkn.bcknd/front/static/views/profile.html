@@ -1,13 +1,7 @@
 <div class="profile" ng-show="vm.profile">
 	<div class="jumbotron profile__header">
-		
-		<img src="{{ vm.profile.photo.thumbnail_30x30 }}" alt="{{ vm.profile.username }}">
-		<img src="{{ vm.profile.photo.thumbnail_50x50 }}" alt="{{ vm.profile.username }}">
 		<img src="{{ vm.profile.photo.thumbnail_100x100 }}" alt="{{ vm.profile.username }}">
-		<img src="{{ vm.profile.photo.original }}" alt="{{ vm.profile.username }}">
 		<h1 class="profile__username">{{ vm.profile.username }}</h1>
-
-			
 		<p class="profile__tagline">{{ vm.profile.tagline }}</p>
 	</div>
 	<div class="user-info">

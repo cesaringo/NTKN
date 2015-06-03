@@ -58,7 +58,6 @@
 		                $window.localStorage.removeItem('token');
 		                //$window.localStorage.removeItem('username');
 		                authentication.authenticated = false;
-		                console.log(authentication.authenticated);
 		                if (data.detail == "Invalid token.")
 		                	$rootScope.$broadcast("Authentication.invalid_token");
 		                else 
@@ -131,10 +130,14 @@
 
 
 				function loginSuccessFn(response){
+					console.log(response);
 					if(!auth.use_session){
 						$http.defaults.headers.common.Authorization = 'Token ' + response.key;
 						$window.localStorage.token = response.key; 
- 						//$window.localStorage.username = response.data.username;
+ 						$window.localStorage.username = response.user.username;
+ 						//$window.localStorage.avatar = response.user.photo.thumbnail_30x30;
+ 							
+ 						console.log($window.localStorage.profile);
 					}
 					auth.authenticated = true;
 					$rootScope.$broadcast("Authentication.logged_in", response);
@@ -153,7 +156,7 @@
 				function logoutSuccessFn (response) {
 					delete $http.defaults.headers.common.Authorization;
 					$window.localStorage.removeItem('token');
-					//$window.localStorage.removeItem('username');
+					$window.localStorage.removeItem('profile');
 					authentication.authenticated = false;
 					$rootScope.$broadcast("Authentication.logged_out");
 				}
@@ -178,7 +181,6 @@
 	            // Set restrict to true to reject the promise if not logged in
 	            // Set to false or omit to resolve when status is known
 	            // Set force to true to ignore stored value and query API
-	            console.log("Cheking authenticationStatus");
 
 	            restrict = restrict || false;
 	            force = force || false;

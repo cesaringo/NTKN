@@ -43,7 +43,6 @@
 		    	controllerAs: 'vm',
 		    	resolve: {
 					authenticated: ['Authentication', function(Authentication){
-						console.log("profile");
 			            return Authentication.authenticationStatus();
 			        }],
 		    	},
