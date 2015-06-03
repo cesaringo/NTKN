@@ -29,14 +29,6 @@ class LoginSerializer(AuthTokenSerializer):
         return attrs
 
 
-class TokenSerializer(serializers.ModelSerializer):
-    """
-    Serializer for Token model.
-    """
-
-    class Meta:
-        model = Token
-        fields = ('key',)
 
 class PhotoSerializer(serializers.ModelSerializer):
     original = serializers.ImageField('original')
@@ -61,6 +53,15 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         read_only_fields = ('email', )
 
 
+class TokenSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Token model.
+    """
+
+    user = UserDetailsSerializer()
+    class Meta:
+        model = Token
+        fields = ('key','user')
 
 class PasswordResetSerializer(serializers.Serializer):
 
