@@ -1,5 +1,4 @@
-from django.contrib.auth.models import AbstractBaseUser
-from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
@@ -11,35 +10,42 @@ class Photo(models.Model):
 	thumbnail_100x100 = ImageSpecField(source='original', processors=[ResizeToFill(100, 100)], format='JPEG', options={'quality': 100})
 
 class AccountManager(BaseUserManager):
-	def create_user(self, email, password=None, **kwargs):
+	def _create_user(self, username, email, password, **extra_fields):
+		"""
+		Creates and saves a User with the given username, email and password.
+		"""
+		if not username:
+			raise ValueError('The given username must be set')
 		if not email:
-			raise ValueError('Users must have a valid email address.')
-
-		if not kwargs.get('username'):
-			raise ValueError('Users must have a valid username.')
-
-		account = self.model(
-            email=self.normalize_email(email), username=kwargs.get('username')
-        )
-        
+			raise ValueError('The given email must be set')
+		email = self.normalize_email(email)
+		account = self.model(username=username, email=email, **extra_fields)
 		account.set_password(password)
-		account.is_active = True
 		account.save()
 		return account
 
-	def create_superuser(self,email, password, **kwargs):
-		account = self.create_user(email, password, **kwargs)
-		account.is_admin = True
-		account.save()
-		return account
+	def create_user(self, username, email=None, password=None, **extra_fields):
+		extra_fields.set_default('is_staff', False)
+		extra_fields.setdefault('is_superuser', False)
+		return self._create_user(username, email, password, **extra_fields)
 
+	def create_superuser(self, username, email, password, **extra_fields):
+		extra_fields.setdefault('is_staff', True)
+		extra_fields.setdefault('is_superuser', True)
 
-class Account(AbstractBaseUser):
-	email = models.EmailField(unique=True)
+		if extra_fields.get('is_staff') is not True:
+			raise ValueError('Superuser must have is_staff=True.')
+		if extra_fields.get('is_superuser') is not True:
+			raise ValueError('Superuser must have is_superuser=True.')
+
+		return self._create_user(username, email, password, **extra_fields)
+
+class Account(AbstractBaseUser, PermissionsMixin):
+	email = models.EmailField(unique=True )
 	username = models.CharField(max_length=50, unique=True)
 	first_name = models.CharField(max_length=50, blank=True)
 	last_name = models.CharField(max_length=50, blank=True)
-	is_admin = models.BooleanField(default=False)
+	is_staff = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 	objects = AccountManager()
@@ -57,18 +63,3 @@ class Account(AbstractBaseUser):
 
 	def get_short_name(self):
 		return self.first_name		
-
-	@property
-	def is_superuser(self):
-		return self.is_admin
-
-	@property
-	def is_staff(self):
-		return self.is_admin
-
-	def has_perm(self, perm, obj=None):
-		return self.is_admin
-
-	def has_module_perms(self, app_label):
-		return self.is_admin
-
