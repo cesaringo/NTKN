@@ -49,7 +49,19 @@ class UserDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'email', 'first_name', 'last_name', 'created_at', 'photo',)
+        fields = ('email', 'username', 'first_name', 'last_name', 'is_staff', 'created_at', 'updated_at', 'is_active', 'photo')
+        read_only_fields = ('email', )
+
+class ShortUserDetailsSerializer(serializers.ModelSerializer):
+
+    """
+    User model w/o password
+    """
+    photo = PhotoSerializer()
+
+    class Meta:
+        model = get_user_model()
+        fields = ('username', 'email', 'first_name', 'last_name', 'photo',)
         read_only_fields = ('email', )
 
 
@@ -58,7 +70,7 @@ class TokenSerializer(serializers.ModelSerializer):
     Serializer for Token model.
     """
 
-    user = UserDetailsSerializer()
+    user = ShortUserDetailsSerializer()
     class Meta:
         model = Token
         fields = ('key','user')
