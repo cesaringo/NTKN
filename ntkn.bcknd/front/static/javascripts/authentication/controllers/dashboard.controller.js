@@ -11,5 +11,5 @@ function DashboardController($scope, $window, $location, Authentication){
     	return;
   	}
   	$scope.token = $window.localStorage.token;
-  	//$scope.username = $window.localStorage.username;
+  	//$scope.user = JSON.parse($window.localStorage.user);
 }

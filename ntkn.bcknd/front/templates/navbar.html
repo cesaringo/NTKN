@@ -10,9 +10,11 @@
       <a class="navbar-brand" href="/">Natkan</a>
     </div> <!-- ./navbar-header -->
     <div class="collapse navbar-collapse" id="not-google-plus-nav">
-      <ul class="nav navbar-nav pull-right">
-          <li ng-if="authenticated"><a href="/profile">
-            {{username }}</a>
+      <ul class="nav navbar-nav pull-right ng-cloak">
+          <li ng-if="authenticated">
+            <a href="/profile">
+              Profile
+            </a>
           </li>
           <li ng-if="authenticated"><a href="/settings">Settings</a></li>
           <li ng-if="authenticated"><a href="/dashboard">Dashboard</a></li>
@@ -20,6 +22,7 @@
           </li>
           <li ng-if="!authenticated"><a href="/login">Login</a></li>
           <li ng-if="!authenticated"><a href="/register">Register</a></li>
+          
       </ul>
     </div> <!-- /.collapse.navbar-collapse -->
   </div> <!-- /.container-fluid -->

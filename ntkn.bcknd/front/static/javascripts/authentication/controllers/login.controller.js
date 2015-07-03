@@ -7,7 +7,9 @@
 	angular
 		.module('ntkn.authentication.controllers')
 		.controller('LoginController', LoginController);
+
 	LoginController.$inject = ['$location', '$timeout', '$scope', '$interval', 'Authentication', 'Validate', 'ngProgress', 'ProfileService'];
+	
 	function LoginController($location, $timeout, $scope, $interval, Authentication, Validate, ngProgress, ProfileService){
 		
 
@@ -16,10 +18,11 @@
 	    	$location.path('/dashboard');
 	    	return;
 	  	}
+
 		$scope.model = {'username':'','password':''};
 		$scope.complete = false;
+
 		$scope.login = function(formData){
-			//
 			$scope.errors = [];
 			Validate.form_validation(formData,$scope.errors);
 			if(!formData.$invalid){
@@ -27,7 +30,7 @@
 				var _startProgressBar;
 				startProgressBar();
 
-				$timeout(function(){//Nice Animation
+				$timeout(function(){//Nice Animation // Remove on production
 					Authentication.login($scope.model.username, $scope.model.password)
 					.then(function(response){
 			        	completeProgressBar();

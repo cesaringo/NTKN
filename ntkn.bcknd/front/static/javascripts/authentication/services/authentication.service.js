@@ -130,17 +130,14 @@
 
 
 				function loginSuccessFn(response){
-					console.log(response);
 					if(!auth.use_session){
 						$http.defaults.headers.common.Authorization = 'Token ' + response.key;
 						$window.localStorage.token = response.key; 
- 						$window.localStorage.username = response.user.username;
- 						//$window.localStorage.avatar = response.user.photo.thumbnail_30x30;
- 							
- 						console.log($window.localStorage.profile);
+ 						$window.localStorage.user =  JSON.stringify(response.user);
 					}
 					auth.authenticated = true;
 					$rootScope.$broadcast("Authentication.logged_in", response);
+					$rootScope.user = JSON.parse($window.localStorage.user);
 				}
 			},
 			//END LOGIN SERVICE
@@ -156,7 +153,7 @@
 				function logoutSuccessFn (response) {
 					delete $http.defaults.headers.common.Authorization;
 					$window.localStorage.removeItem('token');
-					$window.localStorage.removeItem('profile');
+					$window.localStorage.removeItem('username');
 					authentication.authenticated = false;
 					$rootScope.$broadcast("Authentication.logged_out");
 				}

@@ -11,5 +11,4 @@
 	        	$scope.errors = data;
 	        });
 		});
-
 })();

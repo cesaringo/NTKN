@@ -6,7 +6,6 @@
 			'ntkn.authentication.controllers',
 			'ntkn.authentication.services',
 			//'ntkn.authentication.interceptors',
-
 		])
 
 	angular

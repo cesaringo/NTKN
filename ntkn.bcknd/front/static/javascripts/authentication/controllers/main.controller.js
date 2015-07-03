@@ -1,8 +1,7 @@
 'use strict';
 
 angular.module('ntkn.authentication.controllers')
-  .controller('MainController', function ($scope, $cookies, $location, Authentication) {
-    
+  .controller('MainController', function ($scope, $location, Authentication) {
     $scope.login = function(){
       Authentication.login(prompt('Username'),prompt('password'))
       .then(function(data){
