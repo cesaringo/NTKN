@@ -1,16 +1,22 @@
 (function(){
 	'use strict';
 	angular.module('ntkn')
-	.service('AuthService', function($q, $http, $window){
+	.service('AuthService', AuthService)
+	.service('Validate', Validate);
+
+
+	AuthService.$inject = ['$q', '$http', '$window', '$rootScope', 'API_URL', 'AUTH_EVENTS'];
+	function AuthService($q, $http, $window, $rootScope, API_URL, AUTH_EVENTS){
 		var isAuthenticated = false;
 		var token = undefined;
 		var username = undefined;
 
 		function loadUserCredentials(){
+			console.log('loadUserCredentials')
 			var _token = $window.localStorage.getItem('token');
-			var _user =  JSON.parse($window.localStorage.getItem('user'));
-			if (_token && _user.username){
-				useCredentials(_token, _user.username);
+			var _username =  $window.localStorage.getItem('username');
+			if (_token && _username){
+				useCredentials(_token, _username);
 			}
 		}
 
@@ -20,12 +26,12 @@
 			useCredentials(token, username);
 		}
 
-		function useCredentials(token, username){
-			this.token = token;
-			this.username = username;
+		function useCredentials(_token, _username){
+			token = _token;
+			username = _username;
 			isAuthenticated = true;
 			// Set the token as header for your requests!
-			$http.defaults.headers.common.Authorization = 'Token ' + response.key;
+			$http.defaults.headers.common.Authorization = 'Token ' + _token;
 		}
 
 		function destroyUserCredentials() {
@@ -38,15 +44,19 @@
 		}
 
 		var login = function (username, password){
-			console.log("LoginService");
-			return $http.post('/login', {username:username, password: password})
-      			.then(function (response) {
-        			console.log('Login Succesfully')
+			console.log('LoginService');
+			return $http.post(API_URL+'/login/', {username:username, password: password})
+	  			.then(function (response) {
+	  				console.log(response)
+	  				storeUserCredentials(response.data.key, response.data.user.username)
+                    $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, response.data);
+	    			console.log('Login Succesfully');
 				});
 		}
 
 		var logout = function(){
 			destroyUserCredentials();
+            $rootScope.$broadcast(AUTH_EVENTS.logoutSuccess);
 		}
 
 		var isAuthorized = function(authorizedRoles) {
@@ -65,10 +75,9 @@
   			'isAuthenticated': function() {return isAuthenticated;},
   			'username': function() {return username;},
   		}
-	})
+	}
 
-	
-	.service('Validate', function(){
+	function Validate(){
 		return {
             'message': {
                 'minlength': 'This value is not long enough.',
@@ -115,7 +124,7 @@
             }
         }
 
-	})
+	}
  
 	
 })()

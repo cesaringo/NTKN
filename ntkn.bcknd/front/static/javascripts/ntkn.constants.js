@@ -8,5 +8,7 @@
 		sessionTimeout: 'auth-session-timeout',
 		notAuthenticated: 'auth-not-authenticated',
 		notAuthorized: 'auth-not-authorized'
-	});
+	})
+
+	.constant('API_URL', 'http://localhost:8000/rest-auth');
 })()
