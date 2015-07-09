@@ -10,6 +10,7 @@
 		var isAuthenticated = false;
 		var token = undefined;
 		var username = undefined;
+        var role = undefined;
 
 		function loadUserCredentials(){
 			console.log('loadUserCredentials')
@@ -20,15 +21,17 @@
 			}
 		}
 
-		function storeUserCredentials(token, username){
+		function storeUserCredentials(token, username, role){
 			$window.localStorage.setItem('token', token);
 			$window.localStorage.setItem('username', username);
-			useCredentials(token, username);
+            $window.localStorage.setItem('role', role);
+			useCredentials(token, username, role);
 		}
 
-		function useCredentials(_token, _username){
+		function useCredentials(_token, _username, _role){
 			token = _token;
 			username = _username;
+            role = _role;
 			isAuthenticated = true;
 			// Set the token as header for your requests!
 			$http.defaults.headers.common.Authorization = 'Token ' + _token;
@@ -38,6 +41,7 @@
 			delete $http.defaults.headers.common.Authorization;
 			$window.localStorage.removeItem('token');
 			$window.localStorage.removeItem('username');
+            $window.localStorage.removeItem('role');
 			token = undefined;
 			username = undefined;
 			isAuthenticated = false;
@@ -47,8 +51,7 @@
 			console.log('LoginService');
 			return $http.post(API_URL+'/login/', {username:username, password: password})
 	  			.then(function (response) {
-	  				console.log(response)
-	  				storeUserCredentials(response.data.key, response.data.user.username)
+	  				storeUserCredentials(response.data.key, response.data.user.username, 'student') //Hardcode Role. API must retunr a role and add logic to handle List of roles or single role
                     $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, response.data);
 	    			console.log('Login Succesfully');
 				});
@@ -74,6 +77,7 @@
   			'isAuthorized': isAuthorized,
   			'isAuthenticated': function() {return isAuthenticated;},
   			'username': function() {return username;},
+            'role': function() {return role;},
   		}
 	}
 

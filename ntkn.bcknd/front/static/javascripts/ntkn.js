@@ -18,6 +18,13 @@
  			templateUrl: '/static/views/dashboard.html',
   			controller: 'DashCtrl'
   		})
+  		.state('main.student',{
+  			url: 'main/student',
+  			templateUrl: '/static/views/student.html',
+  			data: {
+	      		authorizedRoles: ['student']
+		    }
+  		})
   		.state('main.admin', {
   			url: 'main/admin',
   			templateUrl: '/static/views/admin.html',
@@ -26,10 +33,10 @@
 		    }
   		})
   		.state('main.teacher', {
-  			url: 'main/admin',
+  			url: 'main/teacher',
   			templateUrl: '/static/views/teaher.html',
   			data: {
-	      		authorizedRoles: ['admin', 'teacher']
+	      		authorizedRoles: ['teacher']
 		    }
   		});
   		$urlRouterProvider.otherwise('/main/dash/');

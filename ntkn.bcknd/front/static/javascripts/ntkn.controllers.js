@@ -7,7 +7,6 @@
 
 		//AUTH
 		$scope.logout = function() {
-			console.log()
     		AuthService.logout();
     		$state.go('login');
   		};
@@ -53,7 +52,12 @@
 			if(!formData.$invalid){
 				AuthService.login($scope.model.username, $scope.model.password)
 				.then(function(response){
-		        	$state.go('main.dash', {}, {reload: true});
+					switch(AuthService.role()){
+						case 'student': $state.go('main.student', {}, {reload: true}); break;
+						case 'teacher': $state.go('main.teacher', {}, {reload: true}); break;
+						case 'admin': $state.go('main.admin', {}, {reload: true}); break;
+						default: $state.go('main.profile', {}, {reload: true});
+					}
 		        	$scope.setCurrentUsername($scope.model.username);
 		        },function(response){
 		        	$scope.errors = response;
