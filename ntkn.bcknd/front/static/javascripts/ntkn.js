@@ -1,6 +1,6 @@
 (function(){
 	'use strict';
-	angular.module('ntkn', ['ui.router'])
+	angular.module('ntkn', ['ui.router', 'http-auth-interceptor'])
 	.config(function ($stateProvider, $urlRouterProvider) {
 		$stateProvider
 		.state('login', {
@@ -13,33 +13,38 @@
 		    abstract: true,
 		    templateUrl: '/static/views/main.html'
 	  	})
+	  	.state('main.profile', {
+    		url: 'profile',
+ 			templateUrl: '/static/views/profile.html',
+  			controller: 'ProfileCtrl'
+  		})
 	  	.state('main.dash', { //All users can access, it can be profile data for example
-    		url: 'main/dash',
+    		url: 'dash',
  			templateUrl: '/static/views/dashboard.html',
   			controller: 'DashCtrl'
   		})
   		.state('main.student',{
-  			url: 'main/student',
+  			url: 'student',
   			templateUrl: '/static/views/student.html',
   			data: {
 	      		authorizedRoles: ['student']
 		    }
   		})
   		.state('main.admin', {
-  			url: 'main/admin',
+  			url: 'admin',
   			templateUrl: '/static/views/admin.html',
   			data: {
 	      		authorizedRoles: ['admin']
 		    }
   		})
   		.state('main.teacher', {
-  			url: 'main/teacher',
+  			url: 'teacher',
   			templateUrl: '/static/views/teaher.html',
   			data: {
 	      		authorizedRoles: ['teacher']
 		    }
   		});
-  		$urlRouterProvider.otherwise('/main/dash/');
+  		$urlRouterProvider.otherwise('/dash');
 	})
 
 	.run(function ($http){

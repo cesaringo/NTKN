@@ -56,10 +56,10 @@
               case 401:
                 var deferred = $q.defer();
                 httpBuffer.append(rejection.config, deferred);
-                $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated, rejection);
+                $rootScope.$broadcast('auth-not-authenticated', rejection);
                 return deferred.promise;
               case 403:
-                $rootScope.$broadcast(AUTH_EVENTS.notAuthorized, rejection);
+                $rootScope.$broadcast('auth-not-authorized', rejection);
                 break;
             }
           }

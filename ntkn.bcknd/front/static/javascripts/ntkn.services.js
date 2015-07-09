@@ -2,6 +2,7 @@
 	'use strict';
 	angular.module('ntkn')
 	.service('AuthService', AuthService)
+    .service('SCEService', SCEService)
 	.service('Validate', Validate);
 
 
@@ -129,6 +130,19 @@
         }
 
 	}
- 
+
+    SCEService.$inject = ['$q', '$http', 'API_URL'];
+    function SCEService ($q, $http, API_URL){
+
+        var UserProfile = function(username){
+            if (username == undefined || username == "" || username == null){
+                return $http.get(API_URL + '/user/');
+            }
+        }
+
+        return {
+            UserProfile: UserProfile,
+        }
+    }
 	
 })()

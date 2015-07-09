@@ -1,21 +1,19 @@
-<div class="profile" ng-show="vm.profile">
+<div class="profile" ng-show="profile">
 	<div class="jumbotron profile__header">
-		<img src="{{ vm.profile.photo.thumbnail_100x100 }}" alt="{{ vm.profile.username }}">
-		<h1 class="profile__username">{{ vm.profile.username }}</h1>
-		<p class="profile__tagline">{{ vm.profile.tagline }}</p>
+		<img src="{{ profile.photo ? profile.photo.thumbnail_100x100: 'no-image.png' }}" alt="{{ profile.username }}">
+		<h2 >{{ profile.username }}</h2>
 	</div>
 	<div class="user-info">
 		<h3>User details</h3>
 		<dl class="dl-horizontal">
 			<dt>Name:</dt>
-			<dd>{{vm.profile.first_name}} {{vm.profile.last_name}}</dd>
+			<dd>{{profile.first_name}} {{profile.last_name}}</dd>
 			
 			<dt>Email:</dt>
-			<dd>{{vm.profile.email}}</dd>
+			<dd>{{profile.email}}</dd>
 
 			<dt>Created at:</dt>
-			<dd>{{vm.profile.created_at}}</dd>
-	Hola
+			<dd>{{profile.created_at}}</dd>
 		</dl>
 	</div>
 	<div class="student-info">

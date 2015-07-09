@@ -18,7 +18,7 @@
   		//Listen Events
 		$scope.$on(AUTH_EVENTS.notAuthorized, function(event){
 			console.log('You are not allowed to access this resource.');
-    		$state.go('main.dash');
+    			$state.go('main.dash');
 		});
 
 		$scope.$on(AUTH_EVENTS.notAuthenticated, function(event){
@@ -64,6 +64,17 @@
 		        });
 			}
 		}
+	})
+
+	.controller('ProfileCtrl', function($scope, SCEService) {
+		console.log('ProfileCtrl');
+		SCEService.UserProfile()
+			.then(function(response){
+				$scope.profile = response.data;
+				console.log($scope.profile);			
+			}, function(response){
+				console.log(response)
+			});
 	})
 
 	.controller('DashCtrl', function($scope, $state, AuthService) {
