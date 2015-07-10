@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.auth.models import Group
 try:
     from django.utils.http import urlsafe_base64_decode as uid_decoder
 except:
@@ -39,6 +40,10 @@ class PhotoSerializer(serializers.ModelSerializer):
         model = Photo
         fields = ('original', 'thumbnail_30x30', 'thumbnail_50x50', 'thumbnail_100x100',)
 
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('name',)
 
 class UserDetailsSerializer(serializers.ModelSerializer):
 
@@ -46,10 +51,11 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     User model w/o password
     """
     photo = PhotoSerializer()
+    groups = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = get_user_model()
-        fields = ('email', 'username', 'first_name', 'last_name', 'is_staff', 'created_at', 'updated_at', 'is_active', 'photo')
+        fields = ('email', 'username', 'first_name', 'last_name', 'is_staff', 'created_at', 'updated_at', 'is_active', 'groups', 'photo')
         read_only_fields = ('email', )
 
 class ShortUserDetailsSerializer(serializers.ModelSerializer):
