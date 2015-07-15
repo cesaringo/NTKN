@@ -6,7 +6,9 @@ from localflavor.us.models import PhoneNumberField
 from authentication.models import Account
 from slugify import slugify
 	
-
+################
+#Students Module
+################
 class GradeLevel(models.Model):
 	number	=	models.IntegerField(verbose_name="Grade number")
 	name 	= 	models.CharField(max_length=150, unique=True, verbose_name="Grade name")
@@ -79,9 +81,9 @@ class Student(Account):
 	class_year = models.ForeignKey(ClassYear, verbose_name="Class year", blank=True, null=True)
 
 	#Contact
-	phone = PhoneNumberField()
+	phone = PhoneNumberField(null=True, blank=True)
 	parent_email = models.EmailField(blank=True, editable=False)
-	parent_phone  = PhoneNumberField()
+	parent_phone  = PhoneNumberField(null=True, blank=True)
 	education = models.ForeignKey(Education, blank=True, null=True, on_delete=models.SET_NULL)
 	cohorts = models.ManyToManyField(Cohort, blank=True)
 
@@ -157,6 +159,7 @@ class Course(models.Model):
 	subject = models.ForeignKey(Subject, related_name='courses')
 	is_active = models.BooleanField(default=True)
 	name = models.CharField(max_length=255)
+	#Periodos de evaluacion
 	marking_period = models.ManyToManyField(MarkingPeriod, blank=True)
 	teacher = models.ForeignKey(Teacher, blank=True)
 	school_year = models.ForeignKey(SchoolYear)
@@ -165,10 +168,11 @@ class Course(models.Model):
 		return self.fullname
 
 
-class Enrollment(models.Model):
+class CourseEnrollment(models.Model):
 	student = models.ForeignKey(Student)
 	course = models.ForeignKey(Course)
-
+	is_active = models.BooleanField(default=True)
+	
 	class Meta:
 		unique_together =  (("course", "student"),)
 
@@ -177,4 +181,17 @@ class Enrollment(models.Model):
 		pass
 
 
-	##Aditional data for evaluating the student of this course
+
+
+
+##################
+#Discipline Module
+##################
+
+
+
+
+
+##################
+#Attendance Module
+##################
