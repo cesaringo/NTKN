@@ -6,7 +6,9 @@ from localflavor.us.models import PhoneNumberField
 from authentication.models import Account
 from slugify import slugify
 	
-
+################
+#Students Module
+################
 class GradeLevel(models.Model):
 	number	=	models.IntegerField(verbose_name="Grade number")
 	name 	= 	models.CharField(max_length=150, unique=True, verbose_name="Grade name")
@@ -50,7 +52,6 @@ class ClassYear(models.Model):
 
 
 
-
 class Education(models.Model):
 	name = models.CharField(max_length=100, unique=True)
 	slug = models.CharField(max_length=100, unique=True)
@@ -59,6 +60,16 @@ class Education(models.Model):
 		self.name = name
 		self.slug = slugify(name)
 	
+#A group od Students. For this purpose is A, B, C even english levelss
+class Cohort(models.Model):
+	name = models.CharField(max_length=255)
+	students = models.ManyToManyField('Student', blank=True)
+	class Meta:
+		ordering = ('name',)
+	
+	def __unicode__(self):
+		return self.name
+
 
 
 
@@ -70,13 +81,11 @@ class Student(Account):
 	class_year = models.ForeignKey(ClassYear, verbose_name="Class year", blank=True, null=True)
 
 	#Contact
-	phone = PhoneNumberField()
+	phone = PhoneNumberField(null=True, blank=True)
 	parent_email = models.EmailField(blank=True, editable=False)
-	parent_phone  = PhoneNumberField()
-
+	parent_phone  = PhoneNumberField(null=True, blank=True)
 	education = models.ForeignKey(Education, blank=True, null=True, on_delete=models.SET_NULL)
-
-	#Status = Regular/ Irregulae
+	cohorts = models.ManyToManyField(Cohort, blank=True)
 
 	class Meta:
 		permissions = (
@@ -109,19 +118,80 @@ class SchoolYear(models.Model):
 	def __unicode__(self):
 		return self.name
 
-class Subject(models.Model):
-	name = models.CharField(max_length=100)
 
+
+################
+#schedule module
+################
+class Department(models.Model):
+	name = models.CharField(max_length=255, unique=True, verbose_name="Department Name")
+
+
+#Ejemplo: Bimestre 1, Bimestre 2, Parcila 1, Parcial 2, etc
+class MarkingPeriod(models.Model):
+	name = models.CharField(max_length=255, unique=True)
+	shortname = models.CharField(max_length=255)
+	start_date = models.DateField()
+	end_date = models.DateField()
+	grades_due = models.DateField(validators=settings.DATE_VALIDATORS, blank=True, null=True, help_text="If filled out, teachers will be notified when grades are due.")
+	active = models.BooleanField(default=False, help_text="Teachers may only enter grades for active marking periods. There may be more than one active marking period.")
+
+	class Meta:
+		ordering = ('-start_date',)
+
+	def __unicode__(self):
+		return self.name
+
+class Subject(models.Model):
+	is_active = models.BooleanField(default=True)
+	fullname = models.CharField(max_length=255, unique=True, verbose_name="Full Course Name")
+	shortname = models.CharField(max_length=255, verbose_name="Short Name")
+	graded = models.BooleanField(default=True, help_text="Teachers can submit grades for this course")
+	description = models.TextField(blank=True)
+	level = models.ForeignKey(GradeLevel, blank=True, null=True, verbose_name="Grade Level")
+	department = models.ForeignKey(Department, blank=True, null=True)
+
+	def __unicode__(self):
+		return self.fullnames
 
 
 class Course(models.Model):
-	subject = models.ForeignKey(Subject)
-	teacher = models.ForeignKey(Teacher)
+	subject = models.ForeignKey(Subject, related_name='courses')
+	is_active = models.BooleanField(default=True)
+	name = models.CharField(max_length=255)
+	#Periodos de evaluacion
+	marking_period = models.ManyToManyField(MarkingPeriod, blank=True)
+	teacher = models.ForeignKey(Teacher, blank=True)
 	school_year = models.ForeignKey(SchoolYear)
 
+	def __unicode__(self):
+		return self.fullname
 
 
-class Enrollment(models.Model):
+class CourseEnrollment(models.Model):
 	student = models.ForeignKey(Student)
 	course = models.ForeignKey(Course)
-	##Aditional data for evaluating the student of this course
+	is_active = models.BooleanField(default=True)
+	
+	class Meta:
+		unique_together =  (("course", "student"),)
+
+
+	def get_average_for_marking_periods():
+		pass
+
+
+
+
+
+##################
+#Discipline Module
+##################
+
+
+
+
+
+##################
+#Attendance Module
+##################
