@@ -52,13 +52,17 @@ class ClassYear(models.Model):
 
 
 
-class Education(models.Model):
+## SUch Ass Preescolar, Primaria, Secundaria, Preparatoria
+class EducativeProgram(models.Model):
 	name = models.CharField(max_length=100, unique=True)
 	slug = models.CharField(max_length=100, unique=True)
 
 	def __init__(self, name):
 		self.name = name
 		self.slug = slugify(name)
+
+	def save(self, *args, **kwargs):
+		pass
 	
 #A group od Students. For this purpose is A, B, C even english levelss
 class Cohort(models.Model):
@@ -70,21 +74,32 @@ class Cohort(models.Model):
 	def __unicode__(self):
 		return self.name
 
-
+		
 
 
 class Student(Account):
 	mname = models.CharField(max_length=100, blank=True, null=True, verbose_name="Middle name")
 	sex	= models.CharField(max_length=1, choices=(('M', 'Male'), ('F', 'Female')), blank=True, null=True )
 	bday = models.DateField(blank=True, null=True, verbose_name="Birth Date", validators=settings.DATE_VALIDATORS)
+
+	#The current student Grade Level. 
+	#Preescolar (3), Primaria (6), Secundaria (3), Preparatoria (3)
 	year = models.ForeignKey(GradeLevel, blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Grade level")
-	class_year = models.ForeignKey(ClassYear, verbose_name="Class year", blank=True, null=True)
+	
+	#The years the student is expected starting and ending 
+	class_year = models.ForeignKey(ClassYear, verbose_name="Class year / School Generation", blank=True, null=True)
+	
+
+	#The current educative program the student is coursing 
+	educative_program = models.ForeignKey(EducativeProgram, blank=True, null=True, on_delete=models.SET_NULL)
+
+	
 
 	#Contact
 	phone = PhoneNumberField(null=True, blank=True)
 	parent_email = models.EmailField(blank=True, editable=False)
 	parent_phone  = PhoneNumberField(null=True, blank=True)
-	education = models.ForeignKey(Education, blank=True, null=True, on_delete=models.SET_NULL)
+	
 	cohorts = models.ManyToManyField(Cohort, blank=True)
 
 	class Meta:
@@ -98,6 +113,9 @@ class Student(Account):
 		return u"{0}, {1}".format(self.last_name, self.first_name)
 
 	def get_absolute_url():
+		pass
+
+	def save(self, *args, **kwargs):
 		pass
 
 
@@ -158,7 +176,7 @@ class Subject(models.Model):
 class Course(models.Model):
 	subject = models.ForeignKey(Subject, related_name='courses')
 	is_active = models.BooleanField(default=True)
-	name = models.CharField(max_length=255)
+	name = models.CharField(max_length=255, null=True)
 	#Periodos de evaluacion
 	marking_period = models.ManyToManyField(MarkingPeriod, blank=True)
 	teacher = models.ForeignKey(Teacher, blank=True)
