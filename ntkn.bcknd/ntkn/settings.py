@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'localflavor',
     'compressor',
     'imagekit',
+    'import_export',
 
     'authentication', #Custom user Model
     'sce',  #School Information System
