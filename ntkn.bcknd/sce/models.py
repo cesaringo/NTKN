@@ -57,12 +57,12 @@ class EducativeProgram(models.Model):
 	name = models.CharField(max_length=100, unique=True)
 	slug = models.CharField(max_length=100, unique=True)
 
-	def __init__(self, name):
+	def __init__(self, name, *args, **kwargs):
 		self.name = name
-		self.slug = slugify(name)
+		super(EducativeProgram, self).__init__(*args, **kwargs)
 
-	def save(self, *args, **kwargs):
-		pass
+
+	
 	
 #A group od Students. For this purpose is A, B, C even english levelss
 class Cohort(models.Model):
@@ -116,7 +116,10 @@ class Student(Account):
 		pass
 
 	def save(self, *args, **kwargs):
-		pass
+		print (self.educative_program)
+
+		super(Student, self).save(*args, **kwargs)
+
 
 
 class Teacher(Account):
