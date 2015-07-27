@@ -9,6 +9,21 @@ from slugify import slugify
 ################
 #Students Module
 ################
+
+#Periodo escolar
+class SchoolYear(models.Model):
+	name = models.CharField(max_length=100, unique=True)
+	start_date = models.DateField(validators=settings.DATE_VALIDATORS)
+	end_date = models.DateField(validators=settings.DATE_VALIDATORS)
+	active_year = models.BooleanField(default=False, help_text = '')
+
+	class Meta:
+		ordering = ('start_date',)
+
+	def __unicode__(self):
+		return self.name
+
+
 class GradeLevel(models.Model):
 	number	=	models.IntegerField(verbose_name="Grade number")
 	name 	= 	models.CharField(max_length=150, unique=True, verbose_name="Grade name")
@@ -56,13 +71,13 @@ class ClassYear(models.Model):
 class EducativeProgram(models.Model):
 	name = models.CharField(max_length=100, unique=True)
 	slug = models.CharField(max_length=100, unique=True)
-
-	def __init__(self, name, *args, **kwargs):
-		self.name = name
-		super(EducativeProgram, self).__init__(*args, **kwargs)
-
-
 	
+	#Director = Some user, Optional attribute
+
+	def __unicode__(self):
+		return self.name
+
+
 	
 #A group od Students. For this purpose is A, B, C even english levelss
 class Cohort(models.Model):
@@ -73,9 +88,6 @@ class Cohort(models.Model):
 	
 	def __unicode__(self):
 		return self.name
-
-		
-
 
 class Student(Account):
 	mname = models.CharField(max_length=100, blank=True, null=True, verbose_name="Middle name")
@@ -93,7 +105,8 @@ class Student(Account):
 	#The current educative program the student is coursing 
 	educative_program = models.ForeignKey(EducativeProgram, blank=True, null=True, on_delete=models.SET_NULL)
 
-	
+	#First School year of any student
+	first_school_year = models.ForeignKey(SchoolYear, null=True, on_delete=models.SET_NULL)
 
 	#Contact
 	phone = PhoneNumberField(null=True, blank=True)
@@ -116,28 +129,24 @@ class Student(Account):
 		pass
 
 	def save(self, *args, **kwargs):
-		print (self.educative_program)
+		#Email and username must be autocreated by API
+		self.username = self.gererate_username(self)
+		self.email = str(self.username) + '@natkan.mx'
+
 
 		super(Student, self).save(*args, **kwargs)
 
 
+	def gererate_username(self):
+		return self 
+		pass
 
 class Teacher(Account):
 	phone = PhoneNumberField()
 	##Adtional administrative data for teacher 
 
 
-class SchoolYear(models.Model):
-	name = models.CharField(max_length=100, unique=True)
-	start_date = models.DateField(validators=settings.DATE_VALIDATORS)
-	end_date = models.DateField(validators=settings.DATE_VALIDATORS)
-	active_year = models.BooleanField(default=False, help_text = '')
 
-	class Meta:
-		ordering = ('start_date',)
-
-	def __unicode__(self):
-		return self.name
 
 
 
