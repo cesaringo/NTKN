@@ -41,8 +41,8 @@ class AccountManager(BaseUserManager):
 		return self._create_user(username, email, password, **extra_fields)
 
 class Account(AbstractBaseUser, PermissionsMixin):
-	email = models.EmailField(unique=True )
-	username = models.CharField(max_length=50, unique=True)
+	email = models.EmailField(unique=True, null=True, blank=True)
+	username = models.CharField(max_length=50, unique=True, null=True, blank=True)
 	first_name = models.CharField(max_length=50, blank=True)
 	last_name = models.CharField(max_length=50, blank=True)
 	is_staff = models.BooleanField(default=False)
@@ -55,8 +55,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username']
 
-	def __unicode__(self):
-		return self.email
+
 
 	def get_full_name(self):
 		return ' '.join([self.first_name, self.last_name])

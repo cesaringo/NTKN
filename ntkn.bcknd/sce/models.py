@@ -5,7 +5,7 @@ from datetime import date
 from localflavor.us.models import PhoneNumberField
 from authentication.models import Account
 from slugify import slugify
-	
+import uuid
 ################
 #Students Module
 ################
@@ -70,13 +70,17 @@ class ClassYear(models.Model):
 ## SUch Ass Preescolar, Primaria, Secundaria, Preparatoria
 class EducativeProgram(models.Model):
 	name = models.CharField(max_length=100, unique=True)
-	slug = models.CharField(max_length=100, unique=True)
+	slug = models.CharField(max_length=100, unique=True, blank=True)
 	
 	#Director = Some user, Optional attribute
 
 	def __unicode__(self):
 		return self.name
 
+	def save(self, *args, **kwargs):
+		if not self.slug:
+			self.slug =  slugify(self.name, to_lower=True)
+		super(EducativeProgram, self).save(*args, **kwargs)
 
 	
 #A group od Students. For this purpose is A, B, C even english levelss
@@ -93,6 +97,9 @@ class Student(Account):
 	mname = models.CharField(max_length=100, blank=True, null=True, verbose_name="Middle name")
 	sex	= models.CharField(max_length=1, choices=(('M', 'Male'), ('F', 'Female')), blank=True, null=True )
 	bday = models.DateField(blank=True, null=True, verbose_name="Birth Date", validators=settings.DATE_VALIDATORS)
+
+	#The student enrollment
+	enrollment = models.CharField(max_length=7, blank=True, null=True)
 
 	#The current student Grade Level. 
 	#Preescolar (3), Primaria (6), Secundaria (3), Preparatoria (3)
@@ -123,23 +130,44 @@ class Student(Account):
 		ordering = ("last_name", "first_name")
 
 	def __unicode__(self):
-		return u"{0}, {1}".format(self.last_name, self.first_name)
+		if self.first_name or self.last_name:
+			return u"{0}, {1}".format(self.last_name, self.first_name)
+		else:
+			return "Student " + str(self.id)
 
 	def get_absolute_url():
 		pass
 
 	def save(self, *args, **kwargs):
-		#Email and username must be autocreated by API
-		self.username = self.gererate_username(self)
-		self.email = str(self.username) + '@natkan.mx'
+		if self.pk is None:
+			super(Student, self).save(*args, **kwargs)
+			self.save(*args, **kwargs)
+		else:
+			if self.first_school_year:
+				self.username = self.gererate_username(self.first_school_year)
+			else:	
+				self.username = self.gererate_username(None)
+			self.email = self.username + '@natkan.mx'
+			super(Student, self).save(*args, **kwargs)
 
 
-		super(Student, self).save(*args, **kwargs)
+		temp_username = str(uuid.uuid4())
+		self.username = temp_username
+		self.email = temp_username + '@natkan.mx'
+		
 
 
-	def gererate_username(self):
-		return self 
-		pass
+	def gererate_username(self, school_year):
+		if school_year == None:
+			#EL actual o el siguiente Periodo escolar activo corresponsiente al Programa educativo
+			return '0123456' #General Matricula unica de 7 digitos
+
+		username = ''
+		username += str(school_year.start_date.year % 100) #Last 2 from year
+		username += '{0:02d}'.format(school_year.start_date.month) #Last 2 from month
+		username += '{0:03d}'.format(self.id) #3 more from id
+		return username
+
 
 class Teacher(Account):
 	phone = PhoneNumberField()

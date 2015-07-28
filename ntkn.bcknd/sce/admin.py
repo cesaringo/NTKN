@@ -8,7 +8,7 @@ class StudentResource(resources.ModelResource):
 	#educative = fields.Field(column_name='myfield')
 	class Meta:
 		model = Student
-		fields = ('id', 'first_name', 'last_name', 'sex', 'bday', 'educative_program',  'parent_email', 'parent_phone',)
+		fields = ('id', 'first_name', 'last_name', 'sex', 'bday', 'educative_program',  'first_school_year', 'parent_email', 'parent_phone', 'email')
 
 
 class StudentAdmin(ImportExportActionModelAdmin):
