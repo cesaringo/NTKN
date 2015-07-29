@@ -3,6 +3,7 @@ from .models import Student, Course, Subject, EducativeProgram, SchoolYear
 from import_export import resources
 from import_export.admin import ImportExportActionModelAdmin
 from import_export import fields
+from .forms import StudentChangeForm, StudentCreationForm
 
 class StudentResource(resources.ModelResource):
 	#educative = fields.Field(column_name='myfield')
@@ -15,7 +16,10 @@ class StudentAdmin(ImportExportActionModelAdmin):
 	resource_class = StudentResource
 	list_display = ('get_photo_as_tag', 'enrollment', '__unicode__', 'email_link', 'is_active', 'educative_program')
 	list_display_links = ('get_photo_as_tag', 'enrollment', '__unicode__',)
-	pass
+
+	change_user_password_template = None
+	form = StudentChangeForm
+	add_form = StudentCreationForm
 
 
 class EcucativeProgramAdmin(admin.ModelAdmin):
