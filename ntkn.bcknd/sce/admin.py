@@ -13,6 +13,8 @@ class StudentResource(resources.ModelResource):
 
 class StudentAdmin(ImportExportActionModelAdmin):
 	resource_class = StudentResource
+	list_display = ('get_photo_as_tag', 'enrollment', '__unicode__', 'email_link', 'is_active', 'educative_program')
+	list_display_links = ('get_photo_as_tag', 'enrollment', '__unicode__',)
 	pass
 
 

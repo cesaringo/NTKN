@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
+from django.utils.html import format_html
+from django.conf.urls.static import static
 
 class Photo(models.Model):
 	original = models.ImageField(upload_to='account_photos')
@@ -62,3 +64,15 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
 	def get_short_name(self):
 		return self.first_name		
+
+	def get_photo_as_tag(self):
+		if self.photo:
+			return format_html('<img src="{}" alt="{}">', 
+				self.photo.thumbnail_30x30.url, self.__unicode__())
+		else: 
+			return None
+	get_photo_as_tag.allow_tags = True
+
+	def email_link(self):
+		return format_html('<a href="mailto:{}">{}</a>', self.email, self.email)
+	email_link.allow_tags = True

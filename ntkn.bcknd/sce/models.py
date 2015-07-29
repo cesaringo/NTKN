@@ -5,7 +5,9 @@ from datetime import date
 from localflavor.us.models import PhoneNumberField
 from authentication.models import Account
 from slugify import slugify
-import uuid
+from datetime import datetime
+
+
 ################
 #Students Module
 ################
@@ -72,9 +74,10 @@ class EducativeProgram(models.Model):
 	name = models.CharField(max_length=100, unique=True)
 	slug = models.CharField(max_length=100, unique=True, blank=True)
 	
-	#Director = Some user, Optional attribute
-
 	def __unicode__(self):
+		return self.name
+
+	def __str__(self):
 		return self.name
 
 	def save(self, *args, **kwargs):
@@ -99,7 +102,7 @@ class Student(Account):
 	bday = models.DateField(blank=True, null=True, verbose_name="Birth Date", validators=settings.DATE_VALIDATORS)
 
 	#The student enrollment
-	enrollment = models.CharField(max_length=7, blank=True, null=True)
+	enrollment = models.CharField(max_length=8, blank=True, null=True)
 
 	#The current student Grade Level. 
 	#Preescolar (3), Primaria (6), Secundaria (3), Preparatoria (3)
@@ -139,22 +142,15 @@ class Student(Account):
 		pass
 
 	def save(self, *args, **kwargs):
-		if self.pk is None:
+		if self.id is None:
 			super(Student, self).save(*args, **kwargs)
 			self.save(*args, **kwargs)
 		else:
-			if self.first_school_year:
-				self.username = self.gererate_username(self.first_school_year)
-			else:	
-				self.username = self.gererate_username(None)
+			self.username = '{0:07}'.format(self.id + 1000000)
 			self.email = self.username + '@natkan.mx'
+			if self.first_school_year:
+				self.enrollment = str(datetime.now().year % 100) + '{0:02d}'.format(datetime.now().month) + '{0:02d}'.format(self.first_school_year.id % 100) + '{0:02}'.format(self.id)
 			super(Student, self).save(*args, **kwargs)
-
-
-		temp_username = str(uuid.uuid4())
-		self.username = temp_username
-		self.email = temp_username + '@natkan.mx'
-		
 
 
 	def gererate_username(self, school_year):
