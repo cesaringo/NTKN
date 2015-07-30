@@ -153,18 +153,6 @@ class Student(Account):
 			super(Student, self).save(*args, **kwargs)
 
 
-	def gererate_username(self, school_year):
-		if school_year == None:
-			#EL actual o el siguiente Periodo escolar activo corresponsiente al Programa educativo
-			return '0123456' #General Matricula unica de 7 digitos
-
-		username = ''
-		username += str(school_year.start_date.year % 100) #Last 2 from year
-		username += '{0:02d}'.format(school_year.start_date.month) #Last 2 from month
-		username += '{0:03d}'.format(self.id) #3 more from id
-		return username
-
-
 class Teacher(Account):
 	phone = PhoneNumberField()
 	##Adtional administrative data for teacher 

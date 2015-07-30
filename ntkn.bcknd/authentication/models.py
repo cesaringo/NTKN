@@ -42,7 +42,7 @@ class AccountManager(BaseUserManager):
 
 		return self._create_user(username, email, password, **extra_fields)
 
-class Account(AbstractBaseUser, PermissionsMixin):
+class Account(AbstractBaseUser	, PermissionsMixin):
 	email = models.EmailField(unique=True, null=True, blank=True)
 	username = models.CharField(max_length=50, unique=True, null=True, blank=True)
 	first_name = models.CharField(max_length=50, blank=True)
@@ -56,7 +56,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username']
-
 
 
 	def get_full_name(self):
