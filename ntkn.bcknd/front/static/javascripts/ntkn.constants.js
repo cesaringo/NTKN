@@ -9,6 +9,10 @@
 		notAuthenticated: 'auth-not-authenticated',
 		notAuthorized: 'auth-not-authorized'
 	})
-
+	.constant('USER_ROLES', {
+		admin: 'admin',
+		student: 'student',
+		teacher: 'teacher,'
+	})
 	.constant('API_URL', 'http://localhost:8000/rest-auth');
 })()

@@ -80,7 +80,8 @@
 	})
 
 	.controller('DashCtrl', function($scope, $state, AuthService) {
-
+		console.log("DashCtrl");
+		console.log($state.current.data);
 	});
 
 
