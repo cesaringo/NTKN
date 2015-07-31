@@ -17,8 +17,9 @@
 			console.log('loadUserCredentials')
 			var _token = $window.localStorage.getItem('token');
 			var _username =  $window.localStorage.getItem('username');
+            var _role =  $window.localStorage.getItem('role');
 			if (_token && _username){
-				useCredentials(_token, _username);
+				useCredentials(_token, _username, _role);
 			}
 		}
 
@@ -52,11 +53,26 @@
 			console.log('LoginService');
 			return $http.post(API_URL+'/login/', {username:username, password: password})
 	  			.then(function (response) {
-	  				storeUserCredentials(response.data.key, response.data.user.username, 'student') //Hardcode Role. API must retunr a role and add logic to handle List of roles or single role
+                    var role = getCurrentRole(response.data.user.groups);
+	  				storeUserCredentials(response.data.key, 
+                        response.data.user.username, role) 
                     $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, response.data);
 	    			console.log('Login Succesfully');
+                    console.log(response);
 				});
 		}
+
+        var getCurrentRole = function(roles){
+            if (roles == undefined) // Si no tiene ningun role
+                return undefined //Permision denegado. todos los usuarios deben de tener un rol
+            var role = "";
+            if (roles.length > 1){//Muchos roles. Preguntar al usuario que Role quiere usar
+                ///var role ...
+            }else{
+                role = roles[0];
+            }
+            return role;
+        }
 
 		var logout = function(){
 			destroyUserCredentials();

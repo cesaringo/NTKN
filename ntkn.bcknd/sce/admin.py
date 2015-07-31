@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student, Course, Subject, EducativeProgram, SchoolYear
+from .models import Student, Course, Subject, EducativeProgram, SchoolYear, Teacher
 from import_export import resources
 from import_export.admin import ImportExportMixin
 from import_export import fields
@@ -19,7 +19,8 @@ class StudentAdmin(ImportExportMixin, AccountAdmin):
 
 	fieldsets = (
         ('Student', {'fields': (
-        	'photo', 'first_name', 'last_name', 
+        	'photo', 'first_name', 'last_name', 'enrollment',
+        	'username', 'email',
         	'password','sex', 'is_active', 'updated_at', 'created_at'
         	)}),
 	)
@@ -27,6 +28,16 @@ class StudentAdmin(ImportExportMixin, AccountAdmin):
 
 	list_filter = ('is_active', 'educative_program')
 
+class TeacherAdmin(AccountAdmin):
+	list_display = ('get_photo_as_tag', '__str__', 'email_link', 'is_active', )
+	list_display_links = ('get_photo_as_tag', '__str__',)
+	fieldsets = (
+        ('Student', {'fields': (
+        	'photo', 'first_name', 'last_name', 'email',
+        	'password', 'is_active', 'updated_at', 'created_at'
+        	)}),
+	)
+	readonly_fields = ('updated_at', 'created_at')
 
 class EcucativeProgramAdmin(admin.ModelAdmin):
 	list_display = ('id','__unicode__',)
@@ -38,8 +49,10 @@ class SchoolYearAdmin(admin.ModelAdmin):
 	ordering = ['id']
 		
 admin.site.register(Student, StudentAdmin)
+admin.site.register(Teacher, TeacherAdmin)
 admin.site.register(Subject)
 admin.site.register(Course)
 admin.site.register(EducativeProgram, EcucativeProgramAdmin)
 admin.site.register(SchoolYear, SchoolYearAdmin)
+
 

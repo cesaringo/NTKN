@@ -42,7 +42,9 @@
   		};
 	})
 
-	/*Login Controller*/
+	/*Login Controller
+	Login & Redirect to dashboard
+	*/
 	.controller('LoginCtrl', function($scope, $state, AuthService, Validate) {
 		console.log('LoginCtrl');
 		$scope.model = {'username':'','password':''};

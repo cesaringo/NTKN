@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.db import models
 from django.conf import settings
 from datetime import date
@@ -142,6 +143,9 @@ class Student(Account):
 		pass
 
 	def save(self, *args, **kwargs):
+		group = Group.objects.get(name="student")
+		self.groups.add(group)
+
 		if self.id is None:
 			super(Student, self).save(*args, **kwargs)
 			self.save(*args, **kwargs)
@@ -155,7 +159,15 @@ class Student(Account):
 
 class Teacher(Account):
 	phone = PhoneNumberField()
-	##Adtional administrative data for teacher 
+	##Adtional administrative data for teacher
+
+	def __str__(self):
+		return self.get_full_name()
+
+	def save(self, *args, **kwargs):
+		group = Group.objects.get(name="teacher")
+		self.groups.add(group)
+		super(Teacher, self).save(*args, **kwargs)
 
 
 

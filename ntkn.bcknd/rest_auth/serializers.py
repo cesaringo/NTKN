@@ -40,6 +40,12 @@ class PhotoSerializer(serializers.ModelSerializer):
         model = Photo
         fields = ('original', 'thumbnail_30x30', 'thumbnail_50x50', 'thumbnail_100x100',)
 
+class SmallPhotoSerializer(serializers.ModelSerializer):
+    thumbnail_30x30 = serializers.ImageField('thumbnail_30x30')
+    class Meta:
+        model = Photo
+        fields = ('thumbnail_30x30',)
+
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
@@ -59,15 +65,14 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         read_only_fields = ('email', )
 
 class ShortUserDetailsSerializer(serializers.ModelSerializer):
-
     """
     User model w/o password
     """
-    photo = PhotoSerializer()
-
+    photo = SmallPhotoSerializer()
+    groups = serializers.StringRelatedField(many=True)
     class Meta:
         model = get_user_model()
-        fields = ('username', 'email', 'first_name', 'last_name', 'photo',)
+        fields = ('username', 'email', 'first_name', 'last_name', 'photo', 'groups')
         read_only_fields = ('email', )
 
 

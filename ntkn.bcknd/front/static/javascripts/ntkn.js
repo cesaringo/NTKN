@@ -39,7 +39,7 @@
   		})
   		.state('main.teacher', {
   			url: 'teacher',
-  			templateUrl: '/static/views/teaher.html',
+  			templateUrl: '/static/views/teacher.html',
   			data: {
 	      		authorizedRoles: ['teacher']
 		    }
