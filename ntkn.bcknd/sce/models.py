@@ -28,8 +28,8 @@ class SchoolYear(models.Model):
 
 
 class GradeLevel(models.Model):
-	number	=	models.IntegerField(verbose_name="Grade number")
-	name 	= 	models.CharField(max_length=150, unique=True, verbose_name="Grade name")
+	number = models.IntegerField(verbose_name="Grade number")
+	name = models.CharField(max_length=150, unique=True, verbose_name="Grade name")
 
 	class Meta:
 		ordering = ('number',)
@@ -74,7 +74,8 @@ class ClassYear(models.Model):
 class EducativeProgram(models.Model):
 	name = models.CharField(max_length=100, unique=True)
 	slug = models.CharField(max_length=100, unique=True, blank=True)
-	
+	order = models.IntegerField(null=True, blank=True)
+
 	def __unicode__(self):
 		return self.name
 
@@ -121,7 +122,7 @@ class Student(Account):
 
 	#Contact
 	phone = PhoneNumberField(null=True, blank=True)
-	parent_email = models.EmailField(blank=True, editable=False)
+	parent_email = models.EmailField(blank=True, )
 	parent_phone  = PhoneNumberField(null=True, blank=True)
 	
 	cohorts = models.ManyToManyField(Cohort, blank=True)
@@ -133,9 +134,11 @@ class Student(Account):
 		)
 		ordering = ("last_name", "first_name")
 
-	def __unicode__(self):
+	def __str__(self):
 		if self.first_name or self.last_name:
 			return u"{0}, {1}".format(self.last_name, self.first_name)
+		elif self.email:
+			return self.email
 		else:
 			return "Student " + str(self.id)
 
@@ -143,13 +146,12 @@ class Student(Account):
 		pass
 
 	def save(self, *args, **kwargs):
-		group = Group.objects.get(name="student")
-		self.groups.add(group)
-
 		if self.id is None:
 			super(Student, self).save(*args, **kwargs)
 			self.save(*args, **kwargs)
 		else:
+			group = Group.objects.get(name="student")
+			self.groups.add(group)
 			self.username = '{0:07}'.format(self.id + 1000000)
 			self.email = self.username + '@natkan.mx'
 			if self.first_school_year:
@@ -165,9 +167,16 @@ class Teacher(Account):
 		return self.get_full_name()
 
 	def save(self, *args, **kwargs):
-		group = Group.objects.get(name="teacher")
-		self.groups.add(group)
-		super(Teacher, self).save(*args, **kwargs)
+		if self.id is None:
+			super(Teacher, self).save(*args, **kwargs)
+			self.save(*args, **kwargs)
+		else:
+			group = Group.objects.get(name="teacher")
+			self.groups.add(group)
+
+			self.username = '{0:07}'.format(self.id + 1000000)
+			self.email = self.username + '@natkan.mx'
+			super(Teacher, self).save(*args, **kwargs)
 
 
 
@@ -196,18 +205,47 @@ class MarkingPeriod(models.Model):
 	def __unicode__(self):
 		return self.name
 
+#Categoria de las asignaturas como por ejemplo las asignaturas de kinder. Sirve para tener una manera de agruparlas
+class SubjectCategory(models.Model):
+	name = models.CharField(max_length=150)
+	order = models.IntegerField(null=True, blank=True)
+	def __str__(self):
+		return self.name
+
+
+
+
 class Subject(models.Model):
 	is_active = models.BooleanField(default=True)
-	fullname = models.CharField(max_length=255, unique=True, verbose_name="Full Course Name")
-	shortname = models.CharField(max_length=255, verbose_name="Short Name")
+	fullname = models.CharField(max_length=255, verbose_name="Subject Name")
+	shortname = models.CharField(max_length=255, verbose_name="Key")
 	graded = models.BooleanField(default=True, help_text="Teachers can submit grades for this course")
-	description = models.TextField(blank=True)
-	level = models.ForeignKey(GradeLevel, blank=True, null=True, verbose_name="Grade Level")
+	description = models.TextField(null=True, blank=True)
+
+	#Años escolares en los cuales la asignatura aplica
+	#Ej: [1,2,3]. This field is store as a string
+	#Por ejemplo, Matématicas que se da en toda la primaria: "[1,2,3,4,5]"
+	levels = models.CharField(max_length=100, null=True)
+
 	department = models.ForeignKey(Department, blank=True, null=True)
 
-	def __unicode__(self):
-		return self.fullnames
+	#La educacion basica (Preescolar, primaria, Segundaria) cuenta con 4 peridos escolares
+	#primer periodo preescolar, Segundo y tercer periodo primaria, cuarto periodo secundaria
+	#List of ints
+	periods = models.CommaSeparatedIntegerField(max_length=100, blank=True)
 
+
+	#Some subjects are grouped by category
+	category = models.ForeignKey(SubjectCategory, null=True, blank=True, default=None)
+
+	#The educative program the subject is associated 
+	educative_program = models.ForeignKey(EducativeProgram, blank=True, null=True, on_delete=models.SET_NULL)
+
+	order = models.IntegerField(null=True)
+
+
+	def __str__(self):
+		return self.fullname
 
 class Course(models.Model):
 	subject = models.ForeignKey(Subject, related_name='courses')
@@ -219,7 +257,7 @@ class Course(models.Model):
 	school_year = models.ForeignKey(SchoolYear)
 
 	def __unicode__(self):
-		return self.fullname
+		return self.subject.fullname
 
 
 class CourseEnrollment(models.Model):

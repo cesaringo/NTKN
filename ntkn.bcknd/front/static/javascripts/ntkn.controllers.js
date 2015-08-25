@@ -3,12 +3,12 @@
 	angular.module('ntkn')
  
 	.controller('AppCtrl', function($scope, $state, AuthService, AUTH_EVENTS) {
-		console.log("AppCtrl");
+		//console.log("AppCtrl");
 
 		//AUTH
 		$scope.logout = function() {
-    		AuthService.logout();
-    		$state.go('login');
+    			AuthService.logout();
+    			$state.go('login');
   		};
 
   		$scope.username = AuthService.username();
@@ -18,7 +18,6 @@
   		//Listen Events
 		$scope.$on(AUTH_EVENTS.notAuthorized, function(event){
 			console.log('You are not allowed to access this resource.');
-    			$state.go('main.dash');
 		});
 
 		$scope.$on(AUTH_EVENTS.notAuthenticated, function(event){
@@ -28,8 +27,16 @@
 		});
 
 		$scope.$on(AUTH_EVENTS.loginSuccess, function(){
+			console.log('Login Succesfully');
+			console.log(AuthService.role());
 			$scope.username = AuthService.username();
   			$scope.isAuthenticated = AuthService.isAuthenticated();
+  			switch(AuthService.role()){
+				case 'student': $state.go('dashboard.student', {}, {reload: true}); break;
+				case 'teacher': $state.go('dashboard.teacher', {}, {reload: true}); break;
+				case 'admin': $state.go('dashboard.admin', {}, {reload: true}); break;
+				default: $state.go('dashboard', {}, {reload: true});
+			}
 		});
 
 		$scope.$on(AUTH_EVENTS.logoutSuccess, function(){
@@ -46,7 +53,7 @@
 	Login & Redirect to dashboard
 	*/
 	.controller('LoginCtrl', function($scope, $state, AuthService, Validate) {
-		console.log('LoginCtrl');
+		//console.log('LoginCtrl');
 		$scope.model = {'username':'','password':''};
 		$scope.login = function(formData){
 			$scope.errors = [];
@@ -54,14 +61,8 @@
 			if(!formData.$invalid){
 				AuthService.login($scope.model.username, $scope.model.password)
 				.then(function(response){
-					switch(AuthService.role()){
-						case 'student': $state.go('main.student', {}, {reload: true}); break;
-						case 'teacher': $state.go('main.teacher', {}, {reload: true}); break;
-						case 'admin': $state.go('main.admin', {}, {reload: true}); break;
-						default: $state.go('main.profile', {}, {reload: true});
-					}
-		        	$scope.setCurrentUsername($scope.model.username);
-		        },function(response){
+					$scope.setCurrentUsername($scope.model.username);
+		        	},function(response){
 		        	$scope.errors = response;
 		        });
 			}
@@ -73,7 +74,7 @@
 		SCEService.UserProfile()
 			.then(function(response){
 				$scope.profile = response.data;
-				console.log($scope.profile);			
+				//console.log($scope.profile);			
 			}, function(response){
 				console.log(response)
 			});

@@ -14,7 +14,7 @@
         var role = undefined;
 
 		function loadUserCredentials(){
-			console.log('loadUserCredentials')
+			//console.log('loadUserCredentials')
 			var _token = $window.localStorage.getItem('token');
 			var _username =  $window.localStorage.getItem('username');
             var _role =  $window.localStorage.getItem('role');
@@ -57,7 +57,7 @@
 	  				storeUserCredentials(response.data.key, 
                         response.data.user.username, role) 
                     $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, response.data);
-	    			console.log('Login Succesfully');
+	    			
                     console.log(response);
 				});
 		}
@@ -86,6 +86,19 @@
     		return (isAuthenticated && authorizedRoles.indexOf(role) !== -1);
   		};
 
+        //raises an error if token isn’t present
+        var authenticationStatus = function(){
+            var deferred = $q.defer();
+            loadUserCredentials();
+            if(token && username){
+                deferred.resolve(username);
+            }else{
+                deferred.reject({error: "noToken"});
+            }
+            return deferred.promise;
+        }
+
+
   		loadUserCredentials();
 
   		return {
@@ -93,6 +106,7 @@
   			'logout': logout,
   			'isAuthorized': isAuthorized,
   			'isAuthenticated': function() {return isAuthenticated;},
+            'authenticationStatus': authenticationStatus,
   			'username': function() {return username;},
             'role': function() {return role;},
   		}

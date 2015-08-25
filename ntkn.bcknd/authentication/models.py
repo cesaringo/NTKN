@@ -10,6 +10,9 @@ class Photo(models.Model):
 	thumbnail_30x30 = ImageSpecField(source='original', processors=[ResizeToFill(30, 30)], format='JPEG', options={'quality': 100})
 	thumbnail_50x50 = ImageSpecField(source='original', processors=[ResizeToFill(50, 50)], format='JPEG', options={'quality': 100})
 	thumbnail_100x100 = ImageSpecField(source='original', processors=[ResizeToFill(100, 100)], format='JPEG', options={'quality': 100})
+	
+	def __str__(self):
+		return self.original.name
 
 class AccountManager(BaseUserManager):
 	def _create_user(self, username, email, password, **extra_fields):
@@ -70,6 +73,14 @@ class Account(AbstractBaseUser, PermissionsMixin):
 				self.photo.thumbnail_30x30.url, self.__unicode__())
 		else: 
 			return None
+
+	def __str__(self):
+		return self.get_full_name()
+
+	def __unicode__(self):
+		return self.__str__()
+
+
 	get_photo_as_tag.allow_tags = True
 
 	def email_link(self):

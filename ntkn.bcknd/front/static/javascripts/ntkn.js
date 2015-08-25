@@ -1,5 +1,5 @@
 (function(){
-	'use strict';
+	"use strict";
 	angular.module('ntkn', ['ui.router', 'http-auth-interceptor'])
 	.config(function ($stateProvider, $urlRouterProvider, USER_ROLES) {
 		$stateProvider
@@ -8,66 +8,71 @@
 			templateUrl: '/static/views/authentication/login.html',
 			controller: 'LoginCtrl'
 		})
-		.state('main', {
-		    url: '/',
-		    abstract: true,
-		    templateUrl: '/static/views/main.html'
+		.state('dashboard', {//Main Aplications. Login Required
+	    		url: '/dashboard',
+			abstract: true,
+			template: "<ui-view/>",
+			resolve:{
+				authenticated: function(AuthService){
+					return AuthService.authenticationStatus();
+				}
+			}
 	  	})
-	  	.state('main.profile', {
-    		url: 'profile',
+	  	.state('dashboard.profile', {
+    			url: '/profile',
  			templateUrl: '/static/views/profile.html',
   			controller: 'ProfileCtrl'
   		})
-	  	.state('main.dash', { //All users can access, it can be profile data for example
-    		url: 'dash',
- 			templateUrl: '/static/views/dashboard.html',
-  			controller: 'DashCtrl',
-  			data: {
-	      		authorizedRoles: [USER_ROLES.admin, USER_ROLES.teacher, USER_ROLES.student]
-		    }
-  		})
-  		.state('main.student',{
-  			url: 'student',
+  		.state('dashboard.student',{
+  			url: '/student',
   			templateUrl: '/static/views/student.html',
   			data: {
 	      		authorizedRoles: [USER_ROLES.student]
 		    }
   		})
-  		.state('main.admin', {
-  			url: 'admin',
+  		.state('dashboard.admin', {
+  			url: '/admin',
   			templateUrl: '/static/views/admin.html',
   			data: {
 	      		authorizedRoles: [USER_ROLES.admin]
 		    }
   		})
-  		.state('main.teacher', {
-  			url: 'teacher',
+  		.state('dashboard.teacher', {
+  			url: '/teacher',
   			templateUrl: '/static/views/teacher.html',
   			data: {
 	      		authorizedRoles: [USER_ROLES.teacher]
 		    }
   		});
-  		$urlRouterProvider.otherwise('/dash');
+  		$urlRouterProvider.otherwise('/dashboard/profile');
 	})
 
 	.run(function ($http, $rootScope, $state, AuthService, AUTH_EVENTS){
 		$http.defaults.xsrfHeaderName = 'X-CSRFToken';
 		$http.defaults.xsrfCookieName = 'csrftoken';
 
-		$rootScope.$on('$stateChangeStart', function(event,next, nextParams, fromState){
-			console.log("stateChangeStart");
-			if('data' in next && 'authorizedRoles' in next.data){
-				console.log(next);
-				console.log($state.current);
-				var authorizedRoles = next.data.authorizedRoles;
-				if (!AuthService.isAuthorized(authorizedRoles)){
-					event.preventDefault();
-					$state.go($state.current, {}, {reload: true});
-					$rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
-				}
-			}
-		});
+		$rootScope.$on('$stateChangeError',
+			function (event, toState, toParams, fromState, fromParams, error) {
+				//console.log('$stateChangeError');
+				if (error && error.error === "noToken") {
+		  			console.log("No authenticated. Redirect to login");
+      				$state.go('login', {});
+		  		}
+			});
 
+		$rootScope.$on('$stateChangeStart', 
+			function(event,next, nextParams, fromState){
+				//console.log('$stateChangeStart');
+				if('data' in next && 'authorizedRoles' in next.data){
+					var authorizedRoles = next.data.authorizedRoles;
+					if (!AuthService.isAuthorized(authorizedRoles)){
+						event.preventDefault();
+						console.log("No authorized. Redirect to previous page");
+						$state.go($state.current, {}, {reload: true});
+						//$rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+					}
+				}
+			});
 		//Authentication.initialize('//localhost:8000/rest-auth', false);
 	})
 

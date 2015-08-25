@@ -11,8 +11,7 @@
     </div> <!-- ./navbar-header -->
     <div class="collapse navbar-collapse" id="not-google-plus-nav">
       <ul class="nav navbar-nav pull-right ng-cloak">
-          <li ng-if="isAuthenticated"><a ui-sref="main.profile">Profile</a></li>
-          <li ng-if="isAuthenticated"><a ui-sref="main.dash">Dashboard</a></li>
+          <li ng-if="isAuthenticated"><a ui-sref="dashboard.profile">Profile</a></li>
           <li ng-if="isAuthenticated"><a ng-click="logout()">Logout</a></li>
           <li ng-if="!isAuthenticated"><a ui-sref="login">Login</a></li>
       </ul>
