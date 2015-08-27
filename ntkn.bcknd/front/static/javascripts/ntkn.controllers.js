@@ -2,7 +2,7 @@
 	'use strict';
 	angular.module('ntkn')
  
-	.controller('AppCtrl', function($scope, $state, AuthService, AUTH_EVENTS) {
+	.controller('AppCtrl', function($scope, $rootScope, $state, AuthService, AUTH_EVENTS) {
 		//console.log("AppCtrl");
 
 		//AUTH
@@ -18,6 +18,7 @@
   		//Listen Events
 		$scope.$on(AUTH_EVENTS.notAuthorized, function(event){
 			console.log('You are not allowed to access this resource.');
+			$state.go('dashboard.profile', {}, {reload: true});
 		});
 
 		$scope.$on(AUTH_EVENTS.notAuthenticated, function(event){
@@ -28,14 +29,15 @@
 
 		$scope.$on(AUTH_EVENTS.loginSuccess, function(){
 			console.log('Login Succesfully');
-			console.log(AuthService.role());
 			$scope.username = AuthService.username();
   			$scope.isAuthenticated = AuthService.isAuthenticated();
   			switch(AuthService.role()){
 				case 'student': $state.go('dashboard.student', {}, {reload: true}); break;
 				case 'teacher': $state.go('dashboard.teacher', {}, {reload: true}); break;
-				case 'admin': $state.go('dashboard.admin', {}, {reload: true}); break;
-				default: $state.go('dashboard', {}, {reload: true});
+				case 'admin': 		$state.go('dashboard.admin', {}, {reload: true}); break;
+				default: 
+					$rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+					break;
 			}
 		});
 
@@ -61,10 +63,10 @@
 			if(!formData.$invalid){
 				AuthService.login($scope.model.username, $scope.model.password)
 				.then(function(response){
-					$scope.setCurrentUsername($scope.model.username);
+						$scope.setCurrentUsername($scope.model.username);
 		        	},function(response){
-		        	$scope.errors = response;
-		        });
+		        		$scope.errors = response;
+		        	});
 			}
 		}
 	})

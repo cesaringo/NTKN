@@ -57,7 +57,6 @@
 	  				storeUserCredentials(response.data.key, 
                         response.data.user.username, role) 
                     $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, response.data);
-	    			
                     console.log(response);
 				});
 		}
@@ -169,7 +168,6 @@
                 return $http.get(API_URL + '/user/');
             }
         }
-
         return {
             UserProfile: UserProfile,
         }
