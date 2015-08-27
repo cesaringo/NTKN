@@ -88,15 +88,7 @@ class EducativeProgram(models.Model):
 		super(EducativeProgram, self).save(*args, **kwargs)
 
 	
-#A group od Students. For this purpose is A, B, C even english levelss
-class Cohort(models.Model):
-	name = models.CharField(max_length=255)
-	students = models.ManyToManyField('Student', blank=True)
-	class Meta:
-		ordering = ('name',)
-	
-	def __unicode__(self):
-		return self.name
+
 
 class Student(Account):
 	mname = models.CharField(max_length=100, blank=True, null=True, verbose_name="Middle name")
@@ -125,7 +117,7 @@ class Student(Account):
 	parent_email = models.EmailField(blank=True, )
 	parent_phone  = PhoneNumberField(null=True, blank=True)
 	
-	cohorts = models.ManyToManyField(Cohort, blank=True)
+	#cohorts = models.ManyToManyField(Cohort, blank=True)
 
 	class Meta:
 		permissions = (
@@ -158,6 +150,20 @@ class Student(Account):
 				self.enrollment = str(datetime.now().year % 100) + '{0:02d}'.format(datetime.now().month) + '{0:02d}'.format(self.first_school_year.id % 100) + '{0:02}'.format(self.id)
 			super(Student, self).save(*args, **kwargs)
 
+#A group od Students. For this purpose is A, B, C even english levelss
+class Cohort(models.Model):
+	name = models.CharField(max_length=255)
+	students = models.ManyToManyField(
+		Student, 
+		blank=True,
+		related_name = 'cohort_set',
+		related_query_name = 'cohort'
+	)
+	class Meta:
+		ordering = ('name',)
+	
+	def __str__(self):
+		return self.name
 
 class Teacher(Account):
 	phone = PhoneNumberField()

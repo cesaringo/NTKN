@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student, Course, Subject, EducativeProgram, SchoolYear, Teacher, SubjectCategory
+from .models import Student, Course, Subject, EducativeProgram, SchoolYear, Teacher, SubjectCategory, Cohort
 from import_export import resources
 from import_export.admin import ImportExportMixin
 from import_export import fields
@@ -27,7 +27,7 @@ class StudentAdmin(ImportExportMixin, AccountAdmin):
         ('Student Info', {'fields': (
         	'educative_program', 'cohorts'
         	)}),
-        
+
         ("Contact", {'fields': (
         	'phone', 'parent_phone', 'parent_email', 
         	)}),
@@ -84,11 +84,18 @@ class SubjectCategoryAdmin(admin.ModelAdmin):
 	pass
 		
 
+class CohortAdmin(admin.ModelAdmin):
+	filter_horizontal = ('students',)
+
+
+	
+
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Teacher, TeacherAdmin)
 admin.site.register(Subject, SubjectAdmin)
 admin.site.register(SubjectCategory, SubjectCategoryAdmin)
 admin.site.register(Course)
+admin.site.register(Cohort, CohortAdmin)
 admin.site.register(EducativeProgram, EcucativeProgramAdmin)
 admin.site.register(SchoolYear, SchoolYearAdmin)
 
