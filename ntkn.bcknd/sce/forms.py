@@ -1,4 +1,4 @@
-from .models import Student, Cohort
+from .models import Student, Cohort, Course
 from django.contrib.auth.forms import (
     UserChangeForm, UserCreationForm,
 )
@@ -32,4 +32,10 @@ class StudentChangeForm(UserChangeForm):
 
 
 class StudentCreationForm(UserCreationForm):
+	pass
+
+class CourseForm(forms.ModelForm):
+	class Meta:
+		model = Course
+		fields = ('subject','teacher', 'school_year', 'is_active', 'marking_periods')
 	pass

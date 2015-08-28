@@ -196,20 +196,7 @@ class Department(models.Model):
 	name = models.CharField(max_length=255, unique=True, verbose_name="Department Name")
 
 
-#Ejemplo: Bimestre 1, Bimestre 2, Parcila 1, Parcial 2, etc
-class MarkingPeriod(models.Model):
-	name = models.CharField(max_length=255, unique=True)
-	shortname = models.CharField(max_length=255)
-	start_date = models.DateField()
-	end_date = models.DateField()
-	grades_due = models.DateField(validators=settings.DATE_VALIDATORS, blank=True, null=True, help_text="If filled out, teachers will be notified when grades are due.")
-	active = models.BooleanField(default=False, help_text="Teachers may only enter grades for active marking periods. There may be more than one active marking period.")
 
-	class Meta:
-		ordering = ('-start_date',)
-
-	def __unicode__(self):
-		return self.name
 
 #Categoria de las asignaturas como por ejemplo las asignaturas de kinder. Sirve para tener una manera de agruparlas
 class SubjectCategory(models.Model):
@@ -253,16 +240,46 @@ class Subject(models.Model):
 	def __str__(self):
 		return self.fullname
 
+#Ejemplo: Bimestre 1, Bimestre 2, Parcila 1, Parcial 2, etc
+class MarkingPeriod(models.Model):
+	name = models.CharField(max_length=255, unique=True)
+	shortname = models.CharField(max_length=255)
+	description = models.TextField(null=True)
+	start_date = models.DateField()
+	end_date = models.DateField()
+	grades_due = models.DateField(validators=settings.DATE_VALIDATORS, blank=True, null=True, help_text="If filled out, teachers will be notified when grades are due.")
+	active = models.BooleanField(default=False, help_text="Teachers may only enter grades for active marking periods. There may be more than one active marking period.")
+
+	class Meta:
+		ordering = ('-start_date',)
+
+	def __str__(self):
+		return self.name
+
 class Course(models.Model):
 	subject = models.ForeignKey(Subject, related_name='courses')
-	is_active = models.BooleanField(default=True)
-	name = models.CharField(max_length=255, null=True)
-	#Periodos de evaluacion
-	marking_period = models.ManyToManyField(MarkingPeriod, blank=True)
 	teacher = models.ForeignKey(Teacher, blank=True)
+	#students = list of students
+
+	marking_periods = models.ManyToManyField(
+		MarkingPeriod,
+		related_name='course_set',
+		related_query_name = 'course',
+	)
+
+	students = models.ManyToManyField(
+		Student,
+		related_name='course_set',
+		related_query_name = 'course',
+	)
+
+	name = models.CharField(max_length=255, null=True)
+	is_active = models.BooleanField(default=True)
+	
+	
 	school_year = models.ForeignKey(SchoolYear)
 
-	def __unicode__(self):
+	def __str__(self):
 		return self.subject.fullname
 
 

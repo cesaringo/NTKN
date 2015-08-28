@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import Student, Course, Subject, EducativeProgram, SchoolYear, Teacher, SubjectCategory, Cohort
+from .models import Student, Course, Subject, EducativeProgram, SchoolYear, Teacher, SubjectCategory, Cohort, MarkingPeriod
 from import_export import resources
 from import_export.admin import ImportExportMixin
 from import_export import fields
 from authentication.admin import AccountAdmin
-from .forms import StudentChangeForm, StudentCreationForm
+from .forms import StudentChangeForm, StudentCreationForm, CourseForm
 
 class StudentResource(resources.ModelResource):
 	#educative = fields.Field(column_name='myfield')
@@ -87,14 +87,23 @@ class SubjectCategoryAdmin(admin.ModelAdmin):
 class CohortAdmin(admin.ModelAdmin):
 	filter_horizontal = ('students',)
 
-
+class MarkingPeriodAdmin(admin.ModelAdmin):
+	pass
 	
+
+class CourseAdmin(admin.ModelAdmin):
+	filter_horizontal = ('marking_periods', 'students')
+	form = CourseForm
+	pass
+
+
 
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Teacher, TeacherAdmin)
 admin.site.register(Subject, SubjectAdmin)
 admin.site.register(SubjectCategory, SubjectCategoryAdmin)
-admin.site.register(Course)
+admin.site.register(Course, CourseAdmin)
+admin.site.register(MarkingPeriod, MarkingPeriodAdmin)
 admin.site.register(Cohort, CohortAdmin)
 admin.site.register(EducativeProgram, EcucativeProgramAdmin)
 admin.site.register(SchoolYear, SchoolYearAdmin)
