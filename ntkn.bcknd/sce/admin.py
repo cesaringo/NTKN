@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Student, Course, Subject, EducativeProgram, SchoolYear, Teacher, SubjectCategory, Cohort, MarkingPeriod
+from .models import (Student, Course, Subject, EducativeProgram, SchoolYear, Teacher, 
+SubjectCategory, Cohort, MarkingPeriod, CourseEnrollment, GradeLevel)
 from import_export import resources
 from import_export.admin import ImportExportMixin
 from import_export import fields
@@ -12,6 +13,9 @@ class StudentResource(resources.ModelResource):
 		model = Student
 		fields = ('id', 'first_name', 'last_name', 'sex', 'bday', 'educative_program',  'first_school_year', 'parent_email', 'parent_phone', 'email')
 
+class CourseEnrollmentInline(admin.TabularInline):
+	model = CourseEnrollment
+	extra = 1
 
 class StudentAdmin(ImportExportMixin, AccountAdmin):
 	resource_class = StudentResource
@@ -41,6 +45,8 @@ class StudentAdmin(ImportExportMixin, AccountAdmin):
 	form = StudentChangeForm
 	add_form = StudentCreationForm
 
+	inlines = (CourseEnrollmentInline,)
+
 class TeacherAdmin(AccountAdmin):
 	list_display = ('get_photo_as_tag', '__str__', 'email_link', 'is_active', )
 	list_display_links = ('get_photo_as_tag', '__str__',)
@@ -65,20 +71,20 @@ class SchoolYearAdmin(admin.ModelAdmin):
 class SubjectResource(resources.ModelResource):
 	class Meta:
 		model = Subject
-		fields = ('id', 'fullname', 'key', 'is_active', 'description', 'educative_program', 'category', 'levels')
+		fields = ('id', 'fullname', 'key', 'is_active', 'description', 'educative_program', 'category', 'level', 'grade_level')
 
 class SubjectAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = SubjectResource
-	list_display = ('shortname', 'fullname', 'educative_program', 'is_active')
-	list_display_links = ('shortname', 'fullname',)
+	list_display = ('shortname', '__str__', 'educative_program', 'level', 'grade_level', 'is_active')
+	list_display_links = ('shortname', '__str__',)
 	ordering = ('educative_program',)
 
 	fieldsets = (
 		(None, {'fields': ('fullname', 'shortname', 'description',)}), 
-		(None, {'fields': ('is_active', 'educative_program', 'category', 'graded',  'levels')}),
+		(None, {'fields': ('is_active', 'educative_program', 'category', 'graded',  'level', 'grade_level')}),
 	)
 
-	list_filter = ('is_active', 'educative_program')
+	list_filter = ('is_active', 'educative_program', 'grade_level', 'grade_level')
 
 class SubjectCategoryAdmin(admin.ModelAdmin):
 	pass
@@ -91,12 +97,19 @@ class MarkingPeriodAdmin(admin.ModelAdmin):
 	pass
 	
 
+
+
 class CourseAdmin(admin.ModelAdmin):
 	filter_horizontal = ('marking_periods', 'students')
 	form = CourseForm
+	inlines = (CourseEnrollmentInline,)
+	list_display = ('id', 'subject', 'teacher', 'cohort', 'school_year', 'is_active')
 	pass
 
 
+class GradeLevelAdmin(admin.ModelAdmin):
+	ordering = ['order']
+	pass
 
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Teacher, TeacherAdmin)
@@ -107,5 +120,6 @@ admin.site.register(MarkingPeriod, MarkingPeriodAdmin)
 admin.site.register(Cohort, CohortAdmin)
 admin.site.register(EducativeProgram, EcucativeProgramAdmin)
 admin.site.register(SchoolYear, SchoolYearAdmin)
+admin.site.register(GradeLevel, GradeLevelAdmin)
 
 

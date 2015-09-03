@@ -5,7 +5,7 @@ from django.conf import settings
 from datetime import date
 from localflavor.us.models import PhoneNumberField
 from authentication.models import Account
-from slugify import slugify
+from django.utils.text import slugify
 from datetime import datetime
 
 
@@ -23,16 +23,20 @@ class SchoolYear(models.Model):
 	class Meta:
 		ordering = ('start_date',)
 
-	def __unicode__(self):
+	def __str__(self):
 		return self.name
 
 
 class GradeLevel(models.Model):
 	number = models.IntegerField(verbose_name="Grade number")
-	name = models.CharField(max_length=150, unique=True, verbose_name="Grade name")
+	educative_program = models.ForeignKey('EducativeProgram')
+	name = models.CharField(max_length=100, verbose_name="Grade name", blank=True)
+	order = models.IntegerField(null=True, blank=True)
+	slug = models.CharField(max_length=100, verbose_name="slug", blank=True)
 
 	class Meta:
 		ordering = ('number',)
+		unique_together =  (('number', 'educative_program'),)
 
 	def __unicode__(self):
 		return unicode(self.name)
@@ -40,6 +44,15 @@ class GradeLevel(models.Model):
 	@property
 	def grade(self):
 		return self.number
+
+	def save(self, *args, **kwargs):
+		if not self.name:
+			self.name = str(self.number) + ' ' + self.educative_program.name
+		self.slug = slugify(self.name)
+		super(GradeLevel, self).save(*args, **kwargs)
+
+	def __str__(self):
+		return self.name
 
 class IntegerRangeField(models.IntegerField):
 	def __init__(self, verbose_name=None, name=None, min_value=None, max_value=None, **kwargs):
@@ -117,7 +130,6 @@ class Student(Account):
 	parent_email = models.EmailField(blank=True, )
 	parent_phone  = PhoneNumberField(null=True, blank=True)
 	
-	#cohorts = models.ManyToManyField(Cohort, blank=True)
 
 	class Meta:
 		permissions = (
@@ -206,8 +218,6 @@ class SubjectCategory(models.Model):
 		return self.name
 
 
-
-
 class Subject(models.Model):
 	is_active = models.BooleanField(default=True)
 	fullname = models.CharField(max_length=255, verbose_name="Subject Name")
@@ -215,10 +225,11 @@ class Subject(models.Model):
 	graded = models.BooleanField(default=True, help_text="Teachers can submit grades for this course")
 	description = models.TextField(null=True, blank=True)
 
-	#Años escolares en los cuales la asignatura aplica
-	#Ej: [1,2,3]. This field is store as a string
-	#Por ejemplo, Matématicas que se da en toda la primaria: "[1,2,3,4,5]"
-	levels = models.CharField(max_length=100, null=True)
+	#level of the subject. Math 1, Math 2, etc
+	level = models.IntegerField(null=True)
+
+	#The Grade Level the subject is suposed to be imparted
+	grade_level = models.ForeignKey(GradeLevel, blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Grade level")
 
 	department = models.ForeignKey(Department, blank=True, null=True)
 
@@ -238,13 +249,13 @@ class Subject(models.Model):
 
 
 	def __str__(self):
-		return self.fullname
+		return self.fullname + ' ' + str(self.level)
 
 #Ejemplo: Bimestre 1, Bimestre 2, Parcila 1, Parcial 2, etc
 class MarkingPeriod(models.Model):
 	name = models.CharField(max_length=255, unique=True)
 	shortname = models.CharField(max_length=255)
-	description = models.TextField(null=True)
+	description = models.TextField(null=True, blank=True)
 	start_date = models.DateField()
 	end_date = models.DateField()
 	grades_due = models.DateField(validators=settings.DATE_VALIDATORS, blank=True, null=True, help_text="If filled out, teachers will be notified when grades are due.")
@@ -258,29 +269,30 @@ class MarkingPeriod(models.Model):
 
 class Course(models.Model):
 	subject = models.ForeignKey(Subject, related_name='courses')
-	teacher = models.ForeignKey(Teacher, blank=True)
-	#students = list of students
+	teacher = models.ForeignKey(Teacher, blank=True, null=True)
 
 	marking_periods = models.ManyToManyField(
 		MarkingPeriod,
+		blank=True,
 		related_name='course_set',
 		related_query_name = 'course',
 	)
 
 	students = models.ManyToManyField(
 		Student,
+		through='CourseEnrollment',
+		blank = True,
 		related_name='course_set',
-		related_query_name = 'course',
+		related_query_name='course'
 	)
 
 	name = models.CharField(max_length=255, null=True)
 	is_active = models.BooleanField(default=True)
-	
-	
 	school_year = models.ForeignKey(SchoolYear)
+	cohort = models.ForeignKey(Cohort, null=True, blank=True)
 
 	def __str__(self):
-		return self.subject.fullname
+		return self.subject.__str__()
 
 
 class CourseEnrollment(models.Model):
@@ -294,6 +306,9 @@ class CourseEnrollment(models.Model):
 
 	def get_average_for_marking_periods():
 		pass
+
+	def __str__(self):
+		return '(' + self.student.__str__() + ' - ' + self.course.__str__() + ')'
 
 
 

@@ -37,5 +37,5 @@ class StudentCreationForm(UserCreationForm):
 class CourseForm(forms.ModelForm):
 	class Meta:
 		model = Course
-		fields = ('subject','teacher', 'school_year', 'is_active', 'marking_periods')
+		fields = ('subject','school_year', 'teacher', 'cohort', 'is_active', 'marking_periods', 'students')
 	pass
