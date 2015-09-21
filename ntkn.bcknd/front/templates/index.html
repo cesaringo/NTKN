@@ -1,28 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Natkan.mx</title>
-
-  <base href="/" />
-
-  {% include 'stylesheets.html' %}
+	<title>Natkan</title>
+	{% include 'stylesheets.html' %}
 </head>
-
-<body  ng-app='ntkn' ng-controller='AppCtrl'>
-  {{username}} 
-  <!--[if lt IE 7]>
-    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-  <![endif]-->
-  {% include 'navbar.html' %}
-
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-xs-12 ui-view">
-      </div>
-    </div>
-  </div>
-
-  {% include 'javascripts.html' %}
-  <script type="text/javascript">$.material.init()</script>
+<body ng-app='ntkn' ng-controller='AppCtrl as ac'>
+	{% include 'header.html' %}
+	<section layout="row" flex="">
+		{% include 'sidenav.html' %}
+		 <md-content flex="" layout-padding="">
+			<ui-view >Main Content</ui-view>
+		</md-content>
+	</section>
+	
+	{% include 'javascripts.html' %}
 </body>
-</html> 
+</html>

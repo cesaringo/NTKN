@@ -10,42 +10,38 @@
 	function AuthService($q, $http, $window, $rootScope, API_URL, AUTH_EVENTS){
 		var isAuthenticated = false;
 		var token = undefined;
-		var username = undefined;
-        var role = undefined;
+		var user = undefined;
 
 		function loadUserCredentials(){
-			//console.log('loadUserCredentials')
 			var _token = $window.localStorage.getItem('token');
-			var _username =  $window.localStorage.getItem('username');
-            var _role =  $window.localStorage.getItem('role');
-			if (_token && _username){
-				useCredentials(_token, _username, _role);
+			var _user =  JSON.parse($window.localStorage.getItem('user'));
+			if (_token && _user){
+				useCredentials(_token, _user);
 			}
 		}
 
-		function storeUserCredentials(token, username, role){
+		function storeUserCredentials(token, user){
 			$window.localStorage.setItem('token', token);
-			$window.localStorage.setItem('username', username);
-            $window.localStorage.setItem('role', role);
-			useCredentials(token, username, role);
+			$window.localStorage.setItem('user', JSON.stringify(user));
+			useCredentials(token, user);
 		}
 
-		function useCredentials(_token, _username, _role){
+		function useCredentials(_token, _user){
 			token = _token;
-			username = _username;
-            role = _role;
+			user = _user;
 			isAuthenticated = true;
 			// Set the token as header for your requests!
 			$http.defaults.headers.common.Authorization = 'Token ' + _token;
 		}
 
+        
+
 		function destroyUserCredentials() {
 			delete $http.defaults.headers.common.Authorization;
 			$window.localStorage.removeItem('token');
-			$window.localStorage.removeItem('username');
-            $window.localStorage.removeItem('role');
+			$window.localStorage.removeItem('user');
 			token = undefined;
-			username = undefined;
+			user = undefined;
 			isAuthenticated = false;
 		}
 
@@ -53,11 +49,8 @@
 			console.log('LoginService');
 			return $http.post(API_URL+'/login/', {username:username, password: password})
 	  			.then(function (response) {
-                    var role = getCurrentRole(response.data.user.groups);
-	  				storeUserCredentials(response.data.key, 
-                        response.data.user.username, role) 
+	  				storeUserCredentials(response.data.key, response.data.user);
                     $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, response.data);
-                    console.log(response);
 				});
 		}
 
@@ -82,17 +75,17 @@
     		if (!angular.isArray(authorizedRoles)) {
       			authorizedRoles = [authorizedRoles];
     		}
-    		return (isAuthenticated && authorizedRoles.indexOf(role) !== -1);
+    		return (isAuthenticated && authorizedRoles.indexOf(user.groups[0]) !== -1);
   		};
 
         //raises an error if token isn’t present
         var authenticationStatus = function(){
             var deferred = $q.defer();
             loadUserCredentials();
-            if(token && username){
-                deferred.resolve(username);
+            if(token && user){
+                deferred.resolve(user.username);
             }else{
-                deferred.reject({error: "noToken"});
+                deferred.reject({error: "not-authenticated"});
             }
             return deferred.promise;
         }
@@ -106,8 +99,7 @@
   			'isAuthorized': isAuthorized,
   			'isAuthenticated': function() {return isAuthenticated;},
             'authenticationStatus': authenticationStatus,
-  			'username': function() {return username;},
-            'role': function() {return role;},
+  			'user': function() {return user;},
   		}
 	}
 
@@ -160,16 +152,24 @@
 
 	}
 
-    SCEService.$inject = ['$q', '$http', 'API_URL'];
-    function SCEService ($q, $http, API_URL){
+    SCEService.$inject = ['$q', '$http', 'API_URL', 'SCE_API_URL'];
+    function SCEService ($q, $http, API_URL, SCE_API_URL){
 
         var UserProfile = function(username){
             if (username == undefined || username == "" || username == null){
                 return $http.get(API_URL + '/user/');
             }
         }
+
+        var StudentProfile = function(username){
+            if (username != undefined){
+                return $http.get(SCE_API_URL + '/students/28/');
+            }
+        }
+
         return {
             UserProfile: UserProfile,
+            StudentProfile: StudentProfile
         }
     }
 	

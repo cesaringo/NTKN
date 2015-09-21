@@ -7,6 +7,7 @@ from localflavor.us.models import PhoneNumberField
 from authentication.models import Account
 from django.utils.text import slugify
 from datetime import datetime
+from django.core import urlresolvers
 
 
 ################
@@ -33,6 +34,7 @@ class GradeLevel(models.Model):
 	name = models.CharField(max_length=100, verbose_name="Grade name", blank=True)
 	order = models.IntegerField(null=True, blank=True)
 	slug = models.CharField(max_length=100, verbose_name="slug", blank=True)
+
 
 	class Meta:
 		ordering = ('number',)
@@ -88,6 +90,7 @@ class EducativeProgram(models.Model):
 	name = models.CharField(max_length=100, unique=True)
 	slug = models.CharField(max_length=100, unique=True, blank=True)
 	order = models.IntegerField(null=True, blank=True)
+	marking_periods = models.IntegerField()
 
 	def __unicode__(self):
 		return self.name
@@ -182,7 +185,8 @@ class Teacher(Account):
 	##Adtional administrative data for teacher
 
 	def __str__(self):
-		return self.get_full_name()
+		if self.get_full_name():
+			return self.get_full_name()
 
 	def save(self, *args, **kwargs):
 		if self.id is None:
@@ -195,9 +199,6 @@ class Teacher(Account):
 			self.username = '{0:07}'.format(self.id + 1000000)
 			self.email = self.username + '@natkan.mx'
 			super(Teacher, self).save(*args, **kwargs)
-
-
-
 
 
 
@@ -295,11 +296,26 @@ class Course(models.Model):
 		return self.subject.__str__()
 
 
+
+
+
+
 class CourseEnrollment(models.Model):
 	student = models.ForeignKey(Student)
 	course = models.ForeignKey(Course)
 	is_active = models.BooleanField(default=True)
-	
+
+	def changeform_link(self):
+		if self.id:
+			changeform_url = urlresolvers.reverse(
+           		'admin:sce_courseenrollment_change', args=(self.id,)
+            	)
+			return u'<a href="%s" target="_blank">Details</a>' % changeform_url
+		return u''
+	changeform_link.allow_tags = True
+	changeform_link.short_description = ''
+
+
 	class Meta:
 		unique_together =  (("course", "student"),)
 
@@ -310,7 +326,18 @@ class CourseEnrollment(models.Model):
 	def __str__(self):
 		return '(' + self.student.__str__() + ' - ' + self.course.__str__() + ')'
 
+	def save(self, *args, **kwargs):
+		super(CourseEnrollment, self).save(*args, **kwargs)
+		for marking_period in self.course.marking_periods.all():
+			score = Score(marking_period=marking_period, course_enrollment=self)
+			score.save()
 
+
+class Score(models.Model):
+	score = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+	marking_period = models.ForeignKey(MarkingPeriod, blank=True, null=True, on_delete=models.SET_NULL)
+	course_enrollment = models.ForeignKey(CourseEnrollment, 
+		related_name='scores', related_query_name='score', on_delete=models.CASCADE)
 
 
 

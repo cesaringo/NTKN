@@ -49,8 +49,6 @@ INSTALLED_APPS = (
     'sce',  #School Information System
     'front', #Angular app
     #'front2', #Angular app
-
-
 )
 
 MIDDLEWARE_CLASSES = (

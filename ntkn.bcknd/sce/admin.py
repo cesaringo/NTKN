@@ -1,11 +1,23 @@
 from django.contrib import admin
 from .models import (Student, Course, Subject, EducativeProgram, SchoolYear, Teacher, 
-SubjectCategory, Cohort, MarkingPeriod, CourseEnrollment, GradeLevel)
+SubjectCategory, Cohort, MarkingPeriod, CourseEnrollment, GradeLevel, Score)
 from import_export import resources
 from import_export.admin import ImportExportMixin
 from import_export import fields
 from authentication.admin import AccountAdmin
 from .forms import StudentChangeForm, StudentCreationForm, CourseForm
+
+class ScoreInline(admin.StackedInline):
+	model=Score
+
+class CourseEnrollmentAdmin(admin.ModelAdmin):
+	inlines = (ScoreInline,)
+
+
+class CourseEnrollmentLinkInline(admin.TabularInline):
+	model = CourseEnrollment
+	fields = ('course', 'is_active', 'changeform_link')
+	readonly_fields = ('changeform_link', )
 
 class StudentResource(resources.ModelResource):
 	#educative = fields.Field(column_name='myfield')
@@ -13,9 +25,6 @@ class StudentResource(resources.ModelResource):
 		model = Student
 		fields = ('id', 'first_name', 'last_name', 'sex', 'bday', 'educative_program',  'first_school_year', 'parent_email', 'parent_phone', 'email')
 
-class CourseEnrollmentInline(admin.TabularInline):
-	model = CourseEnrollment
-	extra = 1
 
 class StudentAdmin(ImportExportMixin, AccountAdmin):
 	resource_class = StudentResource
@@ -35,7 +44,6 @@ class StudentAdmin(ImportExportMixin, AccountAdmin):
         ("Contact", {'fields': (
         	'phone', 'parent_phone', 'parent_email', 
         	)}),
-
 	)
 	readonly_fields = ('updated_at', 'created_at')
 
@@ -45,7 +53,7 @@ class StudentAdmin(ImportExportMixin, AccountAdmin):
 	form = StudentChangeForm
 	add_form = StudentCreationForm
 
-	inlines = (CourseEnrollmentInline,)
+	inlines = (CourseEnrollmentLinkInline,)
 
 class TeacherAdmin(AccountAdmin):
 	list_display = ('get_photo_as_tag', '__str__', 'email_link', 'is_active', )
@@ -97,19 +105,21 @@ class MarkingPeriodAdmin(admin.ModelAdmin):
 	pass
 	
 
-
-
 class CourseAdmin(admin.ModelAdmin):
-	filter_horizontal = ('marking_periods', 'students')
+	filter_horizontal = ('marking_periods', 'students',)
 	form = CourseForm
-	inlines = (CourseEnrollmentInline,)
+	inlines = (CourseEnrollmentLinkInline,)
 	list_display = ('id', 'subject', 'teacher', 'cohort', 'school_year', 'is_active')
+	list_filter = ('cohort',)
 	pass
 
 
 class GradeLevelAdmin(admin.ModelAdmin):
 	ordering = ['order']
 	pass
+
+
+
 
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Teacher, TeacherAdmin)
@@ -121,5 +131,5 @@ admin.site.register(Cohort, CohortAdmin)
 admin.site.register(EducativeProgram, EcucativeProgramAdmin)
 admin.site.register(SchoolYear, SchoolYearAdmin)
 admin.site.register(GradeLevel, GradeLevelAdmin)
-
+admin.site.register(CourseEnrollment, CourseEnrollmentAdmin)
 

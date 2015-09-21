@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Natkan.mx</title>
+
+  <base href="/" />
+
+  {% include 'stylesheets.html' %}
+</head>
+
+<body  ng-app='ntkn' ng-controller='AppCtrl as ac'>
+
+  <!--[if lt IE 7]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <![endif]-->
+  {% include 'navbar.html' %}
+  
+  <md-content layout-padding layout="row">
+    <ui-view >
+    </ui-view>
+  </md-content>
+  
+
+  {% include 'javascripts.html' %}
+</body>
+</html> 

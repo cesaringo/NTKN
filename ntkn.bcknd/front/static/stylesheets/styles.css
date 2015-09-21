@@ -11,3 +11,7 @@ body{
     top: 0;
     z-index: 99999;
 }
+
+#menu-user-info md-list-item{
+	min-height: inherit;
+}

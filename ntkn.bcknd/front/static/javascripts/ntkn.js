@@ -1,6 +1,6 @@
 (function(){
 	"use strict";
-	angular.module('ntkn', ['ui.router', 'http-auth-interceptor'])
+	angular.module('ntkn', ['ui.router', 'ngMaterial', 'http-auth-interceptor'])
 	.config(function ($stateProvider, $urlRouterProvider, USER_ROLES) {
 		$stateProvider
 		.state('login', {
@@ -22,14 +22,22 @@
     			url: '/profile',
  			templateUrl: '/static/views/profile.html',
   			controller: 'ProfileCtrl'
+
   		})
   		.state('dashboard.student',{
   			url: '/student',
   			templateUrl: '/static/views/student.html',
+  			controller: 'StudentDashCtrl',
   			data: {
 	      		authorizedRoles: [USER_ROLES.student]
-		    }
+		     }
   		})
+  		.state('dashboard.student.courses',{
+  			url: '/student/courses',
+  			templateUrl: '/static/views/student.html',
+  			controller: 'StudentCoursesCtrl'
+  		})
+
   		.state('dashboard.admin', {
   			url: '/admin',
   			templateUrl: '/static/views/admin.html',
@@ -44,7 +52,7 @@
 	      		authorizedRoles: [USER_ROLES.teacher]
 		    }
   		});
-  		$urlRouterProvider.otherwise('/dashboard/profile');
+  		//$urlRouterProvider.otherwise('/dashboard/profile');
 	})
 
 	.run(function ($http, $rootScope, $state, AuthService, AUTH_EVENTS){
@@ -52,11 +60,11 @@
 		$http.defaults.xsrfCookieName = 'csrftoken';
 
 		$rootScope.$on('$stateChangeError',
-			function (event, toState, toParams, fromState, fromParams, error) {
-				//console.log('$stateChangeError');
-				if (error && error.error === "noToken") {
+			function (event, toState, toParams, fromState, fromParams, error){
+				console.log(error);
+				if (error && error.error === "not-authenticated") {
 		  			console.log("No authenticated. Redirect to login");
-      				$state.go('login', {});
+      				$state.go('login', {reload: true});
 		  		}
 			});
 

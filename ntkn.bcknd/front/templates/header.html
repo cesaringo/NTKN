@@ -1,0 +1,18 @@
+{% verbatim %}
+<md-toolbar id="header">
+	<div class="md-toolbar-tools">
+		<md-button class="md-icon-button" aria-label="Settings" ng-click="toggleMainSideNav()"
+		hide-gt-md=""> 
+			<md-icon class="material-icons" md-36>menu</md-icon>
+		</md-button>
+		
+		<h2 ui-sref="login">
+			<b>NATKAN</b>
+		</h2>
+		<span flex></span>
+		<md-switch ng-model="lockMainSideNav" aria-label="Show menu" hide-sm>
+	    		{{ lockMainSideNav ? 'Hide' : 'Show' }} menu
+	  	</md-switch>
+	</div>
+</md-toolbar>
+{% endverbatim %}

@@ -2,8 +2,35 @@
 	'use strict';
 	angular.module('ntkn')
  
-	.controller('AppCtrl', function($scope, $rootScope, $state, AuthService, AUTH_EVENTS) {
-		//console.log("AppCtrl");
+	.controller('AppCtrl', function($scope, $rootScope, $state, AuthService, $mdSidenav, $mdComponentRegistry, $log,$mdUtil,  AUTH_EVENTS) {
+
+		var self = this;
+
+		//Main sidenav//
+		$scope.lockMainSideNav = true; //Alway show ond desktop
+		$scope.toggleMainSideNav = buildToggler('mainSideNav');
+		$scope.close = function () {
+		 $mdSidenav('mainSideNav').close()
+		   .then(function () {
+		     $log.debug("close mainSideNav is done");
+		   });
+		};
+		/**
+	     * Build handler to open/close a SideNav; when animation finishes
+	     * report completion in console
+	     */
+    		function buildToggler(navID) {
+      		var debounceFn =  $mdUtil.debounce(function(){
+				$mdSidenav(navID)
+				.toggle()
+				.then(function () {
+			 		$log.debug("toggle " + navID + " is done");
+				});
+          	},100);
+
+      		return debounceFn;
+    		}
+		//End Main sidenav//
 
 		//AUTH
 		$scope.logout = function() {
@@ -11,9 +38,8 @@
     			$state.go('login');
   		};
 
-  		$scope.username = AuthService.username();
+  		$scope.user = AuthService.user();
   		$scope.isAuthenticated = AuthService.isAuthenticated();
-
 
   		//Listen Events
 		$scope.$on(AUTH_EVENTS.notAuthorized, function(event){
@@ -29,31 +55,47 @@
 
 		$scope.$on(AUTH_EVENTS.loginSuccess, function(){
 			console.log('Login Succesfully');
-			$scope.username = AuthService.username();
+			$scope.user = AuthService.user();
   			$scope.isAuthenticated = AuthService.isAuthenticated();
-  			switch(AuthService.role()){
-				case 'student': $state.go('dashboard.student', {}, {reload: true}); break;
-				case 'teacher': $state.go('dashboard.teacher', {}, {reload: true}); break;
-				case 'admin': 		$state.go('dashboard.admin', {}, {reload: true}); break;
-				default: 
-					$rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
-					break;
-			}
+  			var roles = AuthService.user().groups;
+
+  			if (roles.length > 0){
+  				switch(roles[0]){
+					case 'student': $state.go('dashboard.student', {}, {reload: true}); break;
+					case 'teacher': $state.go('dashboard.teacher', {}, {reload: true}); break;
+					case 'admin': 	$state.go('dashboard.admin', {}, {reload: true}); break;
+					default: 
+						$rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+						break;
+				}
+  			}else{
+  				$rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+  			}
+  			
 		});
 
 		$scope.$on(AUTH_EVENTS.logoutSuccess, function(){
-			$scope.username = undefined;
+			$scope.user = undefined;
   			$scope.isAuthenticated = false;
 		});
 
 		$scope.setCurrentUsername = function(username) {
-    		$scope.username = username;
+    			$scope.username = username;
   		};
 	})
 
 	/*Login Controller
 	Login & Redirect to dashboard
 	*/
+	.controller('MainMenuCtrl', function ($scope, $timeout, $mdSidenav, $log) {
+		var self = this;
+		$scope.close = function () {
+		 $mdSidenav('mainSideNav').close()
+		   .then(function () {
+		     $log.debug("close mainSideNav is done");
+		   });
+		};
+	})
 	.controller('LoginCtrl', function($scope, $state, AuthService, Validate) {
 		//console.log('LoginCtrl');
 		$scope.model = {'username':'','password':''};
@@ -85,10 +127,10 @@
 	.controller('DashCtrl', function($scope, $state, AuthService) {
 		console.log("DashCtrl");
 		console.log($state.current.data);
+	})
+
+	.controller('StudentDashCtrl', function($scope, $state, SCEService) {
+		console.log("StudentDashCtrl");
+		$scope.currentStudent = SCEService.StudentProfile($scope.username);
 	});
-
-
-
-
-
 })()

@@ -2,6 +2,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from front.views import Home
 from ntkn import settings
+
 urlpatterns = patterns('',
     # Examples:
     
