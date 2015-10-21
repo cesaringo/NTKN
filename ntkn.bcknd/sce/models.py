@@ -8,11 +8,12 @@ from authentication.models import Account
 from django.utils.text import slugify
 from datetime import datetime
 from django.core import urlresolvers
-
+from django.db.models import Sum
+from decimal import *
 
 ################
 #Students Module
-################
+#################
 
 #Periodo escolar
 class SchoolYear(models.Model):
@@ -20,6 +21,7 @@ class SchoolYear(models.Model):
 	start_date = models.DateField(validators=settings.DATE_VALIDATORS)
 	end_date = models.DateField(validators=settings.DATE_VALIDATORS)
 	active_year = models.BooleanField(default=False, help_text = '')
+	
 
 	class Meta:
 		ordering = ('start_date',)
@@ -171,7 +173,7 @@ class Cohort(models.Model):
 	students = models.ManyToManyField(
 		Student, 
 		blank=True,
-		related_name = 'cohort_set',
+		related_name = 'cohorts',
 		related_query_name = 'cohort'
 	)
 	class Meta:
@@ -263,8 +265,7 @@ class MarkingPeriod(models.Model):
 	active = models.BooleanField(default=False, help_text="Teachers may only enter grades for active marking periods. There may be more than one active marking period.")
 
 	class Meta:
-		ordering = ('-start_date',)
-
+		ordering = ('shortname',)
 	def __str__(self):
 		return self.name
 
@@ -292,9 +293,24 @@ class Course(models.Model):
 	school_year = models.ForeignKey(SchoolYear)
 	cohort = models.ForeignKey(Cohort, null=True, blank=True)
 
+	
+
+
 	def __str__(self):
 		return self.subject.__str__()
 
+	def grade_level(self):
+		return self.subject.grade_level
+
+	def save(self, *args, **kwargs):
+		if self.pk is not None:
+			orig = Course.objects.get(pk=self.pk)
+			if Course.marking_periods != self.marking_periods:
+				related_course_enrollments = CourseEnrollment.objects.filter(course=self)
+				for course_enrollment in related_course_enrollments:
+					course_enrollment.ma
+
+		super(Course, self).save(*args, **kwargs)
 
 
 
@@ -327,18 +343,43 @@ class CourseEnrollment(models.Model):
 		return '(' + self.student.__str__() + ' - ' + self.course.__str__() + ')'
 
 	def save(self, *args, **kwargs):
+		create_scores = False
+		if self.pk is None:
+			create_scores = True
 		super(CourseEnrollment, self).save(*args, **kwargs)
-		for marking_period in self.course.marking_periods.all():
-			score = Score(marking_period=marking_period, course_enrollment=self)
-			score.save()
+		if create_scores:
+			for marking_period in self.course.marking_periods.all():
+				print(marking_period)
+				score = Score(marking_period=marking_period, course_enrollment=self)
+				score.save()
+
+
+	def get_avarage(self):
+		n = Decimal(self.scores.count())
+		x = Decimal(0)
+		for s in self.scores.all():
+			if s.score is None:
+				return None
+			x += s.score
+
+		if n is None or x is None:
+			return None
+		return x/n
+		
+		
 
 
 class Score(models.Model):
-	score = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+	score = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)
 	marking_period = models.ForeignKey(MarkingPeriod, blank=True, null=True, on_delete=models.SET_NULL)
 	course_enrollment = models.ForeignKey(CourseEnrollment, 
 		related_name='scores', related_query_name='score', on_delete=models.CASCADE)
 
+	def __str__(self):
+		return self.marking_period.name
+
+	class Meta:
+		ordering = ('marking_period',)
 
 
 ##################

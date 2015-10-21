@@ -159,17 +159,22 @@
             if (username == undefined || username == "" || username == null){
                 return $http.get(API_URL + '/user/');
             }
-        }
+        };
 
         var StudentProfile = function(username){
             if (username != undefined){
-                return $http.get(SCE_API_URL + '/students/28/');
+                return $http.get(SCE_API_URL + '/students/59/');
             }
-        }
+        };
+
+        var GetCourses = function(params){
+            return $http.get(SCE_API_URL + '/courses/');
+        };
 
         return {
             UserProfile: UserProfile,
-            StudentProfile: StudentProfile
+            StudentProfile: StudentProfile,
+            GetCourses: GetCourses,
         }
     }
 	

@@ -38,7 +38,7 @@ class StudentAdmin(ImportExportMixin, AccountAdmin):
         	)}),
 
         ('Student Info', {'fields': (
-        	'educative_program', 'cohorts'
+        	'educative_program', 'year', 	'cohorts', 
         	)}),
 
         ("Contact", {'fields': (
@@ -102,14 +102,16 @@ class CohortAdmin(admin.ModelAdmin):
 	filter_horizontal = ('students',)
 
 class MarkingPeriodAdmin(admin.ModelAdmin):
-	pass
+	list_display = ('name', 'shortname', 'active', 'description')
+	ordering = ('name',)
 	
 
 class CourseAdmin(admin.ModelAdmin):
 	filter_horizontal = ('marking_periods', 'students',)
 	form = CourseForm
 	inlines = (CourseEnrollmentLinkInline,)
-	list_display = ('id', 'subject', 'teacher', 'cohort', 'school_year', 'is_active')
+	list_display = ('id', 'subject', 'teacher', 'grade_level', 'cohort', 'school_year', 'is_active')
+	list_display_links = ('id', 'subject',)
 	list_filter = ('cohort',)
 	pass
 

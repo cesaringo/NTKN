@@ -3,47 +3,49 @@
 class="md-sidenav-left md-whiteframe-z2" 
 md-component-id="mainSideNav" 
 md-is-locked-open="$mdMedia('gt-md') && lockMainSideNav">
-    <md-toolbar class="md-theme-indigo" id="menu-user-info">
-        <md-list>
-            <md-list-item class="md-body-2">
+    <md-toolbar class="md-theme-indigo" id="menu-user-info" style="
+    {{isAuthenticated ? 'background-position: 75px 0;' : ''}}" layout="column">
+        <md-list flex="100">
+            <!--<md-list-item class="md-body-2" hide-gt-md="">
                 <md-button class="md-icon-button"
                 hide-gt-md="" ng-click="close()">
                     <md-icon class="material-icons" >keyboard_backspace</md-icon>
                 </md-button>
-            </md-list-item>
+            </md-list-item>-->
             <md-list-item  ng-if="isAuthenticated">
                 <img src="{{$parent.user.photo.thumbnail_50x50}}" class="md-avatar" 
             alt="{{$parent.user.first_name}} {{$parent.user.last_name}}">
             </md-list-item>
             <md-list-item ng-if="isAuthenticated" class="md-body-2">
-                {{$parent.user.first_name}} {{$parent.user.last_name}}
+                {{$parent.user.first_name | limitTo:20}}
             </md-list-item>
             <md-list-item ng-if="isAuthenticated" class="md-body-2">
-                {{$parent.user.email}}
+                {{$parent.user.email | limitTo:20}}
             </md-list-item>
+            
         </md-list>
     </md-toolbar>
     <md-content ng-controller="MainMenuCtrl as mc">
         <md-list>
-            <md-list-item ng-if="isAuthenticated">
-                <a md-ink-ripple layout="row" layout-align="start center">
+            <md-list-item ng-if="isAuthenticated" md-ink-ripple class="md-clickable md-button"> 
+                <a layout="row" layout-align="start center" ui-sref="dashboard.student"> 
                     <div class="inset"><md-icon class="material-icons">dashboard</md-icon></div>
                     Dashboard
                 </a>
             </md-list-item>
-            <md-list-item ng-if="isAuthenticated">
-                <a md-ink-ripple layout="row" layout-align="start center" ui-sref="dashboard.profile">
+            <md-list-item ng-if="isAuthenticated" md-ink-ripple class="md-clickable md-button">
+                <a layout="row" layout-align="start center" ui-sref="dashboard.profile">
                     <div class="inset"><md-icon class="material-icons">person</md-icon></div>
                     <div class="inset">Profile</div>
                 </a>
             </md-list-item>
-            <md-list-item ng-if="isAuthenticated">
-                <a md-ink-ripple layout="row" layout-align="start center" ng-click="logout()">
+            <md-list-item ng-if="isAuthenticated" md-ink-ripple class="md-clickable md-button">
+                <a layout="row" layout-align="start center" ng-click="logout()">
                     <div class="inset"><md-icon class="material-icons">reply</md-icon></div>
                     Logout
                 </a>
             </md-list-item>
-            <md-list-item ng-if="!isAuthenticated">
+            <md-list-item ng-if="!isAuthenticated" class="md-clickable md-button">
                 <a md-ink-ripple layout="row" layout-align="start center" ui-sref="login">
                     <div class="inset"><md-icon class="material-icons">input</md-icon></div>
                     Login

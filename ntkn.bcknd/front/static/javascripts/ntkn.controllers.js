@@ -129,8 +129,49 @@
 		console.log($state.current.data);
 	})
 
-	.controller('StudentDashCtrl', function($scope, $state, SCEService) {
+	.controller('StudentDashCtrl', function($scope, $state, AuthService, SCEService, $http, SCE_API_URL) {
 		console.log("StudentDashCtrl");
-		$scope.currentStudent = SCEService.StudentProfile($scope.username);
+		$scope.currentStudent = undefined;
+		SCEService.StudentProfile(AuthService.user().username)
+		.then(function(response){
+			$scope.currentStudent = response.data;
+			//console.log($scope.currentStudent);
+		});
+
+		//Boleta estudiante
+		$scope.schoolyear = null;
+		$scope.available_schoolyears = [];
+		$scope.selected_schoolyear = undefined;
+		$scope.course_enrollments = [];
+		
+		//Loading entollments 
+		$http.get(SCE_API_URL + '/course-enrollments/')
+		.then(function(response){
+			$scope.course_enrollments = response.data;
+			//console.log($scope.course_enrollments);
+		});
+		
+		
+		$scope.LoadSchoolYears = function(){
+			$http.get(SCE_API_URL + '/school-years/')
+			.then(function(response){
+				$scope.available_schoolyears = response.data;
+			});
+		};
+	})
+
+	.controller('TeacherDashCtrl', function($scope, $state, SCEService, $log){
+		console.log("TeacherDashCtrl");
+		$scope.courses = [];
+
+		SCEService.GetCourses([])
+		.then(function(response){
+			$scope.courses = response.data;
+			console.log($scope.courses);
+		}, function(){
+			console.log('Error');
+		})
+
 	});
+
 })()

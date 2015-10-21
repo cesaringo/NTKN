@@ -1,7 +1,11 @@
 (function(){
 	"use strict";
-	angular.module('ntkn', ['ui.router', 'ngMaterial', 'http-auth-interceptor'])
-	.config(function ($stateProvider, $urlRouterProvider, USER_ROLES) {
+	angular.module('ntkn', ['ui.router', 'ngMaterial', 'http-auth-interceptor', 'md.data.table'])
+	.config(function ($stateProvider, $urlRouterProvider, USER_ROLES, $mdThemingProvider) {
+		$mdThemingProvider.theme('default')
+    		.primaryPalette('blue')
+    		.accentPalette('deep-orange');
+
 		$stateProvider
 		.state('login', {
 			url: '/login',
@@ -32,12 +36,7 @@
 	      		authorizedRoles: [USER_ROLES.student]
 		     }
   		})
-  		.state('dashboard.student.courses',{
-  			url: '/student/courses',
-  			templateUrl: '/static/views/student.html',
-  			controller: 'StudentCoursesCtrl'
-  		})
-
+  		
   		.state('dashboard.admin', {
   			url: '/admin',
   			templateUrl: '/static/views/admin.html',
@@ -46,8 +45,10 @@
 		    }
   		})
   		.state('dashboard.teacher', {
+
   			url: '/teacher',
   			templateUrl: '/static/views/teacher.html',
+  			controller: 'TeacherDashCtrl',
   			data: {
 	      		authorizedRoles: [USER_ROLES.teacher]
 		    }

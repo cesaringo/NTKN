@@ -1,18 +1,15 @@
 import rest_framework
 from rest_framework import serializers
-from .models import Student, Course, MarkingPeriod, Subject, CourseEnrollment
+from .models import (Student, Course, MarkingPeriod, Subject, 
+	CourseEnrollment, Score, SchoolYear, GradeLevel, Cohort)
 
-class StudentSerializer(serializers.ModelSerializer):
-	course_set = serializers.StringRelatedField(many=True)
-	class Meta:
-		model = Student
-		fields = ['first_name', 'last_name', 'sex', 'year', 'class_year', 'course_set']
-		depth = 1
+
 
 class MarkingPeriodSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = MarkingPeriod
 		fields = ['name', 'shortname']
+		ordering = ('name',)
 
 class SubjectSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -43,7 +40,44 @@ class CourseSerializer(serializers.ModelSerializer):
 		model = Course
 		fields = ['id', 'subject', 'teacher', 'school_year', 'cohort', 'marking_periods', 'students']
 
+
+
+class ScoreSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Score
+		fields = ['score', 'marking_period']
+		depth = 1
+
+
 class CourseEnrollmentSerializer(serializers.ModelSerializer):
+	scores = ScoreSerializer(many=True)
+	course = CourseSerializer()
 	class Meta:
 		model = CourseEnrollment
-		fields = ['id', 'student', 'course', 'is_active']
+		fields = ['id', 'student', 'course', 'is_active', 'scores', 'get_avarage']
+
+
+class GradeLevelSerializer(serializers.ModelSerializer):
+	class Meta:
+		model=GradeLevel
+
+class CohortSerializer(serializers.ModelSerializer):
+	class Meta:
+		model=Cohort
+		fields = ['id', 'name']
+
+class StudentSerializer(serializers.ModelSerializer):
+	course_set = serializers.StringRelatedField(many=True)
+	from rest_auth.serializers import PhotoSerializer
+	photo = PhotoSerializer()
+	year = GradeLevelSerializer()
+	cohorts = CohortSerializer(many=True)
+	class Meta:
+		model = Student
+		fields = ['first_name', 'last_name', 'sex', 'username', 'year', 'class_year', 'educative_program', 'course_set', 'photo', 'cohorts']
+		depth = 1
+
+class SchoolYearSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = SchoolYear
+		fields = ['id', 'name']

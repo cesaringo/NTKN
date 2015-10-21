@@ -15,17 +15,17 @@ class StudentChangeForm(UserChangeForm):
 	def __init__(self, *args, **kwargs):
 		super(StudentChangeForm, self).__init__(*args, **kwargs)
 		if self.instance.pk:
-			self.initial['cohorts'] = self.instance.cohort_set.values_list('pk', flat=True)
+			self.initial['cohorts'] = self.instance.cohorts.values_list('pk', flat=True)
 
 	def save(self, *args, **kwargs):
 		instance = super(StudentChangeForm, self).save(*args, **kwargs)  
 		if instance.pk: 
-			for cohort in instance.cohort_set.all():
+			for cohort in instance.cohorts.all():
 				if cohort not in self.cleaned_data['cohorts']:
-					instance.cohort_set.remove(cohort) 
+					instance.cohorts.remove(cohort) 
 			for cohort in self.cleaned_data['cohorts']:
-				if cohort not in instance.cohort_set.all():
-					instance.cohort_set.add(cohort)
+				if cohort not in instance.cohorts.all():
+					instance.cohorts.add(cohort)
 		return instance
 
 
