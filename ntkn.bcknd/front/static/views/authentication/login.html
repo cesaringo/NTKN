@@ -1,30 +1,32 @@
-<div class="row">
-  <div class="col-md-4 col-md-offset-4">
-    <h1>Login</h1>
-    <div class="well">
-      <div ng-if="invalid_token" class="alert alert-danger">
-        {{invalid_token}}
-      </div>
-      <form role="form" ng-submit="login(loginForm)" novalidate name="loginForm" >
-        <div class="form-group">
-          <label for="login__email">Email</label>
-          <input type="text" class="form-control" id="login__email" ng-model="model.username" placeholder="algo@naktnak.mx" name="username" required/>
-          <div class="text-danger small" ng-repeat="error in errors.username">{{error}}</div>
+<div id="login" layout="row" layout-margin layout-fill layout-padding 
+flex layout-margin layout-fill layout-padding >
+    <div flex-sm="100" flex-gt-sm="33" flexlayout="column">
+        <hgroup>
+            <h1>Iniciar sesión</h1>
+            <h3>Sistema de calificaciones</h3>
+        </hgroup>
+        <md-whiteframe class="md-whiteframe-z3" layout="column" layout-margin layout-fill layout-padding flex>
+            <form ng-submit="login(loginForm)" novalidate name="loginForm">
+                <md-input-container>
+                    <label for="login__email">Usuario</label>
+                    <input type="text" class="form-control" id="login__email" ng-model="model.username" 
+                    placeholder="Usuario" name="username" required/>
+                    <div class="text-danger small" ng-repeat="error in errors.username">{{error}}</div>
+                </md-input-container>
+                <md-input-container>
+                    <label for="login__password">Contraseña</label>
+                    <input type="password" class="form-control" id="login__password" ng-model="model.password" placeholder="Contraseña" name="password" required/>
+                    <div class="text-danger small" ng-repeat="error in errors.password">{{error}}</div>
+                </md-input-container>
+                <md-input-container>
+                  <md-button type="submit" class="md-raised md-primary">Iniciar sesión</md-button>
+                </md-input-container>
+                <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors">{{error}}</div>
+                <div class="alert alert-danger" ng-if="error">{{error}}</div>
+            </form>
+        </md-whiteframe>
+        <div class="progress progress-striped active" style="height:10px;" ng-if="loginProgress">
+            <div class="progress-bar" style="width: {{progressCount}}%;"></div>
         </div>
-        <div class="form-group">
-          <label for="login__password">Password</label>
-          <input type="password" class="form-control" id="login__password" ng-model="model.password" placeholder="Password" name="password" required/>
-          <div class="text-danger small" ng-repeat="error in errors.password">{{error}}</div>
-        </div>
-        <div class="form-group">
-          <button type="submit" class="btn btn-primary btn-material-blue-700">Submit</button>
-        </div>
-        <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors">{{error}}</div>
-        <div class="alert alert-danger" ng-if="error">{{error}}</div>
-      </form>
-      <div class="progress progress-striped active" style="height:10px;" ng-if="loginProgress">
-        <div class="progress-bar" style="width: {{progressCount}}%;"></div>
-      </div>
     </div>
-  </div>
 </div>

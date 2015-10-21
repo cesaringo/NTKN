@@ -1,5 +1,6 @@
 body{
 	background-color: #e7e7e7;
+    font-size: 14px;
 }
 
 #ngProgress-container {
@@ -11,7 +12,26 @@ body{
     top: 0;
     z-index: 99999;
 }
+#menu-user-info{
+    background-image:url('/media/logonatkan.png'); height: 125px; 
+}
+#menu-user-info md-list{
+    position:absolute; bottom: 0;   
+    padding: 0;
+}
+#student-info md-list-item{
+    min-height: inherit;
+}
 
 #menu-user-info md-list-item{
 	min-height: inherit;
+}
+md-sidenav.md-locked-open{
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+}
+.md-sidenav-left .md-button{
+	margin: 0;
+	padding: 0;
 }

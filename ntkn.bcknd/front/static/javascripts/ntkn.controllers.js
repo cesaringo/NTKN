@@ -161,7 +161,7 @@
 	})
 
 	.controller('TeacherDashCtrl', function($scope, $state, SCEService, $log){
-		console.log("TeacherDashCtrl");
+		console.log('TeacherDashCtrl');
 		$scope.courses = [];
 
 		SCEService.GetCourses([])
