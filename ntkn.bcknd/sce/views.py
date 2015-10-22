@@ -1,6 +1,7 @@
 from rest_framework import viewsets
-from .serializers import StudentSerializer, CourseSerializer, CourseEnrollmentSerializer, SchoolYearSerializer
-from .models import Student, Course, CourseEnrollment, SchoolYear
+from .serializers import (StudentSerializer, CourseSerializer, CourseEnrollmentSerializer, 
+	SchoolYearSerializer, ScoreSerializer)
+from .models import Student, Course, CourseEnrollment, SchoolYear, Score
 from rest_framework.permissions import IsAuthenticated
 from .permissions import CanSeeCourseEnrollment
 
@@ -26,9 +27,17 @@ class CourseViewSet(viewsets.ModelViewSet):
 		user = self.request.user
 		queryset = Course.objects.all()
 
-		
+		#Si la petición la hace un usuario con Rol de maestro				
 		if user.groups.all().filter(name='teacher').exists():
+			print('teacher')
 			queryset = queryset.filter(teacher=user)
+
+		#Si la petición la hace un usuario con Rol de estudiante	
+		elif user.groups.all().filter(name='student').exists():
+			print('student')
+			id_courses = CourseEnrollment.objects.filter(
+				student__username=user.username).values_list('course_id', flat=True)
+			queryset = queryset.filter(id__in=id_courses)
 
 		else:
 			queryset=None
@@ -40,7 +49,7 @@ class CourseEnrollmentViewSet(viewsets.ModelViewSet):
 	And API endpoint for CourseEnrollment model
 	"""
 	serializer_class = CourseEnrollmentSerializer
-	#permission_classes = [IsAuthenticated, CanSeeCourseEnrollment]
+	permission_classes = [IsAuthenticated]
 
 	def get_queryset(self):
 		queryset = CourseEnrollment.objects.all()
@@ -59,3 +68,6 @@ class SchoolYearViewSet(viewsets.ModelViewSet):
 	queryset = SchoolYear.objects.all()
 	permission_classes = [IsAuthenticated,]
 
+class ScoreViewSet(viewsets.ModelViewSet):
+	serializer_class = ScoreSerializer
+	queryset = Score.objects.all()

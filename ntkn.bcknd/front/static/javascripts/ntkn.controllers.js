@@ -160,17 +160,52 @@
 		};
 	})
 
-	.controller('TeacherDashCtrl', function($scope, $state, SCEService, $log){
+	.controller('TeacherDashCtrl', function($scope, $state, SCEService, $log, $http){
 		console.log('TeacherDashCtrl');
 		$scope.courses = [];
 
-		SCEService.GetCourses([])
-		.then(function(response){
+		var get_courses = SCEService.GetCourses([]);
+		get_courses.then(function(response){
 			$scope.courses = response.data;
 			console.log($scope.courses);
 		}, function(){
 			console.log('Error');
-		})
+		});
+
+		var sample_course_enrollment = undefined;
+		var get_sample_course_enrollment = $http.get('http://localhost:8000/sce-api/course-enrollments/125/');
+		get_sample_course_enrollment.then(function(response){
+			sample_course_enrollment = response.data;
+			console.log(sample_course_enrollment);
+			sample_course_enrollment.scores[0].score = "10.0";
+			sample_course_enrollment.scores[1].score = "9.0";
+			console.log(sample_course_enrollment);
+
+			//Modify data
+			var put_sample_course_enrollment = $http.put(
+				'http://localhost:8000/sce-api/course-enrollments/125/',
+				{
+					student: sample_course_enrollment.student,
+					course: sample_course_enrollment.course,
+					scores: sample_course_enrollment.scores
+				}
+			);
+			put_sample_course_enrollment.then(function(response){
+				console.log(response);
+			})
+
+		}, function(response){
+			console.log("Some Error");
+		});
+
+		
+
+
+
+
+
+
+
 
 	});
 

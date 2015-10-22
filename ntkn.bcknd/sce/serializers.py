@@ -51,7 +51,7 @@ class ScoreSerializer(serializers.ModelSerializer):
 
 class CourseEnrollmentSerializer(serializers.ModelSerializer):
 	scores = ScoreSerializer(many=True)
-	course = CourseSerializer()
+	#course = CourseSerializer()
 	class Meta:
 		model = CourseEnrollment
 		fields = ['id', 'student', 'course', 'is_active', 'scores', 'get_avarage']
