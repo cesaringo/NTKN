@@ -43,9 +43,11 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class ScoreSerializer(serializers.ModelSerializer):
+	marking_period = MarkingPeriodSerializer(read_only=True)
+	
 	class Meta:
 		model = Score
-		fields = ['score', 'marking_period']
+		fields = ['id', 'score', 'marking_period']
 		depth = 1
 
 
@@ -55,6 +57,16 @@ class CourseEnrollmentSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = CourseEnrollment
 		fields = ['id', 'student', 'course', 'is_active', 'scores', 'get_avarage']
+
+	def update(self, instance, validated_data):
+		#Update the list of Scores Instances
+		print ("Saving data...")
+		for item in validated_data['scores']:
+			print (item)
+			#score = Score(id=item['id'], score=item['score'])
+			#score.save()
+
+
 
 
 class GradeLevelSerializer(serializers.ModelSerializer):

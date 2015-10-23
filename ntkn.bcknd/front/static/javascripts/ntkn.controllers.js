@@ -167,16 +167,15 @@
 		var get_courses = SCEService.GetCourses([]);
 		get_courses.then(function(response){
 			$scope.courses = response.data;
-			console.log($scope.courses);
 		}, function(){
 			console.log('Error');
 		});
 
+		//Sample to PUT request
 		var sample_course_enrollment = undefined;
 		var get_sample_course_enrollment = $http.get('http://localhost:8000/sce-api/course-enrollments/125/');
 		get_sample_course_enrollment.then(function(response){
 			sample_course_enrollment = response.data;
-			console.log(sample_course_enrollment);
 			sample_course_enrollment.scores[0].score = "10.0";
 			sample_course_enrollment.scores[1].score = "9.0";
 			console.log(sample_course_enrollment);
