@@ -171,12 +171,17 @@
 			console.log('Error');
 		});
 
+<<<<<<< HEAD
 		//Edit a course enrollment
+=======
+		//Sample to PUT request
+>>>>>>> 0c530ffe9b1af1f80d0cd16dd31347dfce2dfd04
 		var sample_course_enrollment = undefined;
 		var get_sample_course_enrollment = 
 		$http.get('http://localhost:8000/sce-api/course-enrollments/125/');
 		get_sample_course_enrollment.then(function(response){
 			sample_course_enrollment = response.data;
+<<<<<<< HEAD
 			
 			console.log(sample_course_enrollment);
 			//Modify the course enrollments
@@ -184,6 +189,11 @@
 			sample_course_enrollment.scores[1].score = "7.5";
 			
 			//console.log(sample_course_enrollment);
+=======
+			sample_course_enrollment.scores[0].score = "10.0";
+			sample_course_enrollment.scores[1].score = "9.0";
+			console.log(sample_course_enrollment);
+>>>>>>> 0c530ffe9b1af1f80d0cd16dd31347dfce2dfd04
 
 			//Modify data
 			var put_sample_course_enrollment = $http.put(

@@ -70,7 +70,6 @@ class ScoreSerializer(serializers.ModelSerializer):
 		fields = ('id', 'score', 'marking_period')
 		#depth = 1
 
-
 class CourseEnrollmentSerializer(DynamicFieldsModelSerializer):
 	scores = ScoreSerializer(many=True)
 	course = CourseSerializer()
@@ -93,6 +92,16 @@ class CourseEnrollmentSerializer(DynamicFieldsModelSerializer):
 
 		instance.save()
 		return instance
+
+	def update(self, instance, validated_data):
+		#Update the list of Scores Instances
+		print ("Saving data...")
+		for item in validated_data['scores']:
+			print (item)
+			#score = Score(id=item['id'], score=item['score'])
+			#score.save()
+
+
 
 
 class GradeLevelSerializer(serializers.ModelSerializer):

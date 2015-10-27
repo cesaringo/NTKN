@@ -50,7 +50,7 @@ class Login(GenericAPIView):
         )
 
     def post(self, request, *args, **kwargs):
-        self.serializer = self.get_serializer(data=self.request.DATA)
+        self.serializer = self.get_serializer(data=self.request.data)
         if not self.serializer.is_valid():
             return self.get_error_response()
         self.login()
