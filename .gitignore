@@ -1,2 +1,5 @@
 ntkn.bcknd/*/migrations/
 ntkn.bcknd/*/__pycache__/
+ntkn.bcknd/front/static/bower_components/
+env/
+
