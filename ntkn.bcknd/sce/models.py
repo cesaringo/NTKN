@@ -10,6 +10,7 @@ from datetime import datetime
 from django.core import urlresolvers
 from django.db.models import Sum
 from decimal import *
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 ################
 #Students Module
@@ -368,15 +369,18 @@ class CourseEnrollment(models.Model):
 		
 		
 
-
 class Score(models.Model):
-	score = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)
+	score = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True, 
+		validators = [MinValueValidator(0.0), MaxValueValidator(10.0)])
 	marking_period = models.ForeignKey(MarkingPeriod, blank=True, null=True, on_delete=models.SET_NULL)
 	course_enrollment = models.ForeignKey(CourseEnrollment, 
 		related_name='scores', related_query_name='score', on_delete=models.CASCADE)
 
 	def __str__(self):
-		return self.marking_period.name
+		if self.marking_period:
+			return self.marking_period.name
+		else:
+			return ""
 
 	class Meta:
 		ordering = ('marking_period',)

@@ -4,11 +4,31 @@ from .models import (Student, Course, MarkingPeriod, Subject,
 	CourseEnrollment, Score, SchoolYear, GradeLevel, Cohort)
 
 
+class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+	"""
+	A ModelSerializer that takes an additional 'fields' argument that
+	controls which fields should be displayed.
+	"""
+
+	def __init__(self, *args, **kwargs):
+		# Don't pass the 'fields' arg up to the superclass
+		fields = kwargs.pop('fields', None)
+
+		# Instantiate the superclass normally
+		super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+
+		if fields is not None:
+			# Drop any fields that are not specified in the `fields` argument.
+			allowed = set(fields)
+			existing = set(self.fields.keys())
+			for field_name in existing - allowed:
+				self.fields.pop(field_name)
+
 
 class MarkingPeriodSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = MarkingPeriod
-		fields = ['name', 'shortname']
+		fields = ['id', 'name', 'shortname']
 		ordering = ('name',)
 
 class SubjectSerializer(serializers.ModelSerializer):
@@ -43,18 +63,36 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class ScoreSerializer(serializers.ModelSerializer):
+	id = serializers.IntegerField()
+	marking_period = MarkingPeriodSerializer(read_only=True)
 	class Meta:
 		model = Score
-		fields = ['score', 'marking_period']
-		depth = 1
+		fields = ('id', 'score', 'marking_period')
+		#depth = 1
 
 
-class CourseEnrollmentSerializer(serializers.ModelSerializer):
+class CourseEnrollmentSerializer(DynamicFieldsModelSerializer):
 	scores = ScoreSerializer(many=True)
-	#course = CourseSerializer()
+	course = CourseSerializer()
 	class Meta:
 		model = CourseEnrollment
-		fields = ['id', 'student', 'course', 'is_active', 'scores', 'get_avarage']
+		#Default fields
+		fields = ('id', 'student', 'course', 'is_active', 'scores') 
+
+	def update(self, instance, validated_data):
+		print (instance)
+		for item in validated_data['scores']:
+			print (item)
+			score = Score(
+				id=item['id'], 
+				score=item['score'], 
+				course_enrollment=instance, 
+				#marking_period=item['marking_period'] #Marking Period is readOnly
+			)
+			score.save
+
+		instance.save()
+		return instance
 
 
 class GradeLevelSerializer(serializers.ModelSerializer):

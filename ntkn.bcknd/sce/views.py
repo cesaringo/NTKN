@@ -5,6 +5,9 @@ from .models import Student, Course, CourseEnrollment, SchoolYear, Score
 from rest_framework.permissions import IsAuthenticated
 from .permissions import CanSeeCourseEnrollment
 
+
+
+
 class StudentViewSet(viewsets.ModelViewSet):
 	"""
 	A viewset for viewing and editing Student instances.
@@ -51,6 +54,7 @@ class CourseEnrollmentViewSet(viewsets.ModelViewSet):
 	serializer_class = CourseEnrollmentSerializer
 	permission_classes = [IsAuthenticated]
 
+
 	def get_queryset(self):
 		queryset = CourseEnrollment.objects.all()
 		user = self.request.user
@@ -62,6 +66,18 @@ class CourseEnrollmentViewSet(viewsets.ModelViewSet):
 		# 	queryset = queryset.filter(student=student)
 
 		return queryset
+
+	def list(self, request, *args, **kwargs):
+		if request.GET.get('fields'):
+			#self.get_serializer().fields = ('id',)
+			print(self.get_serializer().fields)
+
+		return super(CourseEnrollmentViewSet, self).list(request, *args, **kwargs)
+
+		
+		
+
+
 
 class SchoolYearViewSet(viewsets.ModelViewSet):
 	serializer_class = SchoolYearSerializer
