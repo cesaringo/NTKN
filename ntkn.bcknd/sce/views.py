@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from .serializers import (StudentSerializer, CourseSerializer, CourseEnrollmentSerializer, 
 	SchoolYearSerializer, ScoreSerializer)
 from .models import Student, Course, CourseEnrollment, SchoolYear, Score
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from .permissions import CanSeeCourseEnrollment
 
 
@@ -51,8 +51,8 @@ class CourseEnrollmentViewSet(viewsets.ModelViewSet):
 	And API endpoint for CourseEnrollment model
 	"""
 	serializer_class = CourseEnrollmentSerializer
-	permission_classes = [IsAuthenticated]
-
+	permission_classes = [IsAuthenticated, DjangoModelPermissions]
+	queryset = CourseEnrollment.objects.none() # Required for DjangoModelPermissions
 
 	def get_queryset(self):
 		queryset = CourseEnrollment.objects.all()

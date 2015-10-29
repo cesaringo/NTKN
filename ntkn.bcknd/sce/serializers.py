@@ -9,7 +9,6 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
 	A ModelSerializer that takes an additional 'fields' argument that
 	controls which fields should be displayed.
 	"""
-
 	def __init__(self, *args, **kwargs):
 		# Don't pass the 'fields' arg up to the superclass
 		fields = kwargs.pop('fields', None)
@@ -25,15 +24,56 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
 				self.fields.pop(field_name)
 
 
-class MarkingPeriodSerializer(serializers.ModelSerializer):
+class SchoolYearSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = SchoolYear
+		fields = ['id', 'name']
+
+
+class GradeLevelSerializer(serializers.ModelSerializer):
+	class Meta:
+		model=GradeLevel
+
+class CohortSerializer(serializers.ModelSerializer):
+	class Meta:
+		model=Cohort
+		fields = ['id', 'name']
+
+
+class MarkingPeriodSerializer(DynamicFieldsModelSerializer):
+	"""
+	Solo para consulta de los bimestres. No se pueden editar.
+	"""
+	id = serializers.IntegerField(read_only=True)
+	name = serializers.CharField(read_only=True)
+	shortname = serializers.CharField(read_only=True)
+
 	class Meta:
 		model = MarkingPeriod
 		fields = ['id', 'name', 'shortname']
 		ordering = ('name',)
 
+
+
 class SubjectSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Subject
+
+
+class StudentSerializer(DynamicFieldsModelSerializer):
+	course_set = serializers.StringRelatedField(many=True)
+	from rest_auth.serializers import PhotoSerializer
+	photo = PhotoSerializer()
+	year = GradeLevelSerializer()
+	cohorts = CohortSerializer(many=True)
+
+	class Meta:
+		model = Student
+		fields = ['id', 'first_name', 'last_name', 'sex', 'username', 'year', 'class_year', 'educative_program', 'course_set', 'photo', 'cohorts']
+		depth = 1
+
+
+
 
 class CourseSerializer(DynamicFieldsModelSerializer):
 	marking_periods = serializers.SlugRelatedField(many=True, slug_field='shortname', read_only=True)
@@ -50,32 +90,32 @@ class CourseSerializer(DynamicFieldsModelSerializer):
 
 
 
+
 class ScoreSerializer(serializers.ModelSerializer):
 	id = serializers.IntegerField()
-	marking_period = MarkingPeriodSerializer(read_only=True)
+	marking_period = MarkingPeriodSerializer(read_only=True, fields=['id', 'name'])
 	class Meta:
 		model = Score
 		fields = ('id', 'score', 'marking_period')
-		#depth = 1
+
+
 
 class CourseEnrollmentSerializer(DynamicFieldsModelSerializer):
-	scores = ScoreSerializer(many=True)
+	student = serializers.PrimaryKeyRelatedField(read_only=True)
 	course = CourseSerializer(fields=['id','subject'], read_only=True)
+	scores = ScoreSerializer(many=True)
+	
 	class Meta:
 		model = CourseEnrollment
 		#Default fields
-		fields = ('id', 'student', 'course', 'is_active', 'scores') 
+		fields = ('id', 'student', 'course', 'is_active', 'scores', 'get_avarage') 
 
 	def update(self, instance, validated_data):
+		#El unico campo que se puede editar de CourseEnrollmente la lista de Scores
 		print (instance)
 		for item in validated_data['scores']:
-			print (item)
-			score = Score(
-				id=item['id'], 
-				score=item['score'], 
-				course_enrollment=instance, 
-				#marking_period=item['marking_period'] #Marking Period is readOnly
-			)
+			score = Score.objects.get(pk=item['id'])
+			score.score = item['score']
 			score.save()
 		instance.save()
 		return instance
@@ -85,27 +125,5 @@ class CourseEnrollmentSerializer(DynamicFieldsModelSerializer):
 
 
 
-class GradeLevelSerializer(serializers.ModelSerializer):
-	class Meta:
-		model=GradeLevel
 
-class CohortSerializer(serializers.ModelSerializer):
-	class Meta:
-		model=Cohort
-		fields = ['id', 'name']
 
-class StudentSerializer(serializers.ModelSerializer):
-	course_set = serializers.StringRelatedField(many=True)
-	from rest_auth.serializers import PhotoSerializer
-	photo = PhotoSerializer()
-	year = GradeLevelSerializer()
-	cohorts = CohortSerializer(many=True)
-	class Meta:
-		model = Student
-		fields = ['first_name', 'last_name', 'sex', 'username', 'year', 'class_year', 'educative_program', 'course_set', 'photo', 'cohorts']
-		depth = 1
-
-class SchoolYearSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = SchoolYear
-		fields = ['id', 'name']
