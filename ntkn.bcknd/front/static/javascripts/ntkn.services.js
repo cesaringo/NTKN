@@ -163,7 +163,7 @@
 
         var StudentProfile = function(username){
             if (username != undefined){
-                return $http.get(SCE_API_URL + '/students/59/');
+                return $http.get(SCE_API_URL + '/students/'+username+'/');
             }
         };
 

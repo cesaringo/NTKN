@@ -1,5 +1,9 @@
+ntkn.bcknd/sce/migrations/
 ntkn.bcknd/*/migrations/
 ntkn.bcknd/*/__pycache__/
 ntkn.bcknd/front/static/bower_components/
 env/
-
+ntkn.bcknd/sce/migrations/__pycache__/0001_initial.cpython-34.pyc
+ntkn.bcknd/sce/migrations/
+ntkn.bcknd/ntkn/media/
+.idea

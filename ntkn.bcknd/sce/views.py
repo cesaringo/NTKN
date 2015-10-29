@@ -14,6 +14,7 @@ class StudentViewSet(viewsets.ModelViewSet):
 	"""
 	serializer_class = StudentSerializer
 	queryset = Student.objects.all()
+	lookup_field = 'username'
 
 
 
@@ -32,12 +33,10 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 		#Si la petición la hace un usuario con Rol de maestro				
 		if user.groups.all().filter(name='teacher').exists():
-			print('teacher')
 			queryset = queryset.filter(teacher=user)
 
 		#Si la petición la hace un usuario con Rol de estudiante	
 		elif user.groups.all().filter(name='student').exists():
-			print('student')
 			id_courses = CourseEnrollment.objects.filter(
 				student__username=user.username).values_list('course_id', flat=True)
 			queryset = queryset.filter(id__in=id_courses)
@@ -67,15 +66,29 @@ class CourseEnrollmentViewSet(viewsets.ModelViewSet):
 
 		return queryset
 
-	def list(self, request, *args, **kwargs):
-		if request.GET.get('fields'):
-			#self.get_serializer().fields = ('id',)
-			print(self.get_serializer().fields)
+	# def list(self, request, *args, **kwargs):
+	# 	if request.GET.get('fields'):
+	# 		#self.get_serializer().fields = ('id',)
+	# 		print(self.get_serializer().fields)
 
-		return super(CourseEnrollmentViewSet, self).list(request, *args, **kwargs)
+	# 	return super(CourseEnrollmentViewSet, self).list(request, *args, **kwargs)
 
+
+	# def retrieve(self, request, *args, **kwargs):
+	# 	if request.GET.get('fields'):
+	# 		#self.get_serializer().fields = ('id',)
+	# 		print(request.GET.get('fields'))
+
+	# 	return super(CourseEnrollmentViewSet, self).list(request, *args, **kwargs)
 		
+	#from rest_framework.fields import empty
+	# def get_serializer(self, instance=None, data=empty, many=False, partial=False):
+	# 	fields = self.request.GET.get('fields', None)
+	# 	if fields is not None:
+	# 		fields = fields.split(',')
 		
+
+	# 	return CourseEnrollmentSerializer(instance=instance, data=data, many=many, partial=partial, fields=fields) 
 
 
 

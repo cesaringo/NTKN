@@ -5,12 +5,12 @@ from django.conf import settings
 from datetime import date
 from localflavor.us.models import PhoneNumberField
 from authentication.models import Account
-from django.utils.text import slugify
 from datetime import datetime
 from django.core import urlresolvers
 from django.db.models import Sum
 from decimal import *
 from django.core.validators import MaxValueValidator, MinValueValidator
+from slugify import slugify
 
 ################
 #Students Module

@@ -35,19 +35,7 @@ class SubjectSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Subject
 
-class CourseSerializer(serializers.ModelSerializer):
-
-	def __init__(self, *args, **kwargs):
-		fields = kwargs.pop('fields', None)
-		super(CourseSerializer, self).__init__(*args, **kwargs)
-
-		if fields is not None:
-			allowed = set(fields)
-			existing = set(self.fields.keys())
-			for field_name in existing - allowed:
-				self.fields.pop(field_name)
-
-	#marking_periods = MarkingPeriodSerializer(many=True)
+class CourseSerializer(DynamicFieldsModelSerializer):
 	marking_periods = serializers.SlugRelatedField(many=True, slug_field='shortname', read_only=True)
 	subject = serializers.StringRelatedField()
 	teacher = serializers.StringRelatedField()
@@ -72,7 +60,7 @@ class ScoreSerializer(serializers.ModelSerializer):
 
 class CourseEnrollmentSerializer(DynamicFieldsModelSerializer):
 	scores = ScoreSerializer(many=True)
-	course = CourseSerializer()
+	course = CourseSerializer(fields=['id','subject'], read_only=True)
 	class Meta:
 		model = CourseEnrollment
 		#Default fields
@@ -88,18 +76,11 @@ class CourseEnrollmentSerializer(DynamicFieldsModelSerializer):
 				course_enrollment=instance, 
 				#marking_period=item['marking_period'] #Marking Period is readOnly
 			)
-			score.save
-
+			score.save()
 		instance.save()
 		return instance
 
-	def update(self, instance, validated_data):
-		#Update the list of Scores Instances
-		print ("Saving data...")
-		for item in validated_data['scores']:
-			print (item)
-			#score = Score(id=item['id'], score=item['score'])
-			#score.save()
+	
 
 
 
