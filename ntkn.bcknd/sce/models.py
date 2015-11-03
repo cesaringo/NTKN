@@ -40,7 +40,7 @@ class GradeLevel(models.Model):
 
 
 	class Meta:
-		ordering = ('number',)
+		ordering = ('order',)
 		unique_together =  (('number', 'educative_program'),)
 
 	def __unicode__(self):
@@ -58,6 +58,8 @@ class GradeLevel(models.Model):
 
 	def __str__(self):
 		return self.name
+
+
 
 class IntegerRangeField(models.IntegerField):
 	def __init__(self, verbose_name=None, name=None, min_value=None, max_value=None, **kwargs):
@@ -94,6 +96,8 @@ class EducativeProgram(models.Model):
 	slug = models.CharField(max_length=100, unique=True, blank=True)
 	order = models.IntegerField(null=True, blank=True)
 	marking_periods = models.IntegerField()
+	num_of_levels = models.IntegerField()
+
 
 	def __unicode__(self):
 		return self.name
@@ -105,6 +109,9 @@ class EducativeProgram(models.Model):
 		if not self.slug:
 			self.slug =  slugify(self.name, to_lower=True)
 		super(EducativeProgram, self).save(*args, **kwargs)
+
+	class Meta:
+		ordering = ('order',)
 
 	
 

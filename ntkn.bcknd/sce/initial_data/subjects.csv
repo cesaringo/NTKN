@@ -1,0 +1,99 @@
+id,fullname,key,is_active,description,educative_program,category,level,grade_level
+,Lenguage y comunicación,,1,,1,1,1,1
+,Lenguage y comunicación,,1,,1,1,2,2
+,Lenguage y comunicación,,1,,1,1,3,3
+,Segunda lengua (inglés),,1,,1,1,1,3
+,Pensamiento matemático,,1,,1,2,1,1
+,Pensamiento matemático,,1,,1,2,2,2
+,Pensamiento matemático,,1,,1,2,3,3
+,Exploración y conocimiento del mundo,,1,,1,3,1,1
+,Exploración y conocimiento del mundo,,1,,1,3,2,2
+,Exploración y conocimiento del mundo,,1,,1,3,3,3
+,Desarrollo físico y salud,,1,,1,3,1,1
+,Desarrollo físico y salud,,1,,1,3,2,2
+,Desarrollo físico y salud,,1,,1,3,3,3
+,Desarrollo personal y social,,1,,1,4,1,1
+,Desarrollo personal y social,,1,,1,4,2,2
+,Desarrollo personal y social,,1,,1,4,3,3
+,Expresión y apreciación artísticas,,1,,1,4,1,1
+,Expresión y apreciación artísticas,,1,,1,4,2,2
+,Expresión y apreciación artísticas,,1,,1,4,3,3
+,Español,,1,,2,1,1,4
+,Español,,1,,2,1,2,5
+,Español,,1,,2,1,3,6
+,Español,,1,,2,1,4,7
+,Español,,1,,2,1,5,8
+,Español,,1,,2,1,6,9
+,Segunda lengua (inglés),,1,,2,1,1,4
+,Segunda lengua (inglés),,1,,2,1,2,5
+,Segunda lengua (inglés),,1,,2,1,3,6
+,Segunda lengua (inglés),,1,,2,1,4,7
+,Segunda lengua (inglés),,1,,2,1,5,8
+,Segunda lengua (inglés),,1,,2,1,6,9
+,Matemáticas,,1,,2,2,1,4
+,Matemáticas,,1,,2,2,2,5
+,Matemáticas,,1,,2,2,3,6
+,Matemáticas,,1,,2,2,4,7
+,Matemáticas,,1,,2,2,5,8
+,Matemáticas,,1,,2,2,6,9
+,Exploración de la naturaleza y la sociedad,,1,,2,3,1,4
+,Exploración de la naturaleza y la sociedad,,1,,2,3,2,5
+,Ciencias naturales,,1,,2,3,1,6
+,Ciencias naturales,,1,,2,3,2,7
+,Ciencias naturales,,1,,2,3,3,8
+,Ciencias naturales,,1,,2,3,4,9
+,La entidad donde vivo,,1,,2,3,1,6
+,Geografía,,1,,2,3,1,7
+,Geografía,,1,,2,3,2,8
+,Geografía,,1,,2,3,3,9
+,História,,1,,2,3,1,7
+,História,,1,,2,3,2,8
+,História,,1,,2,3,3,9
+,Formación cívica y ética,,1,,2,4,1,4
+,Formación cívica y ética,,1,,2,4,2,5
+,Formación cívica y ética,,1,,2,4,3,6
+,Formación cívica y ética,,1,,2,4,4,7
+,Formación cívica y ética,,1,,2,4,5,8
+,Formación cívica y ética,,1,,2,4,6,9
+,Educación física,,1,,2,4,1,4
+,Educación física,,1,,2,4,2,5
+,Educación física,,1,,2,4,3,6
+,Educación física,,1,,2,4,4,7
+,Educación física,,1,,2,4,5,8
+,Educación física,,1,,2,4,6,9
+,Educación astística,,1,,2,4,1,4
+,Educación astística,,1,,2,4,2,5
+,Educación astística,,1,,2,4,3,6
+,Educación astística,,1,,2,4,4,7
+,Educación astística,,1,,2,4,5,8
+,Educación astística,,1,,2,4,6,9
+,Español,,1,,3,1,1,10
+,Español,,1,,3,1,2,11
+,Español,,1,,3,1,3,12
+,Segunda lengua (inglés),,1,,3,1,1,10
+,Segunda lengua (inglés),,1,,3,1,2,11
+,Segunda lengua (inglés),,1,,3,1,3,12
+,Matemáticas,,1,,3,2,1,10
+,Matemáticas,,1,,3,2,2,11
+,Matemáticas,,1,,3,2,3,12
+,Biología,,1,Ciencias 1 (Enfásis en biología),3,3,1,10
+,Física,,1,Ciencias 2 (Enfásis en física),3,3,1,11
+,Química,,1,Ciencias 3 (Enfásis en química),3,3,1,12
+,Tecnología,,1,,3,3,1,10
+,Tecnología,,1,,3,3,2,11
+,Tecnología,,1,,3,3,3,12
+,Geografía de México y el mundo,,1,,3,3,1,10
+,História,,1,,3,3,1,11
+,História,,1,,3,3,2,12
+,Asignatura estatal,,1,,3,3,1,10
+,Formación cívica y ética,,1,,3,4,1,11
+,Formación cívica y ética,,1,,3,4,2,12
+,Tutoría,,1,,3,4,1,10
+,Tutoría,,1,,3,4,2,11
+,Tutoría,,1,,3,4,3,12
+,Educación física,,1,,3,4,1,10
+,Educación física,,1,,3,4,2,11
+,Educación física,,1,,3,4,2,12
+,Artes,,1,,3,4,1,10
+,Artes,,1,,3,4,2,11
+,Artes,,1,,3,4,3,12
