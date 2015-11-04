@@ -22,7 +22,7 @@ class Institute(models.Model):
 
     def __str__(self):
         return self.name
-    # More data about Institute here...
+        # More data about Institute here...
 
 
 class EducativeProgram(models.Model):
@@ -37,6 +37,7 @@ class EducativeProgram(models.Model):
     def __str__(self):
         return self.name
 
+
 class IntegerRangeField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, min_value=None, max_value=None, **kwargs):
         self.min_value, self.max_value = min_value, max_value
@@ -49,8 +50,7 @@ class IntegerRangeField(models.IntegerField):
 
 
 class ClassYear(models.Model):
-    """	ClassYear such as class of 2015
-	"""
+    """	ClassYear such as class of 2015"""
     year = IntegerRangeField(unique=True, min_value=2000, max_value=date.today().year + 1, help_text="e.g. 2015")
     name = models.CharField(max_length=255, help_text="e.g. Class of 2015", blank=True)
 
