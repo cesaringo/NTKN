@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'import_export',
 
     'authentication', #Custom user Model
+    'students',
     'sce',  #School Information System
     'front', #Angular app
     #'front2', #Angular app

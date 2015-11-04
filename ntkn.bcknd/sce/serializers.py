@@ -89,15 +89,12 @@ class CourseSerializer(DynamicFieldsModelSerializer):
 		fields = ['id', 'subject', 'teacher', 'school_year', 'cohort', 'marking_periods', 'students']
 
 
-
-
 class ScoreSerializer(serializers.ModelSerializer):
 	id = serializers.IntegerField()
 	marking_period = MarkingPeriodSerializer(read_only=True, fields=['id', 'name'])
 	class Meta:
 		model = Score
 		fields = ('id', 'score', 'marking_period')
-
 
 
 class CourseEnrollmentSerializer(DynamicFieldsModelSerializer):
@@ -108,11 +105,11 @@ class CourseEnrollmentSerializer(DynamicFieldsModelSerializer):
 	class Meta:
 		model = CourseEnrollment
 		#Default fields
-		fields = ('id', 'student', 'course', 'is_active', 'scores', 'get_avarage') 
+		fields = ('id', 'student', 'course', 'is_active', 'scores', 'get_average')
 
 	def update(self, instance, validated_data):
-		#El unico campo que se puede editar de CourseEnrollmente la lista de Scores
-		print (instance)
+		# The unique field than can be edited in CourseEnrollment on list of Scores
+		print(instance)
 		for item in validated_data['scores']:
 			score = Score.objects.get(pk=item['id'])
 			score.score = item['score']
