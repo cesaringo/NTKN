@@ -1,6 +1,5 @@
 from datetime import date, datetime
 from django.db import models
-
 from authentication.models import Account
 from localflavor.us.models import PhoneNumberField
 from django.contrib.auth.models import Group
@@ -148,3 +147,4 @@ class Student(Account):
                 self.enrollment = str(datetime.now().year % 100) + '{0:02d}'.format(
                     datetime.now().month) + '{0:02d}'.format(self.first_school_year.id % 100) + '{0:02}'.format(self.id)
             super(Student, self).save(*args, **kwargs)
+            return self.id

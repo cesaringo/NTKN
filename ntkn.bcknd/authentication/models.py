@@ -37,7 +37,7 @@ class AccountManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', False)
         return self._create_user(username, email, password, **extra_fields)
 
-    def create_superuser(self, username, email, password, **extra_fields):
+    def create_superuser(self, username, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
@@ -89,3 +89,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
         return format_html('<a href="mailto:{}">{}</a>', self.email, self.email)
 
     email_link.allow_tags = True
+
+    def __str__(self):
+        return self.username
