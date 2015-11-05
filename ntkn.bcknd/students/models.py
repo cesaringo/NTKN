@@ -143,8 +143,29 @@ class Student(Account):
             self.groups.add(group)
             self.username = '{0:07}'.format(self.id + 1000000)
             self.email = self.username + '@natkan.mx'
+            self.enrollment = self.username
             if self.first_school_year:
                 self.enrollment = str(datetime.now().year % 100) + '{0:02d}'.format(
                     datetime.now().month) + '{0:02d}'.format(self.first_school_year.id % 100) + '{0:02}'.format(self.id)
             super(Student, self).save(*args, **kwargs)
             return self.id
+
+
+class Teacher(Account):
+    phone = PhoneNumberField()
+
+    def __str__(self):
+        if self.get_full_name():
+            return self.get_full_name()
+
+    def save(self, *args, **kwargs):
+        if self.id is None:
+            super(Teacher, self).save(*args, **kwargs)
+            self.save(*args, **kwargs)
+        else:
+            group = Group.objects.get(name="teacher")
+            self.groups.add(group)
+
+            self.username = '{0:07}'.format(self.id + 1000000)
+            self.email = self.username + '@natkan.mx'
+            super(Teacher, self).save(*args, **kwargs)

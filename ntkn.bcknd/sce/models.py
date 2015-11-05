@@ -7,7 +7,7 @@ from django.core import urlresolvers
 from decimal import *
 from django.core.validators import MaxValueValidator, MinValueValidator
 from slugify import slugify
-from students.models import Student, GradeLevel, EducativeProgram
+from students.models import Student, Teacher, GradeLevel, EducativeProgram
 
 
 class SchoolYear(models.Model):
@@ -37,26 +37,6 @@ class Cohort(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Teacher(Account):
-    phone = PhoneNumberField()
-
-    def __str__(self):
-        if self.get_full_name():
-            return self.get_full_name()
-
-    def save(self, *args, **kwargs):
-        if self.id is None:
-            super(Teacher, self).save(*args, **kwargs)
-            self.save(*args, **kwargs)
-        else:
-            group = Group.objects.get(name="teacher")
-            self.groups.add(group)
-
-            self.username = '{0:07}'.format(self.id + 1000000)
-            self.email = self.username + '@natkan.mx'
-            super(Teacher, self).save(*args, **kwargs)
 
 
 class Department(models.Model):

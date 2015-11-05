@@ -5,20 +5,21 @@ from sce.models import (
     EducativeProgram, GradeLevel, Cohort, SubjectCategory, Subject)
 import csv
 from slugify import slugify
-from students.models import Institute
+from students.models import Institute, Student, Teacher
 
 
 def load_institutes(apps, schema_editor):
-    print('\nLoading Institutes')
+    print('\nLoading data for students module')
+    print('\n-Loading Institutes')
     institute = Institute(
         name='Colegio Natkan',
     )
     institute.save()
-    print('-added institute: ' + institute.__str__())
+    print('--added Institute: ' + institute.__str__())
 
 
 def load_educative_programs(apps, schema_editor):
-    print("\nLoading educative programs")
+    print("\n-Loading educative programs")
     institute = Institute.objects.get(pk=1)
     with open('students/initial_data/educative_programs.csv', 'rt', encoding='utf8') as f:
         reader = csv.reader(f)
@@ -35,11 +36,11 @@ def load_educative_programs(apps, schema_editor):
                     institute=institute
                 )
                 educative_program.save()
-                print('-added ' + educative_program.__str__())
+                print('--added EducativeProgram: ' + educative_program.__str__())
 
 
 def load_grade_levels(apps, schema_editor):
-    print('\nLoading Grade Levels')
+    print('\n-Loading Grade Levels')
     educative_programs = EducativeProgram.objects.all()
     order = 1
     for educative_program in educative_programs:
@@ -53,70 +54,37 @@ def load_grade_levels(apps, schema_editor):
             )
             order += 1
             grade_level.save()
-            print('-added ' + grade_level.__str__())
+            print('--added GradeLevel: ' + grade_level.__str__())
 
 
-def load_cohorts(apps, schema_editor):
-    print('\nLoading Cohorts')
+def load_students(apps, schema_editor):
+    print('\n-Load sample students')
     grade_levels = GradeLevel.objects.all()
-    basic_groups = ["A", "B", "C", "D"]
-
-    for grade_level in grade_levels:
-        print('-'+grade_level.__str__()+str(grade_level.order))
-        name = "-"
-        if grade_level.number == 1:
-            name = "Primero "
-        elif grade_level.number == 2:
-            name = "Segundo "
-        elif grade_level.number == 3:
-            name = "Tercero "
-        elif grade_level.number == 4:
-            name = "Cuarto "
-        elif grade_level.number == 5:
-            name = "Quinto "
-        elif grade_level.number== 6:
-            name = "Sexto "
-        for basic_group in basic_groups:
-            cohort = Cohort(name = name+basic_group)
-            cohort.save()
-            print('--added '+ cohort.__str__())
-
-
-def load_subjects(apps, schema_editor):
-    print('\nLoading Subjects')
-    categories = [
-        'Lenguaje y comunicación',
-        'Pensamiento matemático',
-        'Exploración y compreensión del mundo natural y social',
-        'Desarrollo personal y para la convivencia'
-    ]
-    id = 1
-    for category in categories:
-        subjectCategory = SubjectCategory(pk=id, id=id, name=category, order = id)
-        subjectCategory.save()
-        print ('-added category ' + subjectCategory.__str__())
-        id += 1
-
-    fields = []
-    with open('sce/initial_data/subjects.csv',  'rt', encoding='utf8') as f:
+    with open('students/initial_data/institute_students.csv',  'rt', encoding='utf8') as f:
         reader = csv.reader(f)
         for row in reader:
             if reader.line_num == 1:
-                fields = row
+                pass
             else:
-                subject = Subject(
-                    fullname=row[1],
-                    #key='',
-                    #is_active=True,
-                    #description='',
-                    educative_program=EducativeProgram.objects.get(pk=row[5]),
-                    category=SubjectCategory.objects.get(pk=row[6]),
-                    level = row[7],
-                    grade_level = GradeLevel.objects.get(pk=row [8])
-
+                if row[3] == 'kinder':
+                    row[3] = 'preescolar'
+                student = Student(
+                    institute_id=1,
+                    first_name=row[0],
+                    last_name=row[1] + ' ' + row[2],
+                    grade_level=grade_levels.get(educative_program__slug=row[3], number=row[5].replace('NULL', '')),
+                    is_active=row[4]
                 )
-                subject.save()
-                print('--added subject '+ subject.__str__() + ' in category ' + subject.category.__str__())
+                student.save()
+                print('--added Student: ' + student.__str__())
+
+    print('\n-Load sample teachers')
+    teacher1 = Teacher(first_name='José Enrique', last_name='Alvarez Estrada', is_active=True)
+    teacher2 = Teacher(first_name='María Montserrat', last_name='Ramírez', is_active=True)
+    teacher1.save()
+    teacher2.save()
+    print('\n--added Teacher:' + teacher1.__str__())
+    print('\n--added Teacher:' + teacher2.__str__())
 
 
 class Migration(migrations.Migration):
@@ -128,7 +96,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(load_institutes),
         migrations.RunPython(load_educative_programs),
         migrations.RunPython(load_grade_levels),
-
-        #migrations.RunPython(load_cohorts),
-        #migrations.RunPython(load_subjects)
+        migrations.RunPython(load_students),
     ]

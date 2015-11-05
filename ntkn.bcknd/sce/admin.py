@@ -1,7 +1,7 @@
 from django.contrib import admin
-from sce.models import (Course, Subject, SchoolYear, Teacher, SubjectCategory, Cohort, MarkingPeriod, CourseEnrollment,
+from sce.models import (Course, Subject, SchoolYear, SubjectCategory, Cohort, MarkingPeriod, CourseEnrollment,
                         Score)
-from students.models import (EducativeProgram, GradeLevel, Student)
+from students.models import (EducativeProgram, GradeLevel, Student, Teacher)
 from import_export import resources
 from import_export.admin import ImportExportMixin
 from authentication.admin import AccountAdmin
@@ -43,7 +43,7 @@ class StudentAdmin(ImportExportMixin, AccountAdmin):
         )}),
 
         ('Student Info', {'fields': (
-            'educative_program', 'year', 'cohorts',
+            'cohorts',
         )}),
 
         ("Contact", {'fields': (
