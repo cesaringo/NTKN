@@ -5,7 +5,7 @@ from sce.models import (
     EducativeProgram, GradeLevel, Cohort, SubjectCategory, Subject)
 import csv
 from slugify import slugify
-from students.models import Institute
+from alumni.models import Institute
 
 
 def load_institutes(apps, schema_editor):
@@ -20,7 +20,7 @@ def load_institutes(apps, schema_editor):
 def load_educative_programs(apps, schema_editor):
     print("\nLoading educative programs")
     institute = Institute.objects.get(pk=1)
-    with open('students/initial_data/educative_programs.csv', 'rt', encoding='utf8') as f:
+    with open('alumni/initial_data/educative_programs.csv', 'rt', encoding='utf8') as f:
         reader = csv.reader(f)
         for row in reader:
             if reader.line_num == 1:
@@ -121,7 +121,7 @@ def load_subjects(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('students', '0001_initial'),
+        ('alumni', '0001_initial'),
     ]
 
     operations = [

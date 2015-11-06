@@ -13,7 +13,8 @@ urlpatterns = patterns('',
     
 
     #SCE API
-    url(r'^sce-api/', include('sce.urls')),
+    url(r'^api/sce/', include('sce.urls')),
+    url(r'^api/alumni/', include('alumni.urls')),
     #url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
     
     #url(r'^app/.*$', Home2.as_view(), name='home2'),

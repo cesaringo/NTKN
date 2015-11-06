@@ -1,14 +1,24 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from datetime import datetime
+
 from django.db import models, migrations
-from sce.models import SubjectCategory, Subject
+from sce.models import SubjectCategory, Subject, SchoolYear
 from alumni.models import GradeLevel, EducativeProgram
 import csv
 
 def load_initial_sce_data(apps, schema_editor):
     print('\nLoading initial data for sce module')
 
+    # School Years
+    school_year = SchoolYear(
+        name='2015 - 2016',
+        start_date=datetime.now(),
+        end_date=datetime.now()
+    )
+    school_year.save()
+    print('\n--added School Year: ' + school_year.__str__())
 
     # Subjects
     print('\n-loading Subjects')
@@ -50,8 +60,6 @@ def load_initial_sce_data(apps, schema_editor):
         # Courses
 
         # Marking Periods
-
-
 
 
 class Migration(migrations.Migration):

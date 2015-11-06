@@ -1,7 +1,9 @@
 from rest_framework import viewsets
-from .serializers import (StudentSerializer, CourseSerializer, CourseEnrollmentSerializer, 
+from sce.serializers import (CourseSerializer, CourseEnrollmentSerializer,
 	SchoolYearSerializer, ScoreSerializer)
-from .models import Student, Course, CourseEnrollment, SchoolYear, Score
+from alumni.serializers import StudentSerializer
+from sce.models import Course, CourseEnrollment, SchoolYear, Score
+from alumni.models import Student
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from .permissions import CanSeeCourseEnrollment
 

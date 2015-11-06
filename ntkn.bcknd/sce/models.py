@@ -1,13 +1,10 @@
-from django.contrib.auth.models import Group
 from django.db import models
 from django.conf import settings
-from localflavor.us.models import PhoneNumberField
-from authentication.models import Account
 from django.core import urlresolvers
 from decimal import *
 from django.core.validators import MaxValueValidator, MinValueValidator
 from slugify import slugify
-from students.models import Student, Teacher, GradeLevel, EducativeProgram
+from alumni.models import Student, Teacher, GradeLevel, EducativeProgram, Cohort
 
 
 class SchoolYear(models.Model):
@@ -18,22 +15,6 @@ class SchoolYear(models.Model):
 
     class Meta:
         ordering = ('start_date',)
-
-    def __str__(self):
-        return self.name
-
-
-class Cohort(models.Model):
-    name = models.CharField(max_length=255)
-    students = models.ManyToManyField(
-        Student,
-        blank=True,
-        related_name='cohorts',
-        related_query_name='cohort'
-    )
-
-    class Meta:
-        ordering = ('name',)
 
     def __str__(self):
         return self.name

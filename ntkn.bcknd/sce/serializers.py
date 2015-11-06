@@ -1,27 +1,8 @@
-import rest_framework
 from rest_framework import serializers
-from .models import (Student, Course, MarkingPeriod, Subject, 
+
+from alumni.serializers import DynamicFieldsModelSerializer
+from sce.models import (Course, MarkingPeriod, Subject,
 	CourseEnrollment, Score, SchoolYear, GradeLevel, Cohort)
-
-
-class DynamicFieldsModelSerializer(serializers.ModelSerializer):
-	"""
-	A ModelSerializer that takes an additional 'fields' argument that
-	controls which fields should be displayed.
-	"""
-	def __init__(self, *args, **kwargs):
-		# Don't pass the 'fields' arg up to the superclass
-		fields = kwargs.pop('fields', None)
-
-		# Instantiate the superclass normally
-		super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
-
-		if fields is not None:
-			# Drop any fields that are not specified in the `fields` argument.
-			allowed = set(fields)
-			existing = set(self.fields.keys())
-			for field_name in existing - allowed:
-				self.fields.pop(field_name)
 
 
 class SchoolYearSerializer(serializers.ModelSerializer):
@@ -34,10 +15,7 @@ class GradeLevelSerializer(serializers.ModelSerializer):
 	class Meta:
 		model=GradeLevel
 
-class CohortSerializer(serializers.ModelSerializer):
-	class Meta:
-		model=Cohort
-		fields = ['id', 'name']
+
 
 
 class MarkingPeriodSerializer(DynamicFieldsModelSerializer):
@@ -59,29 +37,13 @@ class SubjectSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Subject
 
-
-class StudentSerializer(DynamicFieldsModelSerializer):
-	course_set = serializers.StringRelatedField(many=True)
-	from rest_auth.serializers import PhotoSerializer
-	photo = PhotoSerializer()
-	year = GradeLevelSerializer()
-	cohorts = CohortSerializer(many=True)
-
-	class Meta:
-		model = Student
-		fields = ['id', 'first_name', 'last_name', 'sex', 'username', 'year', 'class_year', 'educative_program', 'course_set', 'photo', 'cohorts']
-		depth = 1
-
-
-
-
 class CourseSerializer(DynamicFieldsModelSerializer):
 	marking_periods = serializers.SlugRelatedField(many=True, slug_field='shortname', read_only=True)
 	subject = serializers.StringRelatedField()
 	teacher = serializers.StringRelatedField()
 	school_year = serializers.StringRelatedField()
 	cohort = serializers.StringRelatedField()
-	#students = StudentSerializer(many=True)#
+	#alumni = StudentSerializer(many=True)#
 	students = serializers.StringRelatedField(many=True)
 
 	class Meta: 

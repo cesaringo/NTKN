@@ -1,11 +1,11 @@
 from django.contrib import admin
 from sce.models import (Course, Subject, SchoolYear, SubjectCategory, Cohort, MarkingPeriod, CourseEnrollment,
                         Score)
-from students.models import (EducativeProgram, GradeLevel, Student, Teacher)
+from alumni.models import (EducativeProgram, GradeLevel, Student, Teacher)
 from import_export import resources
 from import_export.admin import ImportExportMixin
 from authentication.admin import AccountAdmin
-from .forms import StudentChangeForm, StudentCreationForm, CourseForm
+from sce.forms import StudentChangeForm, StudentCreationForm, CourseForm
 
 
 class ScoreInline(admin.StackedInline):
