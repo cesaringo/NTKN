@@ -4,28 +4,19 @@ from front.views import Home
 from ntkn import settings
 
 urlpatterns = patterns('',
-    # Examples:
-    
-
-    #url(r'^auth/', include('authentication.urls')),
+    # Admin
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^rest-auth/', include('rest_auth.urls')),
-    
 
-    #SCE API
+    # API | BackEnd
+    url(r'^rest-auth/', include('rest_auth.urls')),
     url(r'^api/sce/', include('sce.urls')),
     url(r'^api/alumni/', include('alumni.urls')),
-    #url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
-    
-    #url(r'^app/.*$', Home2.as_view(), name='home2'),
 
+    # FrontEnd
+    url(r'^.*$', Home.as_view(), name='home'),
 )
 
 if settings.DEBUG :
     urlpatterns += patterns('',
         (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
     )
-
-urlpatterns += patterns('',
-	url(r'^.*$', Home.as_view(), name='home'),
-)
