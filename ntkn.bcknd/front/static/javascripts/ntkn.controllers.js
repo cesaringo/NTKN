@@ -129,7 +129,7 @@
 		console.log($state.current.data);
 	})
 
-	.controller('StudentDashCtrl', function($scope, $state, AuthService, SCEService, $http, SCE_API_URL) {
+	.controller('StudentDashCtrl', function($scope, $state, AuthService, SCEService, $http, API_URL) {
 		console.log("StudentDashCtrl");
 		$scope.currentStudent = undefined;
 		SCEService.StudentProfile(AuthService.user().username)
@@ -144,8 +144,8 @@
 		$scope.selected_schoolyear = undefined;
 		$scope.course_enrollments = [];
 		
-		//Loading entollments 
-		$http.get(SCE_API_URL + '/course-enrollments/')
+		//Loading enrollments
+		$http.get(API_URL + '/sce/course-enrollments/')
 		.then(function(response){
 			$scope.course_enrollments = response.data;
 			//console.log($scope.course_enrollments);
@@ -153,7 +153,7 @@
 		
 		
 		$scope.LoadSchoolYears = function(){
-			$http.get(SCE_API_URL + '/school-years/')
+			$http.get(API_URL + '/sce/school-years/')
 			.then(function(response){
 				$scope.available_schoolyears = response.data;
 			});
@@ -163,7 +163,7 @@
 		//Edit a course enrollment
 		var sample_course_enrollment = undefined;
 		var get_sample_course_enrollment = 
-		$http.get('http://localhost:8000/sce-api/course-enrollments/1/');
+		$http.get('http://localhost:8000/api/sce/course-enrollments/1/');
 		get_sample_course_enrollment.then(function(response){
 			sample_course_enrollment = response.data;
 			console.log(sample_course_enrollment);
@@ -172,7 +172,7 @@
 			sample_course_enrollment.scores[1].score = "10.0";
 			sample_course_enrollment.scores[2].score = "10.0";
 			var put_sample_course_enrollment = $http.put(
-				'http://localhost:8000/sce-api/course-enrollments/1/',
+				'http://localhost:8000/api/sce/course-enrollments/1/',
 				{
 					student: sample_course_enrollment.student,
 					course: sample_course_enrollment.course,
@@ -202,7 +202,7 @@
 		//Edit a course enrollment
 		var sample_course_enrollment = undefined;
 		var get_sample_course_enrollment = 
-		$http.get('http://localhost:8000/sce-api/course-enrollments/1/');
+		$http.get('http://localhost:8000/api/sce/course-enrollments/1/');
 		get_sample_course_enrollment.then(function(response){
 			sample_course_enrollment = response.data;
 			console.log(sample_course_enrollment);
@@ -211,7 +211,7 @@
 			sample_course_enrollment.scores[1].score = "9.7";
 			sample_course_enrollment.scores[2].score = "9.6";
 			var put_sample_course_enrollment = $http.put(
-				'http://localhost:8000/sce-api/course-enrollments/1/',
+				'http://localhost:8000/api/sce/course-enrollments/1/',
 				{
 					student: sample_course_enrollment.student,
 					course: sample_course_enrollment.course,

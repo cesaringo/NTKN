@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     # API | BackEnd
-    url(r'^rest-auth/', include('rest_auth.urls')),
+    url(r'^api/auth/', include('rest_auth.urls')),
     url(r'^api/sce/', include('sce.urls')),
     url(r'^api/alumni/', include('alumni.urls')),
 

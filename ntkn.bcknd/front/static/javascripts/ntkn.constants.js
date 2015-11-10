@@ -14,6 +14,5 @@
 		student: 'student',
 		teacher: 'teacher'
 	})
-	.constant('SCE_API_URL', 'http://localhost:8000/sce-api')
-	.constant('API_URL', 'http://localhost:8000/rest-auth');
+	.constant('API_URL', 'http://localhost:8000/api');
 })()

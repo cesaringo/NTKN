@@ -75,6 +75,8 @@ class MarkingPeriod(models.Model):
         help_text="Teachers may only enter grades for active marking periods. "
                   "There may be more than one active marking period.")
 
+    educative_program = models.ForeignKey(EducativeProgram)
+
     class Meta:
         ordering = ('shortname',)
 
@@ -104,7 +106,7 @@ class Course(models.Model):
     name = models.CharField(max_length=255, null=True)
     is_active = models.BooleanField(default=True)
     school_year = models.ForeignKey(SchoolYear)
-    cohort = models.ForeignKey(Cohort, null=True, blank=True)
+    cohort = models.ForeignKey(Cohort)
 
     def __str__(self):
         return self.subject.__str__()
@@ -112,6 +114,19 @@ class Course(models.Model):
     def grade_level(self):
         return self.subject.grade_level
 
+    class Meta:
+        pass
+        #unique_together = ('subject', 'school_year', 'cohort')
+
+    def save(self, *args, **kwargs):
+        print('saving data')
+        #super(Course, self).save(*args, **kwargs)
+        #marking_periods = self.subject.educative_program.markingperiod_set.all()
+        #for marking_period in marking_periods:
+        #   pass#print(marking_period)
+        #self.marking_periods.add(marking_period)
+        #super(Course, self).save(*args, **kwargs)
+        #print(marking_periods)
 
 class CourseEnrollment(models.Model):
     student = models.ForeignKey(Student)

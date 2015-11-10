@@ -14,19 +14,19 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Account',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('password', models.CharField(verbose_name='password', max_length=128)),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('is_superuser', models.BooleanField(default=False, verbose_name='superuser status', help_text='Designates that this user has all permissions without explicitly assigning them.')),
-                ('email', models.EmailField(blank=True, null=True, max_length=254, unique=True)),
-                ('username', models.CharField(blank=True, null=True, max_length=50, unique=True)),
+                ('last_login', models.DateTimeField(blank=True, verbose_name='last login', null=True)),
+                ('is_superuser', models.BooleanField(help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status', default=False)),
+                ('email', models.EmailField(unique=True, blank=True, max_length=254, null=True)),
+                ('username', models.CharField(unique=True, blank=True, max_length=50, null=True)),
                 ('first_name', models.CharField(blank=True, max_length=50)),
                 ('last_name', models.CharField(blank=True, max_length=50)),
                 ('is_staff', models.BooleanField(default=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('is_active', models.BooleanField(default=True)),
-                ('groups', models.ManyToManyField(blank=True, related_query_name='user', related_name='user_set', to='auth.Group', verbose_name='groups', help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.')),
+                ('groups', models.ManyToManyField(blank=True, related_name='user_set', help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_query_name='user', to='auth.Group', verbose_name='groups')),
             ],
             options={
                 'abstract': False,
@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Photo',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('original', models.ImageField(upload_to='account_photos')),
             ],
         ),
@@ -47,6 +47,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='account',
             name='user_permissions',
-            field=models.ManyToManyField(blank=True, related_query_name='user', related_name='user_set', to='auth.Permission', verbose_name='user permissions', help_text='Specific permissions for this user.'),
+            field=models.ManyToManyField(blank=True, related_name='user_set', help_text='Specific permissions for this user.', related_query_name='user', to='auth.Permission', verbose_name='user permissions'),
         ),
     ]

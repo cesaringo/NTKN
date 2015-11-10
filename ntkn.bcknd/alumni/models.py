@@ -27,7 +27,7 @@ class Institute(models.Model):
 class EducativeProgram(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.CharField(max_length=100, unique=True, blank=True)
-    marking_periods = models.IntegerField()
+    num_marking_periods = models.IntegerField()
     num_of_levels = models.IntegerField()
     institute = models.ForeignKey(Institute)
 

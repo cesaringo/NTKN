@@ -47,7 +47,7 @@
 
 		var login = function (username, password){
 			console.log('LoginService');
-			return $http.post(API_URL+'/login/', {username:username, password: password})
+			return $http.post(API_URL+'/auth/login/', {username:username, password: password})
 	  			.then(function (response) {
 	  				storeUserCredentials(response.data.key, response.data.user);
                     $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, response.data);
@@ -152,23 +152,23 @@
 
 	}
 
-    SCEService.$inject = ['$q', '$http', 'API_URL', 'SCE_API_URL'];
-    function SCEService ($q, $http, API_URL, SCE_API_URL){
+    SCEService.$inject = ['$q', '$http', 'API_URL'];
+    function SCEService ($q, $http, API_URL){
 
         var UserProfile = function(username){
             if (username == undefined || username == "" || username == null){
-                return $http.get(API_URL + '/user/');
+                return $http.get(API_URL + '/auth/user/');
             }
         };
 
         var StudentProfile = function(username){
             if (username != undefined){
-                return $http.get(SCE_API_URL + '/alumni/'+username+'/');
+                return $http.get(API_URL + '/alumni/students/'+username+'/');
             }
         };
 
         var GetCourses = function(params){
-            return $http.get(SCE_API_URL + '/courses/');
+            return $http.get(API_URL + '/sce/courses/');
         };
 
         return {
