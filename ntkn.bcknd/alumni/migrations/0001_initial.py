@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
                 ('name', models.CharField(unique=True, max_length=100)),
                 ('slug', models.CharField(unique=True, max_length=100, blank=True)),
-                ('marking_periods', models.IntegerField()),
+                ('num_marking_periods', models.IntegerField()),
                 ('num_of_levels', models.IntegerField()),
                 ('order', models.IntegerField(null=True, blank=True)),
             ],

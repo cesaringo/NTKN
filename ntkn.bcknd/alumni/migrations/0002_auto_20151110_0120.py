@@ -32,7 +32,7 @@ def load_educative_programs(apps, schema_editor):
                     name=row[0],
                     slug=slugify(row[0], to_lower=True),
                     order=row[2],
-                    marking_periods=row[3],
+                    num_marking_periods=row[3],
                     num_of_levels=row[4],
                     institute=institute
                 )

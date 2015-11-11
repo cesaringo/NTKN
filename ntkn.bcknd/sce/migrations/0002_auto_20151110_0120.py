@@ -59,7 +59,7 @@ def load_initial_sce_data(apps, schema_editor):
     # Marking period
     educative_programs = EducativeProgram.objects.all()
     for educative_program in educative_programs:
-        for partial in range(1, educative_program.marking_periods + 1):
+        for partial in range(1, educative_program.num_marking_periods + 1):
             marking_period = MarkingPeriod(name='Parcial ' + str(partial) + ' ' + educative_program.name,
                                            shortname='P ' + str(partial), start_date=datetime.min,
                                            end_date=datetime.min,
@@ -70,8 +70,6 @@ def load_initial_sce_data(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
-
     dependencies = [
         ('sce', '0001_initial'),
     ]
