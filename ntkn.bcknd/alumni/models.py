@@ -147,11 +147,15 @@ class Student(Account):
             if self.first_school_year:
                 self.enrollment = str(datetime.now().year % 100) + '{0:02d}'.format(
                     datetime.now().month) + '{0:02d}'.format(self.first_school_year.id % 100) + '{0:02}'.format(self.id)
-            #print(self.password)
-            if self.password is None:
-                super(Student, self).set_password(self.username)
+            print(type(self.password))
+            if self.password is "":
+                self.set_password(self.username)
+                super(self.__class__, self).set_password(self.username)
+
             else:
-                super(Student, self).set_password(self.password)
+                self.set_password(self.password)
+                super(self.__class__, self).set_password(self.password)
+            super(self.__class__, self).save()
             super(Student, self).save(*args, **kwargs)
             return self.id
 

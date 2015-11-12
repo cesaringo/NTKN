@@ -119,14 +119,10 @@ class Course(models.Model):
         #unique_together = ('subject', 'school_year', 'cohort')
 
     def save(self, *args, **kwargs):
-        print('saving data')
-        #super(Course, self).save(*args, **kwargs)
-        #marking_periods = self.subject.educative_program.markingperiod_set.all()
-        #for marking_period in marking_periods:
-        #   pass#print(marking_period)
-        #self.marking_periods.add(marking_period)
-        #super(Course, self).save(*args, **kwargs)
-        #print(marking_periods)
+        super(Course, self).save(*args, **kwargs)
+        marking_periods = self.subject.educative_program.markingperiod_set.all()
+        for marking_period in marking_periods:
+            self.marking_periods.add(marking_period)
 
 class CourseEnrollment(models.Model):
     student = models.ForeignKey(Student)
@@ -147,7 +143,7 @@ class CourseEnrollment(models.Model):
     class Meta:
         unique_together = (("course", "student"),)
 
-    def get_average_for_marking_periods():
+    def get_average_for_marking_periods(self):
         pass
 
     def __str__(self):

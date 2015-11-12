@@ -6,6 +6,7 @@ from sce.models import Course, CourseEnrollment, SchoolYear, Score, Subject
 from alumni.models import Student
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.fields import empty
+from rest_framework_bulk import ListBulkCreateUpdateDestroyAPIView
 
 
 class StudentViewSet(viewsets.ModelViewSet):

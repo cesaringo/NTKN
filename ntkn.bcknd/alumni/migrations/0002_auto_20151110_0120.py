@@ -112,6 +112,8 @@ def load_students(apps, schema_editor):
     teacher1 = Teacher(first_name='José Enrique', last_name='Alvarez Estrada', is_active=True)
     teacher2 = Teacher(first_name='María Montserrat', last_name='Ramírez', is_active=True)
     teacher1.save()
+    teacher1.set_password(teacher1.username)
+    teacher1.save()
     teacher2.save()
     print('\n--added Teacher:' + teacher1.__str__())
     print('\n--added Teacher:' + teacher2.__str__())

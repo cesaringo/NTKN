@@ -160,35 +160,41 @@
 		};
 
 
-		//Edit a course enrollment
-		var sample_course_enrollment = undefined;
-		var get_sample_course_enrollment = 
-		$http.get('http://localhost:8000/api/sce/course-enrollments/1/');
-		get_sample_course_enrollment.then(function(response){
-			sample_course_enrollment = response.data;
-			console.log(sample_course_enrollment);
-			//Modify the course enrollments
-			sample_course_enrollment.scores[0].score = "10.0";
-			sample_course_enrollment.scores[1].score = "10.0";
-			sample_course_enrollment.scores[2].score = "10.0";
-			var put_sample_course_enrollment = $http.put(
-				'http://localhost:8000/api/sce/course-enrollments/1/',
-				{
-					student: sample_course_enrollment.student,
-					course: sample_course_enrollment.course,
-					scores: sample_course_enrollment.scores
-				}
-			);
-			put_sample_course_enrollment.then(function(response){
-				console.log(response);
-			})
 
-		}, function(response){
-			console.log("Some Error");
-		});
+		//Edit a course enrollment
+		//var sample_course_enrollment = undefined;
+		//var get_sample_course_enrollment =
+		//$http.get('http://localhost:8000/api/sce/course-enrollments/1/');
+		//get_sample_course_enrollment.then(function(response){
+		//	sample_course_enrollment = response.data;
+		//	console.log(sample_course_enrollment);
+		//	//Modify the course enrollments
+		//	sample_course_enrollment.scores[0].score = "10.0";
+		//	sample_course_enrollment.scores[1].score = "10.0";
+		//	sample_course_enrollment.scores[2].score = "10.0";
+		//	var put_sample_course_enrollment = $http.put(
+		//		'http://localhost:8000/api/sce/course-enrollments/1/',
+		//		{
+		//			student: sample_course_enrollment.student,
+		//			course: sample_course_enrollment.course,
+		//			scores: sample_course_enrollment.scores
+		//		}
+		//	);
+		//	put_sample_course_enrollment.then(function(response){
+		//		console.log(response);
+		//	})
+        //
+		//}, function(response){
+		//	console.log("Some Error");
+		//});
+
+
+
+
+
 	})
 
-	.controller('TeacherDashCtrl', function($scope, $state, SCEService, $log, $http){
+	.controller('TeacherDashCtrl', function($scope, $state, SCEService, $log, $http, API_URL) {
 		console.log('TeacherDashCtrl');
 		$scope.courses = [];
 
@@ -199,32 +205,44 @@
 			console.log('Error');
 		});
 
-		//Edit a course enrollment
-		var sample_course_enrollment = undefined;
-		var get_sample_course_enrollment = 
-		$http.get('http://localhost:8000/api/sce/course-enrollments/1/');
-		get_sample_course_enrollment.then(function(response){
-			sample_course_enrollment = response.data;
-			console.log(sample_course_enrollment);
-			//Modify the course enrollments
-			sample_course_enrollment.scores[0].score = "9.8";
-			sample_course_enrollment.scores[1].score = "9.7";
-			sample_course_enrollment.scores[2].score = "9.6";
-			var put_sample_course_enrollment = $http.put(
-				'http://localhost:8000/api/sce/course-enrollments/1/',
-				{
-					student: sample_course_enrollment.student,
-					course: sample_course_enrollment.course,
-					scores: sample_course_enrollment.scores
-				}
-			);
-			put_sample_course_enrollment.then(function(response){
+		////Edit a course enrollment
+		//var sample_course_enrollment = undefined;
+		//var get_sample_course_enrollment =
+		//$http.get('http://localhost:8000/api/sce/course-enrollments/1/');
+		//get_sample_course_enrollment.then(function(response){
+		//	sample_course_enrollment = response.data;
+		//	console.log(sample_course_enrollment);
+		//	//Modify the course enrollments
+		//	sample_course_enrollment.scores[0].score = "9.8";
+		//	sample_course_enrollment.scores[1].score = "9.7";
+		//	sample_course_enrollment.scores[2].score = "9.6";
+		//	var put_sample_course_enrollment = $http.put(
+		//		'http://localhost:8000/api/sce/course-enrollments/1/',
+		//		{
+		//			student: sample_course_enrollment.student,
+		//			course: sample_course_enrollment.course,
+		//			scores: sample_course_enrollment.scores
+		//		}
+		//	);
+		//	put_sample_course_enrollment.then(function(response){
+		//		console.log(response);
+		//	})
+        //
+		//}, function(response){
+		//	console.log("Some Error");
+		//});
+
+			//Create multiple Courses
+			var params = [
+				{school_year_id:1, subject_id:11, cohort_id: 9}
+			];
+			var post = $http.post(API_URL + '/sce/courses/', params);
+			post.then(function(response){
+				console.log(response);
+			}, function(response){
 				console.log(response);
 			})
 
-		}, function(response){
-			console.log("Some Error");
-		});
 
 		
 
