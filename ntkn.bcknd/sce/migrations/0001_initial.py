@@ -2,9 +2,9 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.core.validators
 import django.db.models.deletion
 import datetime
-import django.core.validators
 
 
 class Migration(migrations.Migration):
@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Course',
             fields=[
-                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=255, null=True)),
                 ('is_active', models.BooleanField(default=True)),
                 ('cohort', models.ForeignKey(to='alumni.Cohort')),
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CourseEnrollment',
             fields=[
-                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
                 ('is_active', models.BooleanField(default=True)),
                 ('course', models.ForeignKey(to='sce.Course')),
                 ('student', models.ForeignKey(to='alumni.Student')),
@@ -35,21 +35,21 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Department',
             fields=[
-                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
-                ('name', models.CharField(unique=True, verbose_name='Department Name', max_length=255)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
+                ('name', models.CharField(max_length=255, verbose_name='Department Name', unique=True)),
             ],
         ),
         migrations.CreateModel(
             name='MarkingPeriod',
             fields=[
-                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
-                ('name', models.CharField(unique=True, max_length=255)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
+                ('name', models.CharField(max_length=255, unique=True)),
                 ('shortname', models.CharField(max_length=255)),
-                ('description', models.TextField(blank=True, null=True)),
+                ('description', models.TextField(null=True, blank=True)),
                 ('start_date', models.DateField()),
                 ('end_date', models.DateField()),
-                ('grades_due', models.DateField(validators=[django.core.validators.MinValueValidator(datetime.date(1970, 1, 1))], blank=True, null=True, help_text='If filled out, teachers will be notified when grades are due.')),
-                ('active', models.BooleanField(default=False, help_text='Teachers may only enter grades for active marking periods. There may be more than one active marking period.')),
+                ('grades_due', models.DateField(null=True, help_text='If filled out, teachers will be notified when grades are due.', blank=True, validators=[django.core.validators.MinValueValidator(datetime.date(1970, 1, 1))])),
+                ('active', models.BooleanField(help_text='Teachers may only enter grades for active marking periods. There may be more than one active marking period.', default=False)),
                 ('educative_program', models.ForeignKey(to='alumni.EducativeProgram')),
             ],
             options={
@@ -59,8 +59,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SchoolYear',
             fields=[
-                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
-                ('name', models.CharField(unique=True, max_length=100)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
+                ('name', models.CharField(max_length=100, unique=True)),
                 ('start_date', models.DateField(validators=[django.core.validators.MinValueValidator(datetime.date(1970, 1, 1))])),
                 ('end_date', models.DateField(validators=[django.core.validators.MinValueValidator(datetime.date(1970, 1, 1))])),
                 ('active_year', models.BooleanField(default=False)),
@@ -72,10 +72,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Score',
             fields=[
-                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
-                ('score', models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True, validators=[django.core.validators.MinValueValidator(0.0), django.core.validators.MaxValueValidator(10.0)])),
-                ('course_enrollment', models.ForeignKey(related_name='scores', related_query_name='score', to='sce.CourseEnrollment')),
-                ('marking_period', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='sce.MarkingPeriod', null=True)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
+                ('score', models.DecimalField(null=True, max_digits=3, blank=True, validators=[django.core.validators.MinValueValidator(0.0), django.core.validators.MaxValueValidator(10.0)], decimal_places=1)),
+                ('course_enrollment', models.ForeignKey(to='sce.CourseEnrollment', related_name='scores', related_query_name='score')),
+                ('marking_period', models.ForeignKey(blank=True, on_delete=django.db.models.deletion.SET_NULL, null=True, to='sce.MarkingPeriod')),
             ],
             options={
                 'ordering': ('marking_period',),
@@ -84,12 +84,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Subject',
             fields=[
-                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
                 ('is_active', models.BooleanField(default=True)),
-                ('fullname', models.CharField(verbose_name='Subject Name', max_length=255)),
-                ('shortname', models.CharField(verbose_name='Key', max_length=255)),
-                ('graded', models.BooleanField(default=True, help_text='Teachers can submit grades for this course')),
-                ('description', models.TextField(blank=True, null=True)),
+                ('fullname', models.CharField(max_length=255, verbose_name='Subject Name')),
+                ('shortname', models.CharField(max_length=255, verbose_name='Key')),
+                ('graded', models.BooleanField(help_text='Teachers can submit grades for this course', default=True)),
+                ('description', models.TextField(null=True, blank=True)),
                 ('level', models.IntegerField(null=True)),
                 ('order', models.IntegerField(null=True)),
             ],
@@ -97,9 +97,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SubjectCategory',
             fields=[
-                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=150)),
-                ('order', models.IntegerField(blank=True, null=True)),
+                ('order', models.IntegerField(null=True, blank=True)),
             ],
         ),
         migrations.AddField(
@@ -109,23 +109,28 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='subject',
+            name='cohorts',
+            field=models.ManyToManyField(to='alumni.Cohort'),
+        ),
+        migrations.AddField(
+            model_name='subject',
             name='department',
             field=models.ForeignKey(blank=True, to='sce.Department', null=True),
         ),
         migrations.AddField(
             model_name='subject',
             name='educative_program',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='alumni.EducativeProgram', null=True),
+            field=models.ForeignKey(blank=True, on_delete=django.db.models.deletion.SET_NULL, null=True, to='alumni.EducativeProgram'),
         ),
         migrations.AddField(
             model_name='subject',
             name='grade_level',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, verbose_name='Grade level', blank=True, to='alumni.GradeLevel', null=True),
+            field=models.ForeignKey(verbose_name='Grade level', blank=True, on_delete=django.db.models.deletion.SET_NULL, null=True, to='alumni.GradeLevel'),
         ),
         migrations.AddField(
             model_name='course',
             name='marking_periods',
-            field=models.ManyToManyField(related_name='course_set', blank=True, related_query_name='course', to='sce.MarkingPeriod'),
+            field=models.ManyToManyField(related_name='course_set', to='sce.MarkingPeriod', blank=True, related_query_name='course'),
         ),
         migrations.AddField(
             model_name='course',
@@ -135,12 +140,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='course',
             name='students',
-            field=models.ManyToManyField(related_name='course_set', through='sce.CourseEnrollment', blank=True, related_query_name='course', to='alumni.Student'),
+            field=models.ManyToManyField(related_name='course_set', through='sce.CourseEnrollment', to='alumni.Student', blank=True, related_query_name='course'),
         ),
         migrations.AddField(
             model_name='course',
             name='subject',
-            field=models.ForeignKey(related_name='courses', to='sce.Subject'),
+            field=models.ForeignKey(to='sce.Subject', related_name='courses'),
         ),
         migrations.AddField(
             model_name='course',

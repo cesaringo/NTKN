@@ -234,7 +234,8 @@
 
 			//Create multiple Courses
 			var params = [
-				{school_year_id:1, subject_id:11, cohort_id: 9}
+				{school_year_id:1, subject_id:11, cohort_id: 10},
+				{school_year_id:1, subject_id:11, cohort_id: 11}
 			];
 			var post = $http.post(API_URL + '/sce/courses/', params);
 			post.then(function(response){

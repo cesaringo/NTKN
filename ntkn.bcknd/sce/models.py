@@ -57,8 +57,14 @@ class Subject(models.Model):
 
     order = models.IntegerField(null=True)
 
+    # current cohorts
+    cohorts = models.ManyToManyField(Cohort)
+
     def __str__(self):
         return self.fullname + ' ' + str(self.level)
+
+    def get_cohorts(self):
+        return ",".join([str(c) for c in self.cohorts.all()])
 
 
 class MarkingPeriod(models.Model):

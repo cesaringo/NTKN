@@ -36,7 +36,7 @@ def load_initial_sce_data(apps, schema_editor):
         print('--added SubjectCategory ' + subject_category.__str__())
         id += 1
 
-    basic_cohorts = Cohort.objets.all()
+    basic_cohorts = Cohort.objects.all()
     with open('sce/initial_data/subjects.csv', 'rt', encoding='utf8') as f:
         reader = csv.reader(f)
         for row in reader:

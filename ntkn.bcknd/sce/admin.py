@@ -94,13 +94,13 @@ class SubjectResource(resources.ModelResource):
 
 class SubjectAdmin(ImportExportMixin, admin.ModelAdmin):
     resource_class = SubjectResource
-    list_display = ('shortname', '__str__', 'educative_program', 'level', 'grade_level', 'is_active')
+    list_display = ('shortname', '__str__', 'educative_program', 'level', 'grade_level', 'is_active', 'get_cohorts')
     list_display_links = ('shortname', '__str__',)
     ordering = ('educative_program',)
 
     fieldsets = (
         (None, {'fields': ('fullname', 'shortname', 'description',)}),
-        (None, {'fields': ('is_active', 'educative_program', 'category', 'graded', 'level', 'grade_level')}),
+        (None, {'fields': ('is_active', 'educative_program', 'category', 'graded', 'level', 'grade_level', 'cohorts')}),
     )
 
     list_filter = ('is_active', 'educative_program', 'grade_level', 'grade_level')
