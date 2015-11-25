@@ -1,0 +1,95 @@
+<div class="student-dashboard">
+	<div layout="column" layout-margin layout-fill layout-padding layout-wrap>
+		<!--Student summary -->
+		<div id="student-info" layout="column" layout-fill layout-padding layout-wrap >
+			<md-subheader class="md-primary">Información</md-subheader>
+			<md-list lay layout-padding >
+				<md-list-item flex>
+					Estudiante: {{currentStudent.last_name}}, {{currentStudent.first_name}}
+				</md-list-item>
+				<md-list-item flex>
+					Nivel educativo: {{currentStudent.educative_program.name}}
+				</md-list-item>
+				<md-list-item flex>
+					Grupos: <span ng-repeat="cohort in currentStudent.cohorts">{{cohort.name}},</span>
+				</md-list-item>
+				<md-list-item flex>
+					Matricula: {{currentStudent.username}}
+				</md-list-item>
+			</md-list>
+			
+			
+		</div>
+		<md-card id="student-schoolcard" flex layout="row" layout-wrap layout-padding>
+			<h3 flex="80" flex-sm="100">Boleta escolar</h3>
+			<div flex="20" flex-sm="100">
+				<md-input-container>
+					<label>Periodo escolar:</label>
+					<md-select ng-model="schoolyear" class="md-raised md-primary"  md-on-open="LoadSchoolYears()" style="min-width: 200px;">
+			     		<md-option ng-value="schoolyear" ng-repeat="schoolyear in available_schoolyears">
+			     			{{schoolyear.name}}
+			     		</md-option>
+				    	</md-select>
+			    	</md-input-container>
+			</div>
+			<div flex="100">
+				<md-tabs md-dynamic-height md-border-bottom md-no-pagination>
+					<md-tab label="Español">
+						<md-content>
+							<md-data-table-container >
+								<table md-data-table>
+									<thead ng-if="course_enrollments.length > 0">
+										<tr>
+											<th name="Curso"></th>
+											<th ng-repeat="score in course_enrollments[0].scores" name="{{ score.marking_period.shortname }}">
+											</th>
+											<th name="Promedio"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr md-auto-select ng-repeat="ce in course_enrollments">
+											<td>
+												{{ce.course.subject}}
+											</td>
+											<td ng-repeat="score in ce.scores">
+												<md-tooltip ng-if="score.score">
+										          	{{score.marking_period.name}}: {{score.score}}
+										        	</md-tooltip>
+												{{score.score}}
+											</td>
+											<td>
+												<md-tooltip ng-if="ce.get_avarage">
+										          	Promedio final asignatura: {{ce.get_avarage}}
+										        	</md-tooltip>
+												{{ce.get_avarage}}
+											</td>
+										</tr>
+									</tbody>
+									<tfoot>
+										<tr>
+										 	<td>
+										 		Promedio final:
+										 		<br>
+										 		<small>*Suma de los promedios por asignatura 
+										 		<br>dividido por el numéro de las mísmas.</small>
+										 	</td>
+										 	<td ng-repeat="score in course_enrollments[0].scores">
+										 	</td>
+										 	<td><strong>9.0</strong></td>
+										</tr>
+									</tfoot>
+								</table>
+							</md-data-table-container>
+
+						</md-content>
+					</md-tab>
+					<md-tab label="Inglés">
+						<md-content>
+						</md-content>
+					</md-tab>
+				</md-tabs>
+				
+			</div>
+		</md-card>
+	</div>
+</div>

@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 from datetime import datetime
 
 from django.db import models, migrations
-from sce.models import SubjectCategory, Subject, SchoolYear, MarkingPeriod
-from alumni.models import GradeLevel, EducativeProgram, Cohort
+from sce.models import EducativeProgram, SubjectCategory, Subject, SchoolYear, MarkingPeriod
+from alumni.models import GradeLevel, Cohort
 import csv
 
 def load_initial_sce_data(apps, schema_editor):

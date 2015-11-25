@@ -39,7 +39,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class AbstractUserRegistrationSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = tuple(User.REQUIRED_FIELDS) + (

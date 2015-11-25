@@ -44,6 +44,7 @@
   		//Listen Events
 		$scope.$on(AUTH_EVENTS.notAuthorized, function(event){
 			console.log('You are not allowed to access this resource.');
+			console.log(event)
 			$state.go('dashboard.profile', {}, {reload: true});
 		});
 
@@ -61,17 +62,20 @@
 
   			if (roles.length > 0){
   				switch(roles[0]){
-					case 'student': $state.go('dashboard.student', {}, {reload: true}); break;
-					case 'teacher': $state.go('dashboard.teacher', {}, {reload: true}); break;
-					case 'admin': 	$state.go('dashboard.admin', {}, {reload: true}); break;
-					default: 
+					case 'student':
+						$state.go('dashboard.student', {}, {reload: true}); break;
+					case 'teacher':
+						$state.go('dashboard.teacher', {}, {reload: true}); break;
+					case 'administrator':
+						$state.go('dashboard.administrator', {}, {reload: true}); break;
+					default:
 						$rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
 						break;
 				}
   			}else{
   				$rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
   			}
-  			
+
 		});
 
 		$scope.$on(AUTH_EVENTS.logoutSuccess, function(){
@@ -87,8 +91,9 @@
 	/*Login Controller
 	Login & Redirect to dashboard
 	*/
-	.controller('MainMenuCtrl', function ($scope, $timeout, $mdSidenav, $log) {
+	.controller('MainMenuCtrl', function ($scope, $timeout, $mdSidenav, $log, AuthService) {
 		var self = this;
+		$scope.role = AuthService.getCurrentRole();//'administrator'
 		$scope.close = function () {
 		 $mdSidenav('mainSideNav').close()
 		   .then(function () {
@@ -243,17 +248,89 @@
 			}, function(response){
 				console.log(response);
 			})
+	})
 
+	.controller('AdministratorCtrl', function($scope, SCEService, $mdDialog){
+		//School Year Module
+		//Initial values
 
-		
+	})
+	.controller('AdminSchoolYearCtrl', function($scope, SCEService){
+		$scope.school_years = [];
+		$scope.educative_programs = [];
+		$scope.school_year_to_create = {
+			name: undefined,
+			start_date: undefined,
+			end_date: undefined,
+			educative_program_id: undefined,
+		};
+		$scope.LoadEducativePrograms = function(){
+			SCEService.GetEducativePrograms().then(function(response){
+				$scope.educative_programs = response.data.results;
+			}, function(){
+				console.log("Some error at GetEducativePrograms()")
+			});
+		};
 
+		$scope.ActivateSchoolYear = function(school_year){
+			SCEService.ActivateSchoolYear(school_year.id).then(function(response){
+				school_year.is_active = response.data.result.is_active;
+			}, function (response) {
+				console.log(response)
+			});
+		};
+		$scope.DeactivateSchoolYear = function(school_year){
+			SCEService.DeactivateSchoolYear(school_year.id).then(function(response){
+				school_year.is_active = response.data.result.is_active;
+			}, function (response) {
+				console.log(response)
+			});
+		};
+		$scope.CreateCoursesBySchoolYear = function(school_year, complete_courses){
+			SCEService.CreateCoursesBySchoolYear(school_year.id, complete_courses).then(function(response){
+				console.log(response.data);
+			}, function (response) {
+				console.log(response)
+			});
+		};
 
+	 	//Run initial services
+		SCEService.GetSchoolYears().then(function(response){
+			$scope.school_years = response.data.results;
+		}, function(error){
+			$console.log("Error at Retrieve School Years");
+		});
+	})
+	.controller('AdminEditSchoolYearCtrl', function(){
+	})
+	.controller('AdminCreateSchoolYearCtrl', function($scope, SCEService, $state){
+		$scope.school_year = {
+			start_date: undefined,
+			end_date: undefined,
+			educative_program_id: undefined
+		};
 
-
-
-
-
-
+		$scope.CreateSchoolYear = function(formData){
+			$scope.errors = [];
+			SCEService.CreateSchoolYear(
+					$scope.school_year.start_date.toISOString().slice(0,10),
+					$scope.school_year.end_date.toISOString().slice(0,10),
+					$scope.school_year.educative_program_id
+			).then(function(response){
+				$scope.$parent.school_years.push(response.data);
+				$state.go('dashboard.administrator.school_years')
+			}, function(response){
+				console.log(response);
+			});
+		}
+	})
+	.controller('AdminEducativeProgramsCtrl', function($scope, SCEService){
+		var self = this;
+		self.educative_programs = [];
+		SCEService.GetEducativePrograms().then(function(response){
+			self.educative_programs = response.data.results;
+		}, function(response){
+			console.log(response)
+		});
 	});
-
 })()

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
@@ -5,12 +7,12 @@ from sce.serializers import (CourseSerializer, CourseEnrollmentSerializer,
 							 SchoolYearSerializer, ScoreSerializer, SubjectSerializer)
 from alumni.serializers import StudentSerializer
 from sce.models import Course, CourseEnrollment, SchoolYear, Score, Subject
-from alumni.models import Student, EducativeProgram
+from alumni.models import Student
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.fields import empty
 from rest_framework_bulk import BulkModelViewSet
 from rest_framework.decorators import detail_route
-
+import re
 
 class StudentViewSet(viewsets.ModelViewSet):
 	"""	A viewset for viewing and editing Student instances. """
@@ -42,13 +44,63 @@ class CourseViewSet(BulkModelViewSet):
 			queryset = queryset.filter(id__in=id_courses)
 
 		# if requested by admin
-		elif user.groups.all().filter(name='administrator').exist():
+		elif user.groups.all().filter(name='administrator').exists():
 			# All courses
 			pass
 		else:
 			queryset = None
 
 		return queryset
+
+	@detail_route(methods=['post'])
+	def enroll_students(self, request, pk):
+		try:
+			course = Course.objects.get(pk=pk)
+		except Course.DoesNotExist:
+			course = None
+
+		if course is None:
+			return Response(data={
+				'has_error': True,
+				'error_message': 'Course with pk = {0} does not exists.'.format(pk)
+			}, status=status.HTTP_400_BAD_REQUEST)
+
+		id_students = request.GET.get('id_students', None)
+		if id_students is None:
+			return Response(data={
+				'has_error': True,
+				'error_message': 'param id_students is required'
+			}, status=status.HTTP_400_BAD_REQUEST)
+
+		pattern = re.compile("^(\d+(,\d+)*)?$")
+		if not pattern.match(id_students):
+			return Response(data={
+				'has_error': True,
+				'error_message': 'id_students is not a valid param. Please use coma separated ints.'
+			}, status=status.HTTP_400_BAD_REQUEST)
+
+		id_students = id_students.split(',')
+		students = Student.objects.filter(id__in=id_students)
+		course_enrollments = []
+		for student in students:
+			course_enrollment = CourseEnrollment(student=student, course=course)
+			try:
+				course_enrollment.save()
+				course_enrollments.append(course_enrollment)
+			except:
+				# If a Course enrollment for the given student and course already exist.
+				pass
+
+		course_enrollment_serializer = CourseEnrollmentSerializer(course_enrollments, many=True)
+		return Response(
+			data={
+				'success': True,
+				'result': course_enrollment_serializer.data
+			}, status=status.HTTP_200_OK
+		)
+
+
+
 
 
 class CourseEnrollmentViewSet(viewsets.ModelViewSet):
@@ -59,6 +111,7 @@ class CourseEnrollmentViewSet(viewsets.ModelViewSet):
 
 	def get_queryset(self):
 		queryset = CourseEnrollment.objects.all()
+
 		user = self.request.user
 
 		# if user:
@@ -99,13 +152,8 @@ class SchoolYearViewSet(viewsets.ModelViewSet):
 	queryset = SchoolYear.objects.all()
 	permission_classes = [IsAuthenticated, DjangoModelPermissions]
 
-	@detail_route()
-	def create_registers(self, request, pk):
-		"""
-		:param request: querystring params (id_educative_program)
-		:param pk: pk of the school year
-		:return: error is some was wrong, result if success
-		"""
+	@detail_route(methods=['post'])
+	def create_courses(self, request, pk):
 		data = {}
 		try:
 			sy = SchoolYear.objects.get(pk=pk)
@@ -117,38 +165,80 @@ class SchoolYearViewSet(viewsets.ModelViewSet):
 			data['error_message'] = 'School year not found.'
 			return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
-		id_educative_program = request.GET.get('educative_program', None)
-		if id_educative_program is None:
-			data['has_error'] = True
-			data['error_message'] = 'Educative program is required.'
+		current_courses = Course.objects.filter(school_year=sy)
+		exist_courses = current_courses.exists()
+		complete_courses = request.DATA.get('complete_courses', False)
+
+		if exist_courses and not complete_courses:
+			data["has_error"] = True
+			data["error_message"] = 'There is already courses for the given period. Use complete_courses option.'
 			return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
-		try:
-			educative_program = EducativeProgram.objects.get(id=id_educative_program)
-		except EducativeProgram.DoesNotExist:
-			data['has_error'] = True
-			data['error_message'] = 'Educative program does not exist.'
-			return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-
-		data['courses'] = []
-		subjects = educative_program.subject_set.all()
+		courses = []
+		subjects = sy.educative_program.subject_set.all()
 		for subject in subjects:
 			for cohort in subject.cohorts.all():
+				if current_courses.filter(subject=subject, cohort=cohort).exists():
+					continue # Only unique courses
 				course = Course(
 					school_year=sy,
 					subject=subject,
 					cohort=cohort
 				)
-				course.save()
-				data['courses'].append({
-					'id': course.id,
-					'course': course.subject.fullname,
-					'cohort': course.cohort.id
-				})
+				courses.append(course)
 
+		Course.objects.bulk_create(courses)
 		data['success'] = True
 		data['success_message'] = 'Course added correctly.'
-		return Response(data=data, status=status.HTTP_200_OK)
+		course_serializer = CourseSerializer(data=courses, many=True, fields=['subject', 'school_year', 'cohort'])
+		course_serializer.is_valid()
+		data['created_courses'] = course_serializer.data
+
+		return Response(data=data,status=status.HTTP_200_OK)
+
+	@detail_route(methods=['post'])
+	def activate(self, request, pk):
+		try:
+			sy = SchoolYear.objects.get(pk=pk)
+		except SchoolYear.DoesNotExist:
+			sy = None
+
+		if sy is None:
+			return Response(data={
+				'has_error': True,
+				'error_message': 'Periodo escolar con el id: {0} no existe'.format(pk)
+			}, status=status.HTTP_400_BAD_REQUEST)
+
+		sy.is_active = True
+		sy.save()
+		return Response(data={
+			'success': True,
+			'success_message': 'Periodo escolar con el id: {0} activado correctamente'.format(pk),
+			'result': SchoolYearSerializer(sy, fields=['id', 'slug', 'is_active', 'start_date',
+													   'end_date', 'educative_program__name']).data
+			}, status=status.HTTP_200_OK)
+
+	@detail_route(methods=['post'])
+	def deactivate(self, request, pk):
+		try:
+			sy = SchoolYear.objects.get(pk=pk)
+		except SchoolYear.DoesNotExist:
+			sy = None
+
+		if sy is None:
+			return Response(data={
+				'has_error': True,
+				'error_message': 'Periodo escolar con el id: {0} no existe'.format(pk)
+			}, status=status.HTTP_400_BAD_REQUEST)
+
+		sy.is_active = False
+		sy.save()
+		return Response(data={
+			'success': True,
+			'success_message': 'Periodo escolar con el id: {0} desactivado correctamente'.format(pk),
+			'result': SchoolYearSerializer(sy, fields=['id', 'slug', 'is_active', 'start_date',
+													   'end_date', 'educative_program__name']).data
+			}, status=status.HTTP_200_OK)
 
 
 class ScoreViewSet(viewsets.ModelViewSet):

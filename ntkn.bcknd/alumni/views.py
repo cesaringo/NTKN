@@ -2,8 +2,9 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from alumni.serializers import IntituteSerializer, StudentSerializer
+from sce.serializers import EducativeProgramSerializer
 from alumni.models import Student, Institute
-
+from sce.models import EducativeProgram
 
 class InstituteViewSet(viewsets.ModelViewSet):
 	serializer_class = IntituteSerializer
@@ -36,3 +37,7 @@ class StudentViewSet(viewsets.ModelViewSet):
 		return queryset
 
 
+class EducativeProgramViewSet(viewsets.ModelViewSet):
+	serializer_class = EducativeProgramSerializer
+	queryset = EducativeProgram.objects.all()
+	permission_classes = [IsAuthenticated]

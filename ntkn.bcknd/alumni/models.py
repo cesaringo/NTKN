@@ -24,19 +24,6 @@ class Institute(models.Model):
         # More data about Institute here...
 
 
-class EducativeProgram(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    slug = models.CharField(max_length=100, unique=True, blank=True)
-    num_marking_periods = models.IntegerField()
-    num_of_levels = models.IntegerField()
-    institute = models.ForeignKey(Institute)
-
-    order = models.IntegerField(null=True, blank=True)
-
-    def __str__(self):
-        return self.name
-
-
 class IntegerRangeField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, min_value=None, max_value=None, **kwargs):
         self.min_value, self.max_value = min_value, max_value
@@ -64,12 +51,11 @@ class ClassYear(models.Model):
             self.name = "Class of %s" % (self.year,)
         super(ClassYear, self).save(*args, **kwargs)
 
-
 class GradeLevel(models.Model):
     number = models.IntegerField(verbose_name="Grade number")
     name = models.CharField(max_length=100, verbose_name="Grade name", blank=True)
     slug = models.CharField(max_length=100, verbose_name="slug", blank=True)
-    educative_program = models.ForeignKey(EducativeProgram)
+    educative_program = models.ForeignKey('sce.EducativeProgram')
     order = models.IntegerField(null=True, blank=True)
 
     class Meta:
@@ -92,20 +78,6 @@ class GradeLevel(models.Model):
     def __str__(self):
         return self.name
 
-
-class SchoolYear(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    start_date = models.DateField(validators=settings.DATE_VALIDATORS)
-    end_date = models.DateField(validators=settings.DATE_VALIDATORS)
-    active_year = models.BooleanField(default=False, help_text='')
-
-    class Meta:
-        ordering = ('start_date',)
-
-    def __str__(self):
-        return self.name
-
-
 class Student(Account):
     institute = models.ForeignKey(Institute)
     enrollment = models.CharField(max_length=8, blank=True, null=True)  # Primary Id for the institute.
@@ -115,7 +87,7 @@ class Student(Account):
     class_year = models.ForeignKey(ClassYear, verbose_name="Class year / School Generation", blank=True, null=True)
     grade_level = models.ForeignKey(GradeLevel, blank=True, null=True, on_delete=models.SET_NULL)
     # First School year of any student
-    first_school_year = models.ForeignKey(SchoolYear, null=True, on_delete=models.SET_NULL)
+    #first_school_year = models.ForeignKey(SchoolYear, null=True, on_delete=models.SET_NULL)
     phone = PhoneNumberField(null=True, blank=True)
     parent_email = models.EmailField(null=True, blank=True)
     parent_phone = PhoneNumberField(null=True, blank=True)

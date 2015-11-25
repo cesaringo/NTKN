@@ -3,8 +3,8 @@
 	angular.module('ntkn', ['ui.router', 'ngMaterial', 'http-auth-interceptor', 'md.data.table'])
 	.config(function ($stateProvider, $urlRouterProvider, USER_ROLES, $mdThemingProvider) {
 		$mdThemingProvider.theme('default')
-    		.primaryPalette('blue')
-    		.accentPalette('deep-orange');
+    		.primaryPalette('pink')
+    		.accentPalette('orange');
 
 		$stateProvider
 		.state('login', {
@@ -36,14 +36,34 @@
 	      		authorizedRoles: [USER_ROLES.student]
 		     }
   		})
-  		
-  		.state('dashboard.admin', {
-  			url: '/admin',
-  			templateUrl: '/static/views/admin.html',
+
+		//Administrator routes
+  		.state('dashboard.administrator', {
+  			url: '/administrator',
+  			templateUrl: '/static/views/administrator.html',
+			controller: 'AdministratorCtrl',
   			data: {
-	      		authorizedRoles: [USER_ROLES.admin]
+	      		authorizedRoles: [USER_ROLES.administrator]
 		    }
-  		})
+  		}).state('dashboard.administrator.school_years', {
+			controller: 'AdminSchoolYearCtrl',
+			url: '/school-years',
+			templateUrl: '/static/views/administrator.school_years.html',
+		}).state('dashboard.administrator.school_years.create', {
+			controller: 'AdminCreateSchoolYearCtrl',
+			url: '/create',
+			templateUrl: '/static/views/administrator.school_years.details.html',
+		}).state('dashboard.administrator.school_years.edit', {
+			controller: 'AdminEditSchoolYearCtrl',
+			url: '/edit',
+			templateUrl: '/static/views/administrator.school_years.details.html',
+		}).state('dashboard.administrator.educative_programs',{
+			controller: 'AdminEducativeProgramsCtrl',
+			controllerAs: 'ctrl',
+			url: '/educative-programs',
+			templateUrl: '/static/views/administrator.educative_programs.html'
+		})
+
   		.state('dashboard.teacher', {
 
   			url: '/teacher',

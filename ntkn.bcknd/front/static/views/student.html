@@ -25,7 +25,8 @@
 			<div flex="20" flex-sm="100">
 				<md-input-container>
 					<label>Periodo escolar:</label>
-					<md-select ng-model="schoolyear" class="md-raised md-primary"  md-on-open="LoadSchoolYears()" style="min-width: 200px;">
+					<md-select ng-model="schoolyear" class="md-raised md-primary"
+                               md-on-open="LoadSchoolYears()" style="min-width: 200px;">
 			     		<md-option ng-value="schoolyear" ng-repeat="schoolyear in available_schoolyears">
 			     			{{schoolyear.name}}
 			     		</md-option>

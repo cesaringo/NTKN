@@ -1,16 +1,18 @@
 from rest_framework import serializers
 from alumni.serializers import DynamicFieldsModelSerializer
 from sce.models import (Course, MarkingPeriod, Subject,
-						CourseEnrollment, Score, SchoolYear, GradeLevel, Cohort)
+						CourseEnrollment, Score, SchoolYear, GradeLevel, Cohort, EducativeProgram)
 from alumni.models import Teacher
 from sce.validators import validate_id_exists
 from rest_framework_bulk import BulkListSerializer, BulkSerializerMixin
 
 
 class SchoolYearSerializer(DynamicFieldsModelSerializer):
+	educative_program_id = serializers.IntegerField(write_only=True)
 	class Meta:
 		model = SchoolYear
-		fields = ('id', 'name', 'start_date', 'end_date', 'active_year')
+		fields = ('id', 'slug', 'start_date', 'end_date', 'is_active', 'educative_program', 'educative_program_id', 'num_of_courses')
+		depth = 1
 
 
 class GradeLevelSerializer(serializers.ModelSerializer):
@@ -32,7 +34,7 @@ class MarkingPeriodSerializer(DynamicFieldsModelSerializer):
 
 	class Meta:
 		model = MarkingPeriod
-		fields = ['id', 'name', 'shortname']
+		fields = ['id', 'name', 'shortname', 'grades_due']
 		ordering = ('name',)
 
 
@@ -43,9 +45,11 @@ class SubjectSerializer(DynamicFieldsModelSerializer):
 				  'grade_level', 'department', 'category')
 
 
+
+
 class CourseSerializer(BulkSerializerMixin, DynamicFieldsModelSerializer):
 	marking_periods = serializers.SlugRelatedField(many=True, slug_field='shortname', read_only=True)
-	subject = serializers.StringRelatedField(read_only=True)
+	subject = serializers.StringRelatedField(read_only=True, allow_null=True)
 	subject_id = serializers.IntegerField(write_only=True, validators=[validate_id_exists(Subject)])
 
 	teacher = serializers.StringRelatedField(read_only=True)
@@ -61,14 +65,23 @@ class CourseSerializer(BulkSerializerMixin, DynamicFieldsModelSerializer):
 
 	class Meta:
 		model = Course
-		fields = ['id', 'subject', 'subject_id', 'teacher', 'teacher_id', 'school_year', 'school_year_id',
-			'cohort', 'cohort_id', 'marking_periods', 'students']
+		fields = ['id',
+				  'subject',
+				  'subject_id',
+				  'teacher',
+				  'teacher_id',
+				  'school_year',
+				  'school_year_id',
+				  'cohort',
+				  'cohort_id',
+				  'marking_periods',
+				  'students']
 
-		depth = 1
+		#depth = 1
 		list_serializer_class = BulkListSerializer
 
 	def create(self, validated_data):
-		print(validated_data)
+		print('Saving...')
 		if 'students' in validated_data:
 			students_data = validated_data.pop('students')
 		course = Course.objects.create(**validated_data)
@@ -76,6 +89,7 @@ class CourseSerializer(BulkSerializerMixin, DynamicFieldsModelSerializer):
 
 
 	def validate(self, attrs):
+		print('Validating data...')
 		if Course.objects.filter(subject__id=attrs['subject_id'], school_year__id=attrs['school_year_id'],
 			cohort__id=attrs['cohort_id']).exists():
 			raise serializers.ValidationError('Course with given data already exists')
@@ -110,3 +124,12 @@ class CourseEnrollmentSerializer(DynamicFieldsModelSerializer):
 			score.save()
 		instance.save()
 		return instance
+
+
+class EducativeProgramSerializer(DynamicFieldsModelSerializer):
+    subject_set = SubjectSerializer(many=True, read_only=True)
+    class Meta:
+        model = EducativeProgram
+        fields = ['id', 'name', 'slug', 'num_of_levels', 'institute', 'is_active',
+                  'subject_set', 'markingperiod_set']
+        depth = 1

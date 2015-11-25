@@ -1,7 +1,6 @@
 slugify
-Django==1.8
+Django
 Unidecode==0.04.17
-awesome-slugify==1.6.4
 defusedxml==0.4.1
 django-allauth==0.19.1
 django-appconf==1.0.1

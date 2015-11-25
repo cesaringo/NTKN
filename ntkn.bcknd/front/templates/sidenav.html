@@ -13,8 +13,8 @@ md-is-locked-open="$mdMedia('gt-md') && lockMainSideNav">
                 </md-button>
             </md-list-item>-->
             <md-list-item  ng-if="isAuthenticated">
-                <img src="{{$parent.user.photo.thumbnail_50x50}}" class="md-avatar" 
-            alt="{{$parent.user.first_name}} {{$parent.user.last_name}}">
+                <img src="" class="md-avatar"
+                     alt="{{ $parent.user.first_name}} {{$parent.user.last_name}}">
             </md-list-item>
             <md-list-item ng-if="isAuthenticated" class="md-body-2">
                 {{$parent.user.first_name | limitTo:20}}
@@ -28,7 +28,7 @@ md-is-locked-open="$mdMedia('gt-md') && lockMainSideNav">
     <md-content ng-controller="MainMenuCtrl as mc">
         <md-list>
             <md-list-item ng-if="isAuthenticated" md-ink-ripple class="md-clickable md-button"> 
-                <a layout="row" layout-align="start center" ui-sref="dashboard.student"> 
+                <a layout="row" layout-align="start center" ui-sref="dashboard.{{ role }}">
                     <div class="inset"><md-icon class="material-icons">dashboard</md-icon></div>
                     Dashboard
                 </a>

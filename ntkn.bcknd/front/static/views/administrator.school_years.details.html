@@ -1,0 +1,25 @@
+<div ng-view name="school-year-details"
+layout-margin  layout-padding>
+    <h3>Nuevo Ciclo Escolar</h3>
+    <div layout="row">
+    <div flex flex-sm="100" flex-gt-sm="33"  layout="column">
+        <md-whiteframe class="md-whiteframe-z3" layout="column" layout-margin layout-fill layout-padding flex>
+            <form ng-submit="CreateSchoolYear(SchoolYearForm)" name="SchoolYearForm">
+                <md-input-container>
+                    <label>Programa Educativo: </label>
+                    <md-select ng-model="school_year.educative_program_id" md-on-open="LoadEducativePrograms()">
+                        <md-option ng-repeat="educative_program in educative_programs" value="{{educative_program.id}}">
+                            {{educative_program.name}}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+                <md-datepicker ng-model="school_year.start_date" md-placeholder="Fecha Inicio"></md-datepicker>
+                <md-datepicker ng-model="school_year.end_date" md-placeholder="Fecha Fin" layout-wrap=""></md-datepicker>
+                <md-input-container>
+                     <md-button type="submit" class="md-raised md-primary">Guardar</md-button>
+                </md-input-container>
+            </form>
+        </md-whiteframe>
+    </div>
+    </div>
+</div>

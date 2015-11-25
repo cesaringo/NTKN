@@ -1,0 +1,34 @@
+<div ng-view name="school-years">
+    <h2 class="module-title">Programas educativos</h2>
+    <ui-view>
+        <md-tabs md-selected="1" md-border-bottom md-autoselect md-dynamic-height class="md-primary md-whiteframe-5dp" >
+            <md-tab ng-repeat="ep in ctrl.educative_programs" label="{{ ep.name }} ">
+                <md-content class="md-padding">
+                    <form>
+                        <div>
+                            <h5>Mapa curricular:</h5>
+                            {{ ep.subject_set }}
+                        </div>
+                        <div>
+                            <h5>Periodos de evaluación:</h5>
+                            <md-list class="md-whiteframe-3dp">
+                                <md-list-item ng-repeat="mp in ep.markingperiod_set" class="md-2-line">
+                                    <div class="md-list-item-text" layout="column">
+                                    <h3>{{ mp.name }}</h3>
+                                    <small>Fecha inicio: {{ mp.start_date }}</small>
+                                    <small>Fecha fin: {{ mp.end_date }}</small>
+
+                                    </div>
+                                    <md-switch class="md-secondary" ng-model="mp.active"></md-switch>
+                                </md-list-item>
+                            </md-list>
+                        </div>
+
+                    </form>
+
+
+                </md-content>
+            </md-tab>
+        </md-tabs>
+    </ui-view>
+</div>

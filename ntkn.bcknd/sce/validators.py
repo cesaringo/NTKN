@@ -7,4 +7,3 @@ def validate_id_exists(model):
             if not item:
                 raise ValidationError('item with id={0} does not exist.'.format(value))
     return validate
-

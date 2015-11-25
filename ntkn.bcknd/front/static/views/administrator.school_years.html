@@ -1,0 +1,62 @@
+<div ng-view name="school-years">
+    <h2 class="module-title">Ciclos escolares</h2>
+    <ui-view>
+        <md-list >
+            <md-subheader class="md-no-sticky">Selecciona un periodo escolar</md-subheader>
+            <md-list-item ng-repeat="school_year in school_years" class="md-3-line">
+                <div flex layout="row">
+                    <div class="md-button" flex="80" style="text-align: left; border-radius: 0; margin: 0">
+                        <div class="md-list-item-text" layout="column" layout-padding layout-margin>
+                            <h3>
+                                {{ school_year.start_date }} - {{ school_year.end_date }}
+                            </h3>
+                            <h4>{{ school_year.educative_program.name }}</h4>
+                            <p>{{ school_year.num_of_courses }} cursos</p>
+                            <p>
+                                <span  ng-if="school_year.is_active"><md-icon class="material-icons"  style="color:green; font-size: 13px">done</md-icon> Activo</span>
+                                <span  ng-if="!school_year.is_active"><md-icon class="material-icons" style="color:red; font-size: 13px">block</md-icon> Inactivo</span>
+                            </p>
+                        </div>
+                        <md-divider></md-divider>
+                    </div>
+                    <md-menu flex="20">
+                        <md-button ng-click="$mdOpenMenu($event)" class="md-primary md-icon-button" aria-label="Open sample menu">
+                            <md-icon class="material-icons" md-36>more_vert</md-icon>
+                        </md-button>
+                        <md-menu-content>
+                            <md-menu-item ng-if="!school_year.is_active">
+                                <md-button ng-click="ActivateSchoolYear(school_year)">
+                                    <md-icon class="material-icons">done</md-icon> Activar
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item ng-if="school_year.is_active">
+                                <md-button ng-click="DeactivateSchoolYear(school_year)">
+                                    <md-icon class="material-icons">block</md-icon> Desactivar
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item ng-if="school_year.num_of_courses == 0">
+                                <md-button ng-click="CreateCoursesBySchoolYear(school_year, 0)">
+                                    <md-icon class="material-icons">sync</md-icon>Crear cursos
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item ng-if="school_year.num_of_courses > 0">
+                                <md-button ng-click="CreateCoursesBySchoolYear(school_year, 1)">
+                                    <md-icon class="material-icons">sync</md-icon>Completar cursos
+                                </md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
+                </div>
+
+            </md-list-item>
+
+        </md-list>
+
+        <div layout-align="end end" layout="row">
+            <md-button class="md-fab md-primary" aria-label="Crear ciclo escolar"
+                       ui-sref="dashboard.administrator.school_years.create" >
+                <md-icon class="material-icons" md-36>add</md-icon>
+            </md-button>
+        </div>
+    </ui-view>
+</div>

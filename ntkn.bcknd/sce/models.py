@@ -4,20 +4,41 @@ from django.core import urlresolvers
 from decimal import *
 from django.core.validators import MaxValueValidator, MinValueValidator
 from slugify import slugify
-from alumni.models import Student, Teacher, GradeLevel, EducativeProgram, Cohort
+from alumni.models import Student, Teacher, GradeLevel, Cohort, Institute
 
+class EducativeProgram(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.CharField(max_length=100, unique=True, blank=True)
+    num_marking_periods = models.IntegerField()
+    num_of_levels = models.IntegerField()
+    institute = models.ForeignKey(Institute)
+    is_active = models.BooleanField(default=True)
+
+    order = models.IntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
 class SchoolYear(models.Model):
-    name = models.CharField(max_length=100, unique=True)
     start_date = models.DateField(validators=settings.DATE_VALIDATORS)
     end_date = models.DateField(validators=settings.DATE_VALIDATORS)
-    active_year = models.BooleanField(default=False, help_text='')
+    is_active = models.BooleanField(default=False, help_text='')
+    educative_program = models.ForeignKey(EducativeProgram)
+    slug = models.CharField(max_length=100, unique=True, blank=True)
 
     class Meta:
         ordering = ('start_date',)
 
     def __str__(self):
-        return self.name
+        return self.slug
+
+    def num_of_courses(self):
+        return self.course_set.all().count()
+
+    def save(self, *args, **kwargs):
+        print ('saving')
+        self.slug = slugify('{0}-{1}-{2}'.format(self.educative_program, self.start_date.year, self.end_date.year))
+        super(SchoolYear, self).save(*args, **kwargs)
 
 
 class Department(models.Model):
@@ -53,7 +74,7 @@ class Subject(models.Model):
 
     # The educative program the subject is associated.
     # Educative program can be retrieved from grade_level.educative_program
-    educative_program = models.ForeignKey(EducativeProgram, blank=True, null=True, on_delete=models.SET_NULL)
+    educative_program = models.ForeignKey(EducativeProgram)
 
     order = models.IntegerField(null=True)
 
@@ -94,6 +115,7 @@ class Course(models.Model):
     subject = models.ForeignKey(Subject, related_name='courses')
     teacher = models.ForeignKey(Teacher, blank=True, null=True)
 
+    #
     marking_periods = models.ManyToManyField(
         MarkingPeriod,
         blank=True,
@@ -121,14 +143,19 @@ class Course(models.Model):
         return self.subject.grade_level
 
     class Meta:
+        #unique_together = ('subject__id', 'school_year__id', 'cohort__id')
         pass
-        #unique_together = ('subject', 'school_year', 'cohort')
+
+    def get_marking_periods(self):
+        return self.marking_periods.all()
 
     def save(self, *args, **kwargs):
         super(Course, self).save(*args, **kwargs)
         marking_periods = self.subject.educative_program.markingperiod_set.all()
+        #print(marking_periods)
         for marking_period in marking_periods:
             self.marking_periods.add(marking_period)
+
 
 class CourseEnrollment(models.Model):
     student = models.ForeignKey(Student)
@@ -161,13 +188,18 @@ class CourseEnrollment(models.Model):
             create_scores = True
         super(CourseEnrollment, self).save(*args, **kwargs)
         if create_scores:
-            for marking_period in self.course.marking_periods.all():
-                print(marking_period)
-                score = Score(marking_period=marking_period, course_enrollment=self)
-                score.save()
+            marking_periods = self.course.subject.educative_program.markingperiod_set.all()
+            scores = []
+            for marking_period in marking_periods:
+                scores.append(
+                    Score(marking_period=marking_period, course_enrollment=self)
+                )
+                #score.save()
+            Score.objects.bulk_create(scores)
 
     def get_average(self):
         n = Decimal(self.scores.count())
+        if n == 0: return None
         x = Decimal(0)
         for s in self.scores.all():
             if s.score is None:

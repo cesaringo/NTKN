@@ -41,7 +41,8 @@ class PhotoSerializer(serializers.ModelSerializer):
         fields = ('original', 'thumbnail_30x30', 'thumbnail_50x50', 'thumbnail_100x100',)
 
 class SmallPhotoSerializer(serializers.ModelSerializer):
-    thumbnail_50x50 = serializers.ImageField('thumbnail_50x50')
+    thumbnail_50x50 = serializers.ImageField('thum'
+                                             'bnail_50x50')
     class Meta:
         model = Photo
         fields = ('thumbnail_50x50',)

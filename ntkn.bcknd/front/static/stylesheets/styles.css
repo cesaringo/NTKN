@@ -2,7 +2,9 @@ body{
 	background-color: #e7e7e7;
     font-size: 14px;
 }
-*{margin: 0; padding: 0;}
+.md-button{
+    text-transform: none;
+}
 #ngProgress-container {
     left: 0;
     margin: 0;

@@ -1,7 +1,7 @@
 from django.contrib import admin
-from sce.models import (Course, Subject, SchoolYear, SubjectCategory, Cohort, MarkingPeriod, CourseEnrollment,
+from sce.models import (EducativeProgram, Course, Subject, SchoolYear, SubjectCategory, Cohort, MarkingPeriod, CourseEnrollment,
                         Score)
-from alumni.models import (EducativeProgram, GradeLevel, Student, Teacher)
+from alumni.models import (GradeLevel, Student, Teacher)
 from import_export import resources
 from import_export.admin import ImportExportMixin
 from authentication.admin import AccountAdmin
@@ -80,7 +80,7 @@ class EcucativeProgramAdmin(admin.ModelAdmin):
 
 
 class SchoolYearAdmin(admin.ModelAdmin):
-    list_display = ('id', '__str__', 'start_date', 'end_date',)
+    list_display = ('id', '__str__', 'start_date', 'end_date', 'is_active')
     ordering = ['id']
 
 
@@ -123,9 +123,12 @@ class CourseAdmin(admin.ModelAdmin):
     filter_horizontal = ('marking_periods', 'students',)
     form = CourseForm
     inlines = (CourseEnrollmentLinkInline,)
-    list_display = ('id', 'subject', 'teacher', 'grade_level', 'cohort', 'school_year', 'is_active')
+    list_display = ('id', 'subject', 'teacher', 'grade_level', 'cohort', 'school_year', 'is_active',)
     list_display_links = ('id', 'subject',)
     list_filter = ('cohort',)
+    fieldsets = (
+        (None, {'fields': ('subject', 'teacher', 'is_active', )}),
+    )
     pass
 
 

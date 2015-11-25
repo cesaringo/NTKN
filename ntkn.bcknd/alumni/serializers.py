@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from alumni.models import Institute, GradeLevel, Student, Cohort
+#from sce.serializers import SubjectSerializer
 
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
@@ -23,14 +24,15 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
                 self.fields.pop(field_name)
 
 
-class IntituteSerializer(DynamicFieldsModelSerializer):
-    class Meta:
-        model = Institute
-
-
 class GradeLevelSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = GradeLevel
+        fields = ['id', 'name', 'slug', 'educative_program', 'order']
+
+
+class IntituteSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Institute
 
 
 class CohortSerializer(serializers.ModelSerializer):

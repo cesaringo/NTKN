@@ -34,8 +34,6 @@
 			$http.defaults.headers.common.Authorization = 'Token ' + _token;
 		}
 
-        
-
 		function destroyUserCredentials() {
 			delete $http.defaults.headers.common.Authorization;
 			$window.localStorage.removeItem('token');
@@ -54,16 +52,14 @@
 				});
 		}
 
-        var getCurrentRole = function(roles){
-            if (roles == undefined) // Si no tiene ningun role
-                return undefined //Permision denegado. todos los usuarios deben de tener un rol
-            var role = "";
-            if (roles.length > 1){//Muchos roles. Preguntar al usuario que Role quiere usar
-                ///var role ...
-            }else{
-                role = roles[0];
+        var getCurrentRole = function(){
+            if (isAuthenticated)
+            {
+                if (user != undefined){
+                    return user.groups[0]
+                }
             }
-            return role;
+            return "";
         }
 
 		var logout = function(){
@@ -91,6 +87,7 @@
         }
 
 
+
   		loadUserCredentials();
 
   		return {
@@ -100,6 +97,7 @@
   			'isAuthenticated': function() {return isAuthenticated;},
             'authenticationStatus': authenticationStatus,
   			'user': function() {return user;},
+            'getCurrentRole': getCurrentRole,
   		}
 	}
 
@@ -171,10 +169,50 @@
             return $http.get(API_URL + '/sce/courses/');
         };
 
+        var GetSchoolYears = function(params){
+            return $http.get(
+                API_URL + '/sce/school-years/',
+                params
+            );
+        };
+
+        var GetEducativePrograms = function(){
+            return $http.get(
+                API_URL + '/alumni/educative-programs/'
+            );
+        };
+
+        var CreateSchoolYear = function(start_date, end_date, educative_program_id){
+            return $http.post(API_URL+'/sce/school-years/', {
+                'start_date': start_date, 'end_date': end_date, 'educative_program_id': educative_program_id
+            });
+        };
+
+        var ActivateSchoolYear = function(school_year_id){
+            return $http.post(API_URL+'/sce/school-years/' + school_year_id + '/activate/');
+        };
+        var DeactivateSchoolYear = function(school_year_id){
+            return $http.post(API_URL+'/sce/school-years/' + school_year_id + '/deactivate/');
+        };
+        var CreateCoursesBySchoolYear = function(school_year_id, complete_courses){
+            return $http.post(API_URL+'/sce/school-years/' + school_year_id + '/create_courses/',{
+                'complete_courses': complete_courses
+            });
+        };
+        var GetEducativePrograms = function(){
+            return $http.get(API_URL+'/alumni/educative-programs/');
+        };
+
         return {
             UserProfile: UserProfile,
             StudentProfile: StudentProfile,
             GetCourses: GetCourses,
+            GetSchoolYears: GetSchoolYears,
+            GetEducativePrograms: GetEducativePrograms,
+            CreateSchoolYear: CreateSchoolYear,
+            ActivateSchoolYear: ActivateSchoolYear,
+            DeactivateSchoolYear: DeactivateSchoolYear,
+            CreateCoursesBySchoolYear: CreateCoursesBySchoolYear,
         }
     }
 	
