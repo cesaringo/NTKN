@@ -1,10 +1,47 @@
 from rest_framework import serializers
 from alumni.serializers import DynamicFieldsModelSerializer
-from sce.models import (Course, MarkingPeriod, Subject,
-						CourseEnrollment, Score, SchoolYear, GradeLevel, Cohort, EducativeProgram)
-from alumni.models import Teacher
+from sce.models import *
 from sce.validators import validate_id_exists
 from rest_framework_bulk import BulkListSerializer, BulkSerializerMixin
+
+
+class IntituteSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Institute
+
+
+class EducativeProgramSerializer(DynamicFieldsModelSerializer):
+    subject_set = SubjectSerializer(many=True, read_only=True)
+    class Meta:
+        model = EducativeProgram
+        fields = ['id', 'name', 'slug', 'num_of_levels', 'institute', 'is_active',
+                  'subject_set', 'markingperiod_set']
+        depth = 1
+
+
+class GradeLevelSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = GradeLevel
+        fields = ['id', 'name', 'slug', 'educative_program', 'order']
+
+
+class StudentSerializer(DynamicFieldsModelSerializer):
+    course_set = serializers.StringRelatedField(many=True)
+    from rest_auth.serializers import PhotoSerializer
+    photo = PhotoSerializer()
+    grade_level = GradeLevelSerializer()
+    cohorts = CohortSerializer(many=True)
+
+    class Meta:
+        model = Student
+        fields = ['id', 'first_name', 'last_name', 'sex', 'username', 'grade_level', 'course_set', 'photo', 'cohorts']
+        depth = 1
+
+
+class CohortSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Cohort
+		fields = ['id', 'name']
 
 
 class SchoolYearSerializer(DynamicFieldsModelSerializer):
@@ -18,6 +55,7 @@ class SchoolYearSerializer(DynamicFieldsModelSerializer):
 class GradeLevelSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = GradeLevel
+		depth = 1
 
 
 class CohortSerializer(serializers.ModelSerializer):
@@ -41,10 +79,8 @@ class MarkingPeriodSerializer(DynamicFieldsModelSerializer):
 class SubjectSerializer(DynamicFieldsModelSerializer):
 	class Meta:
 		model = Subject
-		fields = ('id', 'is_active', 'fullname', 'shortname', 'graded', 'description', 'level', 'order',
+		fields = ('id', 'is_active', 'name', 'code', 'graded', 'description', 'level', 'order',
 				  'grade_level', 'department', 'category')
-
-
 
 
 class CourseSerializer(BulkSerializerMixin, DynamicFieldsModelSerializer):
@@ -126,10 +162,3 @@ class CourseEnrollmentSerializer(DynamicFieldsModelSerializer):
 		return instance
 
 
-class EducativeProgramSerializer(DynamicFieldsModelSerializer):
-    subject_set = SubjectSerializer(many=True, read_only=True)
-    class Meta:
-        model = EducativeProgram
-        fields = ['id', 'name', 'slug', 'num_of_levels', 'institute', 'is_active',
-                  'subject_set', 'markingperiod_set']
-        depth = 1
