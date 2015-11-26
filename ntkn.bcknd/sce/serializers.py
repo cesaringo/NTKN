@@ -29,12 +29,11 @@ class InstituteSerializer(DynamicFieldsModelSerializer):
 		model = Institute
 
 
-
-
 class GradeLevelSerializer(DynamicFieldsModelSerializer):
 	class Meta:
 		model = GradeLevel
-		fields = ['id', 'name', 'slug', 'educative_program', 'order']
+		fields = ('id', 'number', 'name', 'slug', 'order', 'is_active', 'educative_program', 'cohort_set')
+		depth = 1
 
 
 class CohortSerializer(serializers.ModelSerializer):
@@ -56,20 +55,11 @@ class StudentSerializer(DynamicFieldsModelSerializer):
 		depth = 1
 
 
-
-
-
 class SchoolYearSerializer(DynamicFieldsModelSerializer):
 	educative_program_id = serializers.IntegerField(write_only=True)
 	class Meta:
 		model = SchoolYear
 		fields = ('id', 'slug', 'start_date', 'end_date', 'is_active', 'educative_program', 'educative_program_id', 'num_of_courses')
-		depth = 1
-
-
-class GradeLevelSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = GradeLevel
 		depth = 1
 
 
@@ -96,15 +86,17 @@ class SubjectSerializer(DynamicFieldsModelSerializer):
 		model = Subject
 		fields = ('id', 'is_active', 'name', 'code', 'graded', 'description', 'level', 'order',
 				  'grade_level', 'department', 'category')
+		depth = 1
 
 
 class EducativeProgramSerializer(DynamicFieldsModelSerializer):
-	subject_set = SubjectSerializer(many=True, read_only=True)
+	gradelevel_set = GradeLevelSerializer(many=True, read_only=True)
 	class Meta:
 		model = EducativeProgram
-		fields = ['id', 'name', 'slug', 'num_of_levels', 'institute', 'is_active',
-				  'subject_set', 'markingperiod_set']
+		fields = ('id', 'name', 'slug', 'institute', 'is_active',
+				  'gradelevel_set', 'markingperiod_set')
 		depth = 1
+
 
 class CourseSerializer(BulkSerializerMixin, DynamicFieldsModelSerializer):
 	marking_periods = serializers.SlugRelatedField(many=True, slug_field='shortname', read_only=True)

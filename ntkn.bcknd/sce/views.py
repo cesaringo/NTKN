@@ -72,6 +72,7 @@ class CourseViewSet(BulkModelViewSet):
 	def get_queryset(self):
 		user = self.request.user
 		queryset = Course.objects.all()
+		print (user.groups.all())
 
 		# if request by teacher
 		if user.groups.all().filter(name='teacher').exists():
@@ -88,7 +89,7 @@ class CourseViewSet(BulkModelViewSet):
 			# All courses
 			pass
 		else:
-			queryset = None
+			queryset = Course.objects.none()
 
 		return queryset
 
