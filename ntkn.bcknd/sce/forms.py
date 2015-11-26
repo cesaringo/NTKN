@@ -1,5 +1,4 @@
-from alumni.models import Student
-from sce.models import Cohort, Course
+from sce.models import Cohort, Course, Student
 from django.contrib.auth.forms import (
     UserChangeForm, UserCreationForm,
 )

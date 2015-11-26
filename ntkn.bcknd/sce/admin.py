@@ -1,7 +1,6 @@
 from django.contrib import admin
 from sce.models import (EducativeProgram, Course, Subject, SchoolYear, SubjectCategory, Cohort, MarkingPeriod, CourseEnrollment,
-                        Score)
-from alumni.models import (GradeLevel, Student, Teacher)
+                        Score, GradeLevel, Student, Teacher)
 from import_export import resources
 from import_export.admin import ImportExportMixin
 from authentication.admin import AccountAdmin
@@ -94,16 +93,16 @@ class SubjectResource(resources.ModelResource):
 
 class SubjectAdmin(ImportExportMixin, admin.ModelAdmin):
     resource_class = SubjectResource
-    list_display = ('shortname', '__str__', 'educative_program', 'level', 'grade_level', 'is_active', 'get_cohorts')
-    list_display_links = ('shortname', '__str__',)
-    ordering = ('educative_program',)
+    list_display = ('name', '__str__',  'level', 'grade_level', 'is_active',)
+    list_display_links = ('name', '__str__',)
+    ordering = ('grade_level',)
 
     fieldsets = (
         (None, {'fields': ('fullname', 'shortname', 'description',)}),
-        (None, {'fields': ('is_active', 'educative_program', 'category', 'graded', 'level', 'grade_level', 'cohorts')}),
+        (None, {'fields': ('is_active', 'category', 'graded', 'level', 'grade_level', 'cohorts')}),
     )
 
-    list_filter = ('is_active', 'educative_program', 'grade_level', 'grade_level')
+    list_filter = ('is_active', 'grade_level')
 
 
 class SubjectCategoryAdmin(admin.ModelAdmin):
@@ -115,7 +114,7 @@ class CohortAdmin(admin.ModelAdmin):
 
 
 class MarkingPeriodAdmin(admin.ModelAdmin):
-    list_display = ('name', 'shortname', 'active', 'description')
+    list_display = ('name', 'shortname', 'is_active', 'description')
     ordering = ('name',)
 
 

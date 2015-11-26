@@ -10,7 +10,6 @@ urlpatterns = patterns('',
     # API | BackEnd
     url(r'^api/auth/', include('rest_auth.urls')),
     url(r'^api/sce/', include('sce.urls')),
-    url(r'^api/alumni/', include('alumni.urls')),
 
     # FrontEnd
     url(r'^.*$', Home.as_view(), name='home'),

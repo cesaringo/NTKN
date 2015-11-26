@@ -6,6 +6,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from slugify import slugify
 from authentication.models import Account
 from localflavor.us.models import PhoneNumberField
+from datetime import date, datetime
+from django.contrib.auth.models import Group
 
 
 class Institute(models.Model):
@@ -61,6 +63,11 @@ class EducativeProgram(models.Model):
     institute = models.ForeignKey(Institute)
     is_active = models.BooleanField(default=True)
     order = models.IntegerField(null=True, blank=True)
+
+    def get_subjects(self):
+        grade_levels_id = self.gradelevel_set.all().values_list('id', flat=True)
+        subjects = Subject.filter(grade_level_id__in=grade_levels_id)
+        return subjects
 
     def __str__(self):
         return self.name
@@ -139,14 +146,13 @@ class Student(Account):
             self.username = '{0:07}'.format(self.id + 1000000)
             self.email = self.username + '@natkan.mx'
             self.enrollment = self.username
-            if self.first_school_year:
-                self.enrollment = str(datetime.now().year % 100) + '{0:02d}'.format(
-                    datetime.now().month) + '{0:02d}'.format(self.first_school_year.id % 100) + '{0:02}'.format(self.id)
-            print(type(self.password))
+            #if self.first_school_year:
+            #    self.enrollment = str(datetime.now().year % 100) + '{0:02d}'.format(
+            #        datetime.now().month) + '{0:02d}'.format(self.first_school_year.id % 100) + '{0:02}'.format(self.id)
+            #print(type(self.password))
             if self.password is "":
                 self.set_password(self.username)
                 super(self.__class__, self).set_password(self.username)
-
             else:
                 self.set_password(self.password)
                 super(self.__class__, self).set_password(self.password)
@@ -187,7 +193,7 @@ class Cohort(models.Model):
     grade_levels = models.ManyToManyField(
         GradeLevel,
         blank=True,
-        related_name='cohorts',
+        #related_name='cohorts',
         related_query_name='cohort'
     )
 
@@ -250,7 +256,7 @@ class Subject(models.Model):
 
 
 class MarkingPeriod(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     shortname = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     start_date = models.DateField()

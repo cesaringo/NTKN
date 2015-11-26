@@ -4,15 +4,55 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from sce.serializers import (CourseSerializer, CourseEnrollmentSerializer,
-							 SchoolYearSerializer, ScoreSerializer, SubjectSerializer)
-from alumni.serializers import StudentSerializer
-from sce.models import Course, CourseEnrollment, SchoolYear, Score, Subject
-from alumni.models import Student
+	SchoolYearSerializer, ScoreSerializer, SubjectSerializer, StudentSerializer,
+	InstituteSerializer, EducativeProgramSerializer)
+
+from sce.models import (Course, CourseEnrollment, SchoolYear, Score, Subject, Student, Institute,
+						EducativeProgram)
+
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.fields import empty
 from rest_framework_bulk import BulkModelViewSet
 from rest_framework.decorators import detail_route
 import re
+
+
+class InstituteViewSet(viewsets.ModelViewSet):
+	serializer_class = InstituteSerializer
+	queryset = Institute.objects.all()
+	permission_classes = [IsAuthenticated]
+
+
+class StudentViewSet(viewsets.ModelViewSet):
+	"""
+	A viewset for viewing and editing Student instances.
+	"""
+	serializer_class = StudentSerializer
+	queryset = Student.objects.none()
+	lookup_field = 'username'
+	permission_classes = [IsAuthenticated]
+
+	def get_queryset(self):
+		queryset = Student.objects.all()
+		user = self.request.user
+
+		# if resource is requested by teacher
+		if user.groups.all().filter(name='teacher').exists():
+			# Only Students on his courses
+			pass
+
+		# if resource is requested by student
+		elif user.groups.all().filter(name='student').exists():
+			queryset = queryset.filter(username=user.username)
+
+		return queryset
+
+
+class EducativeProgramViewSet(viewsets.ModelViewSet):
+	serializer_class = EducativeProgramSerializer
+	queryset = EducativeProgram.objects.all()
+	permission_classes = [IsAuthenticated]
+
 
 class StudentViewSet(viewsets.ModelViewSet):
 	"""	A viewset for viewing and editing Student instances. """
@@ -100,9 +140,6 @@ class CourseViewSet(BulkModelViewSet):
 		)
 
 
-
-
-
 class CourseEnrollmentViewSet(viewsets.ModelViewSet):
 	"""	And API endpoint for CourseEnrollment model	"""
 	serializer_class = CourseEnrollmentSerializer
@@ -154,30 +191,31 @@ class SchoolYearViewSet(viewsets.ModelViewSet):
 
 	@detail_route(methods=['post'])
 	def create_courses(self, request, pk):
-		data = {}
 		try:
 			sy = SchoolYear.objects.get(pk=pk)
 		except SchoolYear.DoesNotExist:
 			sy = None
 
 		if sy is None:
-			data['has_error'] = True
-			data['error_message'] = 'School year not found.'
-			return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+			return Response(data={
+				'has_error': True,
+				'error_message': 'School year not found.'
+			}, status=status.HTTP_404_NOT_FOUND)
 
 		current_courses = Course.objects.filter(school_year=sy)
 		exist_courses = current_courses.exists()
 		complete_courses = request.DATA.get('complete_courses', False)
 
 		if exist_courses and not complete_courses:
-			data["has_error"] = True
-			data["error_message"] = 'There is already courses for the given period. Use complete_courses option.'
-			return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+			return Response(data={
+				'has_error': True,
+				'error_message': 'There is already courses for the given period. Use complete_courses option.'
+			}, status=status.HTTP_400_BAD_REQUEST)
 
 		courses = []
-		subjects = sy.educative_program.subject_set.all()
+		subjects = sy.educative_program.get_subjects()
 		for subject in subjects:
-			for cohort in subject.cohorts.all():
+			for cohort in subject.grade_level._get_cohorts():
 				if current_courses.filter(subject=subject, cohort=cohort).exists():
 					continue # Only unique courses
 				course = Course(
@@ -188,13 +226,13 @@ class SchoolYearViewSet(viewsets.ModelViewSet):
 				courses.append(course)
 
 		Course.objects.bulk_create(courses)
-		data['success'] = True
-		data['success_message'] = 'Course added correctly.'
 		course_serializer = CourseSerializer(data=courses, many=True, fields=['subject', 'school_year', 'cohort'])
 		course_serializer.is_valid()
-		data['created_courses'] = course_serializer.data
-
-		return Response(data=data,status=status.HTTP_200_OK)
+		return Response(data={
+			'success': True,
+			'success_message': 'Course added correctly.',
+			'created_courses': course_serializer.data
+		},status=status.HTTP_200_OK)
 
 	@detail_route(methods=['post'])
 	def activate(self, request, pk):
