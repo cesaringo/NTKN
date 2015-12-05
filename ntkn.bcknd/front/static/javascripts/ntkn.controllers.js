@@ -256,6 +256,7 @@
 
 	})
 	.controller('AdminSchoolYearCtrl', function($scope, SCEService){
+		$scope.loading = [];
 		$scope.school_years = [];
 		$scope.educative_programs = [];
 		$scope.school_year_to_create = {
@@ -273,23 +274,31 @@
 		};
 
 		$scope.ActivateSchoolYear = function(school_year){
+			$scope.loading[school_year.id] = true;
 			SCEService.ActivateSchoolYear(school_year.id).then(function(response){
+				$scope.loading[school_year.id] = false;
 				school_year.is_active = response.data.result.is_active;
 			}, function (response) {
 				console.log(response)
 			});
 		};
 		$scope.DeactivateSchoolYear = function(school_year){
+			$scope.loading[school_year.id] = true;
 			SCEService.DeactivateSchoolYear(school_year.id).then(function(response){
+				$scope.loading[school_year.id] = false;
 				school_year.is_active = response.data.result.is_active;
 			}, function (response) {
 				console.log(response)
 			});
 		};
 		$scope.CreateCoursesBySchoolYear = function(school_year, complete_courses){
+			$scope.loading[school_year.id] = true;
 			SCEService.CreateCoursesBySchoolYear(school_year.id, complete_courses).then(function(response){
+				$scope.loading[school_year.id] = false;
 				console.log(response.data);
+				school_year.num_of_courses += response.data.created_courses.length;
 			}, function (response) {
+				$scope.loading[school_year.id] = false;
 				console.log(response)
 			});
 		};
@@ -332,5 +341,23 @@
 		}, function(response){
 			console.log(response)
 		});
+
+		self.ToggleMarkingPeriod = function(marking_period){
+			if (marking_period.is_active){
+				SCEService.ActivateMarkingPeriod(marking_period.id).then(function(response){
+					//$scope.loading[markin_period.id] = false;
+					marking_period.is_active = response.data.result.is_active;
+				}, function (response) {
+					console.log(response)
+				});
+			}else{
+				SCEService.DeactivateMarkingPeriod(marking_period.id).then(function(response){
+					//$scope.loading[markin_period.id] = false;
+					marking_period.is_active = response.data.result.is_active;
+				}, function (response) {
+					console.log(response)
+				});
+			}
+		};
 	});
 })()

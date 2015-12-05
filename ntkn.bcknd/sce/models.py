@@ -66,7 +66,7 @@ class EducativeProgram(models.Model):
 
     def get_subjects(self):
         grade_levels_id = self.gradelevel_set.all().values_list('id', flat=True)
-        subjects = Subject.filter(grade_level_id__in=grade_levels_id)
+        subjects = Subject.objects.filter(grade_level_id__in=grade_levels_id)
         return subjects
 
     def __str__(self):

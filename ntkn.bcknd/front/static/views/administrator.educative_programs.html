@@ -1,32 +1,51 @@
 <div ng-view name="school-years">
-    <h2 class="module-title">Programas educativos</h2>
+    <h2 layout-margin layout-padding class="md-headline">Programas educativos</h2>
     <ui-view>
-        <md-tabs md-selected="1" md-border-bottom md-autoselect md-dynamic-height class="md-primary md-whiteframe-5dp" >
+        <md-tabs md-selected="1" md-border-bottom md-autoselect md-dynamic-height class="md-primary md-whiteframe-1dp" >
             <md-tab ng-repeat="ep in ctrl.educative_programs" label="{{ ep.name }} ">
                 <md-content class="md-padding">
                     <form>
-                        <div>
-                            <h5>Mapa curricular:</h5>
-                            {{ ep.subject_set }}
+                        <div flex layout="row">
+                            <h4 class="md-subhead" flex>{{ ep.name }}</h4>
+                            <md-switch ng-model="ep.is_active" aria-label="{{ ep.name }} activo">
+                                <span ng-if="ep.is_active">Activo</span>
+                                <span ng-if="!ep.is_active">Inactivo</span>
+                            </md-switch>
                         </div>
+                        <md-divider></md-divider>
                         <div>
-                            <h5>Periodos de evaluación:</h5>
-                            <md-list class="md-whiteframe-3dp">
-                                <md-list-item ng-repeat="mp in ep.markingperiod_set" class="md-2-line">
-                                    <div class="md-list-item-text" layout="column">
-                                    <h3>{{ mp.name }}</h3>
-                                    <small>Fecha inicio: {{ mp.start_date }}</small>
-                                    <small>Fecha fin: {{ mp.end_date }}</small>
-
+                            <h4 class="md-subhead">Grados escolares:</h4>
+                            <div flex layout="row" layout-wrap>
+                                <div flex="30" flex-sm="100" ng-repeat="grade in ep.gradelevel_set" layout="column"
+                                     layout-padding layout-margin>
+                                    <h5 class="md-body-2">{{ grade.name }}</h5>
+                                    <div>
+                                        <p>Grupos activos:</p>
+                                        <md-chips ng-model="grade.cohort_set" readonly="true"></md-chips>
+                                        <p>Asignaturas:</p>
+                                        <md-list>
+                                            <md-list-item  class="md-warn" ng-repeat="subject in grade.subject_set" style="line-height: 20px;">
+                                                {{ subject }}</md-list-item>
+                                        </md-list>
                                     </div>
-                                    <md-switch class="md-secondary" ng-model="mp.active"></md-switch>
+                                </div>
+                            </div>
+                        </div>
+                        <md-divider></md-divider>
+                        <div>
+                            <h4 class="md-subhead">Periodos de evaluación:</h4>
+                            <md-list>
+                                <md-list-item ng-repeat="mp in ep.markingperiod_set">
+                                    <p> {{ mp.name }} </p>
+                                    <md-switch class="md-secondary" ng-model="mp.is_active" aria-label="Activar"
+                                    ng-change="ctrl.ToggleMarkingPeriod(mp)">
+                                        <span ng-if="mp.is_active">Activo</span>
+                                        <span ng-if="!mp.is_active">Inactivo</span>
+                                    </md-switch>
                                 </md-list-item>
                             </md-list>
                         </div>
-
                     </form>
-
-
                 </md-content>
             </md-tab>
         </md-tabs>

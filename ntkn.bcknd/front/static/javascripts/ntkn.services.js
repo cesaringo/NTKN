@@ -161,7 +161,7 @@
 
         var StudentProfile = function(username){
             if (username != undefined){
-                return $http.get(API_URL + '/alumni/students/'+username+'/');
+                return $http.get(API_URL + '/sce/students/'+username+'/');
             }
         };
 
@@ -178,7 +178,7 @@
 
         var GetEducativePrograms = function(){
             return $http.get(
-                API_URL + '/alumni/educative-programs/'
+                API_URL + '/sce/educative-programs/'
             );
         };
 
@@ -200,7 +200,14 @@
             });
         };
         var GetEducativePrograms = function(){
-            return $http.get(API_URL+'/alumni/educative-programs/');
+            return $http.get(API_URL+'/sce/educative-programs/');
+        };
+
+        var ActivateMarkingPeriod = function(marking_period_id){
+            return $http.post(API_URL+'/sce/marking-periods/' + marking_period_id + '/activate/');
+        };
+        var DeactivateMarkingPeriod = function(marking_period_id){
+            return $http.post(API_URL+'/sce/marking-periods/' + marking_period_id + '/deactivate/');
         };
 
         return {
@@ -213,6 +220,8 @@
             ActivateSchoolYear: ActivateSchoolYear,
             DeactivateSchoolYear: DeactivateSchoolYear,
             CreateCoursesBySchoolYear: CreateCoursesBySchoolYear,
+            ActivateMarkingPeriod: ActivateMarkingPeriod,
+            DeactivateMarkingPeriod: DeactivateMarkingPeriod,
         }
     }
 	

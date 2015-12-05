@@ -1,10 +1,9 @@
 {% verbatim %}
-<md-sidenav 
+<md-sidenav id="sidebar"
 class="md-sidenav-left md-whiteframe-z2" 
 md-component-id="mainSideNav" 
 md-is-locked-open="$mdMedia('gt-md') && lockMainSideNav">
-    <md-toolbar class="md-theme-indigo" id="menu-user-info" style="
-    {{isAuthenticated ? 'background-position: 75px 0;' : ''}}" layout="column">
+    <md-toolbar class="md-theme-indigo" id="menu-user-info" layout="column">
         <md-list flex="100">
             <!--<md-list-item class="md-body-2" hide-gt-md="">
                 <md-button class="md-icon-button"

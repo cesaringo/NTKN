@@ -5,10 +5,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from sce.serializers import (CourseSerializer, CourseEnrollmentSerializer,
 	SchoolYearSerializer, ScoreSerializer, SubjectSerializer, StudentSerializer,
-	InstituteSerializer, EducativeProgramSerializer)
+	InstituteSerializer, EducativeProgramSerializer, MarkingPeriodSerializer)
 
 from sce.models import (Course, CourseEnrollment, SchoolYear, Score, Subject, Student, Institute,
-						EducativeProgram)
+						EducativeProgram, MarkingPeriod)
 
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.fields import empty
@@ -216,7 +216,7 @@ class SchoolYearViewSet(viewsets.ModelViewSet):
 		courses = []
 		subjects = sy.educative_program.get_subjects()
 		for subject in subjects:
-			for cohort in subject.grade_level._get_cohorts():
+			for cohort in subject.grade_level.get_cohorts():
 				if current_courses.filter(subject=subject, cohort=cohort).exists():
 					continue # Only unique courses
 				course = Course(
@@ -318,3 +318,53 @@ class SubjectViewSet(viewsets.ModelViewSet):
 		if fields is not None:
 			fields = fields.split(',')
 		return SubjectSerializer(instance=instance, data=data, many=many, partial=partial, fields=fields)
+
+
+class MarkingPeriodViewSet(viewsets.ModelViewSet):
+	serializer_class = MarkingPeriodSerializer
+	queryset = MarkingPeriod.objects.all()
+	permission_classes = [IsAuthenticated]
+
+	@detail_route(methods=['post'])
+	def activate(self, request, pk):
+		try:
+			object = MarkingPeriod.objects.get(pk=pk)
+		except MarkingPeriod.DoesNotExist:
+			object = None
+
+		if object is None:
+			return Response(data={
+				'has_error': True,
+				'error_message': 'Periodo de evaluación con el id: {0} no existe'.format(pk)
+			}, status=status.HTTP_400_BAD_REQUEST)
+
+		object.is_active = True
+		object.save()
+		return Response(data={
+			'success': True,
+			'success_message': 'Periodo de evaluación con el id: {0} activado correctamente'.format(pk),
+			'result': MarkingPeriodSerializer(object).data
+			}, status=status.HTTP_200_OK)
+
+	@detail_route(methods=['post'])
+	def deactivate(self, request, pk):
+		try:
+			object = MarkingPeriod.objects.get(pk=pk)
+		except MarkingPeriod.DoesNotExist:
+			object = None
+
+		if object is None:
+			return Response(data={
+				'has_error': True,
+				'error_message': 'Periodo de evaluación con el id: {0} no existe'.format(pk)
+			}, status=status.HTTP_400_BAD_REQUEST)
+
+		object.is_active = False
+		object.save()
+		return Response(data={
+			'success': True,
+			'success_message': 'Periodo de evaluación con el id: {0} desactivado correctamente'.format(pk),
+			'result': MarkingPeriodSerializer(object).data
+			}, status=status.HTTP_200_OK)
+
+

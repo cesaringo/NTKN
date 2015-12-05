@@ -3,8 +3,13 @@
 	angular.module('ntkn', ['ui.router', 'ngMaterial', 'http-auth-interceptor', 'md.data.table'])
 	.config(function ($stateProvider, $urlRouterProvider, USER_ROLES, $mdThemingProvider) {
 		$mdThemingProvider.theme('default')
-    		.primaryPalette('pink')
-    		.accentPalette('orange');
+    		.primaryPalette('blue')
+    		.accentPalette('orange')
+			.warnPalette('red');
+			//.backgroundPalette('white');
+
+
+
 
 		$stateProvider
 		.state('login', {

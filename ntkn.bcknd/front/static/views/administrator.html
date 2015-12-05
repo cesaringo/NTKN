@@ -1,7 +1,8 @@
-<div ng-view name="administrator-dashboard"
-layout-margin>
-    <h1>Administración</h1>
-    <md-divider></md-divider>
+<div ng-view name="administrator-dashboard">
+    <div id="showcase" layout-padding class="md-whiteframe-1dp" >
+        <h1 class="title2">Administración</h1>
+    </div>
+
     <div ui-view>
         <p><a ui-sref="dashboard.administrator.school_years">Periodos escolares</a></p>
         <p><a ui-sref="dashboard.administrator.educative_programs">Programas educativos</a></p>

@@ -30,11 +30,17 @@ class InstituteSerializer(DynamicFieldsModelSerializer):
 
 
 class GradeLevelSerializer(DynamicFieldsModelSerializer):
+	educative_program = serializers.SlugRelatedField(slug_field='name', read_only=True)
+	cohort_set = serializers.SlugRelatedField(many=True, slug_field='name', read_only=True)
+	subject_set = serializers.SlugRelatedField(many=True, slug_field='name', read_only=True)
+
 	class Meta:
 		model = GradeLevel
-		fields = ('id', 'number', 'name', 'slug', 'order', 'is_active', 'educative_program', 'cohort_set')
-		depth = 1
-
+		fields = ('id', 'number', 'name', 'slug', 'order', 'is_active',
+				  'educative_program',
+				  'cohort_set',
+				  'subject_set'
+		)
 
 class CohortSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -46,8 +52,8 @@ class StudentSerializer(DynamicFieldsModelSerializer):
 	course_set = serializers.StringRelatedField(many=True)
 	from rest_auth.serializers import PhotoSerializer
 	photo = PhotoSerializer()
-	grade_level = GradeLevelSerializer()
-	cohorts = CohortSerializer(many=True)
+	grade_level = serializers.SlugRelatedField(slug_field='name', read_only=True)
+	cohorts = CohortSerializer(many=True, read_only=True)
 
 	class Meta:
 		model = Student
@@ -77,16 +83,18 @@ class MarkingPeriodSerializer(DynamicFieldsModelSerializer):
 
 	class Meta:
 		model = MarkingPeriod
-		fields = ['id', 'name', 'shortname', 'grades_due']
+		fields = ['id', 'name', 'shortname', 'grades_due', 'is_active']
 		ordering = ('name',)
 
 
 class SubjectSerializer(DynamicFieldsModelSerializer):
+	#grade_level_id = serializers.IntegerField(read_only=True)
+	grade_level = serializers.SlugRelatedField(slug_field='name', read_only=True)
 	class Meta:
 		model = Subject
 		fields = ('id', 'is_active', 'name', 'code', 'graded', 'description', 'level', 'order',
 				  'grade_level', 'department', 'category')
-		depth = 1
+		#depth = 1
 
 
 class EducativeProgramSerializer(DynamicFieldsModelSerializer):
@@ -168,7 +176,6 @@ class CourseEnrollmentSerializer(DynamicFieldsModelSerializer):
 
 	def update(self, instance, validated_data):
 		# The unique field than can be edited in CourseEnrollment on list of Scores
-		print(instance)
 		for item in validated_data['scores']:
 			score = Score.objects.get(pk=item['id'])
 			score.score = item['score']

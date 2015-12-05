@@ -1,6 +1,6 @@
 from sce.views import (SubjectViewSet, CourseViewSet,
     CourseEnrollmentViewSet, SchoolYearViewSet, StudentViewSet, InstituteViewSet,
-    EducativeProgramViewSet)
+    EducativeProgramViewSet, MarkingPeriodViewSet)
 from rest_framework.routers import DefaultRouter
 from django.conf.urls import patterns, url
 
@@ -12,6 +12,7 @@ router.register(r'course-enrollments', CourseEnrollmentViewSet, base_name='Cours
 router.register(r'students', StudentViewSet)
 router.register(r'institutes', InstituteViewSet)
 router.register(r'educative-programs', EducativeProgramViewSet)
+router.register(r'marking-periods', MarkingPeriodViewSet)
 
 urlpatterns = router.urls
 
